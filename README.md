@@ -93,3 +93,32 @@ Follow the instruction below to setting up your project.
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [product-screenshot]: images/screenshot.png
+
+
+## Cloning devTrac to docker
+
+git clone https://github.com/macabral/devTrac
+
+cd devTrac
+
+docker-compose build
+
+docker-compose up -d
+
+docker exec -it php sh
+
+    mv .env.example .env
+
+    composer install
+
+    php artisan migrate
+
+    php artisan db:seed
+
+    php artisan optimize \
+        && php artisan route:clear \
+        && php artisan route:cache \
+        && php artisan config:clear \
+        && php artisan config:cache \
+        && php artisan view:clear \
+        && php artisan view:cache
