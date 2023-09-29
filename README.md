@@ -121,4 +121,7 @@ docker exec -it php sh
         && php artisan config:clear \
         && php artisan config:cache \
         && php artisan view:clear \
-        && php artisan view:cache
+        && php artisan view:cache´
+
+    chmod -R 777 storage
+    
