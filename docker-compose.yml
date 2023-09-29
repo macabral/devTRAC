@@ -1,0 +1,83 @@
+version: '3'
+
+networks: 
+    laravel:
+        driver: bridge
+
+services: 
+    nginx:
+        image: nginx:alpine
+        container_name: nginx
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "8989:8001"
+        volumes: 
+            - ./src:/var/www/app
+            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+        depends_on: 
+            - php
+            - mysql
+        networks: 
+            - laravel
+
+    mysql:
+        platform: linux/amd64
+        image: mysql:8
+        container_name: mysql
+        restart: unless-stopped
+        tty: true
+        ports: 
+            - "3336:3306"
+        volumes: 
+            - ./mysql:/var/lib/mysql
+        environment: 
+            MYSQL_DATABASE: devtrac
+            MYSQL_USER: devtrac
+            MYSQL_PASSWORD: devtrac
+            MYSQL_ROOT_PASSWORD: devtrac
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks: 
+            - laravel
+
+    php:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: php
+        restart: unless-stopped
+        tty: true
+        working_dir: /var/www/app
+        volumes: 
+            - ./src:/var/www/app
+        ports: 
+            - "${PHP_HOST_PORT}:${PHP_DOCKER_CONTAINER_PORT}"
+        networks: 
+            - laravel
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpadmin
+        links:
+            - mysql
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
+        restart: unless-stopped
+        ports:
+            - 8990:80
+        networks:
+            - laravel
+
+    schedule:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        command: "php artisan schedule:work"
+        volumes:
+            - ./src:/var/www/app
+        networks:
+            - laravel
