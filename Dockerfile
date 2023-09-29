@@ -34,6 +34,8 @@ RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
 COPY ./src .
 
+RUN mv .env.example .env
+
 RUN composer install --no-dev --no-scripts
 
 VOLUME ./src /var/www/app
