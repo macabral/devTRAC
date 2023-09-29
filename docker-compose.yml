@@ -1,7 +1,7 @@
 version: '3'
 
 networks: 
-    laravel:
+    devtrac:
         driver: bridge
 
 services: 
@@ -19,7 +19,7 @@ services:
             - php
             - mysql
         networks: 
-            - laravel
+            - devtrac
 
     mysql:
         platform: linux/amd64
@@ -39,7 +39,7 @@ services:
             SERVICE_TAGS: dev
             SERVICE_NAME: mysql
         networks: 
-            - laravel
+            - devtrac
 
     php:
         build:
@@ -54,7 +54,7 @@ services:
         ports: 
             - "${PHP_HOST_PORT}:${PHP_DOCKER_CONTAINER_PORT}"
         networks: 
-            - laravel
+            - devtrac
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
@@ -69,7 +69,7 @@ services:
         ports:
             - 8990:80
         networks:
-            - laravel
+            - devtrac
 
     schedule:
         build:
@@ -80,4 +80,9 @@ services:
         volumes:
             - ./src:/var/www/app
         networks:
-            - laravel
+            - devtrac
+
+    redis:
+        image: redis:latest
+        networks:
+            - devtrac
