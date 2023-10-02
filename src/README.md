@@ -42,6 +42,7 @@ v0.6 - 02/10/2023
 - Paginação de 7 linhas
 - Confirmação quando clicar em Enviar para Teste | Fechar Tíquete | Reabrir Tíquete
 - incluir logo da empresa na janela de welcome
+- usuario inativo não acessar o devTrac
 
 ### Iniciando o projeto devTRAC ###
 
