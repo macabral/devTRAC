@@ -75,11 +75,7 @@
 
                             @if ($ret->status == 'Open' || $ret->status == 'Testing')
                                 <div>
-                                    
-                                    <x-splade-form method="post" :action="route('logtickets.create',  $ret->id)"  class="mt-4 space-y-4" preserve-scroll>
-                                        @include('tickets.log-form')
-                                    </x-splade-form>
-
+                                    @include('tickets.log-form')
                                 </div>
                             @endif                            
 

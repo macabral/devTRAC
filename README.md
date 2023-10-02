@@ -105,7 +105,8 @@ docker-compose build
 
 docker-compose up -d
 
-docker
+
+docker exec -it php sh
 
     mv .env.example .env
 

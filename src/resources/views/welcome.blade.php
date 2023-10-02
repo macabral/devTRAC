@@ -1,6 +1,11 @@
 <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-0 sm:pt-0">
 
+    
+
     <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="flex justify-center pt-8 pb-4 sm:justify-start sm:pt-0">
+            <img src="assets/logo_empresa.png" height="70" dalt="logo!">
+        </div>
         <div class="flex justify-center pt-8 sm:justify-start sm:pt-0">
             <img src="assets/logo_text.jpg" height="70" dalt="logo!">
         </div>
