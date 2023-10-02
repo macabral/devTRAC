@@ -18,6 +18,13 @@ class DashboardController extends Controller
         $userId = auth('sanctum')->user()->id;
         $ret = User::where('id', $userId)->where('active','=',1)->with('projects')->get();
 
+        if (empty($ret[0])) {
+            Session::forget(Session::driver()->getId());
+            Session::invalidate();
+            Auth::guard('web')->logout();
+            return redirect('/login');
+        }
+
         // se usuário não tiver projeto associado retorna para o login.
         if (count($ret[0]->projects) == 0) {
 

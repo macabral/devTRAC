@@ -22,6 +22,9 @@ class AdminAccess
             if ($user->admin != 1) {
                 abort(403, __('Unauthorized Access'));
             }
+            if ($user->active != 1) {
+                abort(403, __('Unauthorized Access'));
+            }
         }
 
         return $next($request);
