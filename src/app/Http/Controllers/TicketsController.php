@@ -195,7 +195,7 @@ class TicketsController extends Controller
         $releases = Releases::select('id','version')->where('status','Open')->orwhere('status','Waiting')->where('projects_id', $project)->orderBy('version')->get();
 
         // devs
-        $devs = UsersProjects::select('users_id','name')->where('projects_id', $project)->where('dev', '1')->leftJoin('users','users.id','=','users_id')->where('users.active','=',1)->get();
+        $devs = UsersProjects::select('users_id','name')->where('projects_id', $project)->where('dev', '1')->leftJoin('users','users.id','=','users_id')->where('users.active','=',1)->orderby('name')->get();
 
         // Type 
         $types = Type::select('id','title')->where('status','Enabled')->get();

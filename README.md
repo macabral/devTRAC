@@ -138,6 +138,12 @@ http://localhost:8990  # to open phpMyAdmin
   user: devtrac
   password: devtrac
 
+To update:
+
+docker-compose down
+git pull
+docker-compose up -d
+
 
 
 
