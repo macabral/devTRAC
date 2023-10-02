@@ -36,6 +36,10 @@ v0.5 - 19/09/2023
 - exibir a quantidade de arquivos anexados ao tíquete
 - na lista de tíquetes o ícone de anexo exibe negritado quando tiver arquivos em anexo
 
+v0.6 - 02/10/2023
+- Edição do cadastro do Usuário
+- Abrir documentos em janela e realizar download quando não for PDF
+- Paginação de 7 linhas
 
 ### Iniciando o projeto devTRAC ###
 

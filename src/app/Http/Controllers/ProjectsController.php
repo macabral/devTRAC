@@ -34,7 +34,7 @@ class ProjectsController extends Controller
             ->orderby('created_at', 'desc')
             ->allowedSorts(['title'])
             ->allowedFilters(['description', 'status',  $globalSearch])
-            ->paginate(10)
+            ->paginate(7)
             ->withQueryString();
 
         return view('projects.result-search', [

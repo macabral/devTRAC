@@ -28,6 +28,7 @@ class UsersController extends Controller
             $query->where(function ($query) use ($value) {
                 Collection::wrap($value)->each(function ($value) use ($query) {
                     $query
+                        ->orwhere('email', 'LIKE', "%$value%")
                         ->orwhere('name', 'LIKE', "%$value%");
                 });
             });
@@ -37,7 +38,7 @@ class UsersController extends Controller
             ->orderby('name', 'asc')
             ->allowedSorts(['name'])
             ->allowedFilters(['name', 'email',  $globalSearch])
-            ->paginate(10)
+            ->paginate(7)
             ->withQueryString();
 
         return view('users.result-search', [
@@ -47,6 +48,8 @@ class UsersController extends Controller
                 ->defaultSort('name','desc')
                 ->column('name', label: __('Name'), sortable: true, searchable: true, canBeHidden:false)
                 ->column('email', label: __('email'), searchable: true)
+                ->column('admin', label: __('is Admin?'), searchable: true)
+                ->column('active', label: __('is Active?'), searchable: true)
                 ->column('action', label: '', canBeHidden:false)
         ]);
     }
@@ -227,6 +230,57 @@ class UsersController extends Controller
 
         return redirect()->back();
 
+    }
+
+
+        /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $id = base64_decode($id);
+
+        $ret = User::findOrFail($id);
+
+        return view('users.edit-users-form', [
+            'ret' => $ret,
+        ]);
+
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $this->validate($request, [
+            'name' => 'required|max:254',
+            'email' => 'required|max:254',
+            'admin' => 'required',
+            'active' => 'required'
+        ]);
+
+        $id = base64_decode($id);
+        
+        $input = $request->all();
+
+        $ret = User::findOrFail($id);
+
+        try {
+            
+            $ret->fill($input);
+
+        } catch (\Exception $e) {
+
+            return response()->json(['messagem' => $e], 422);
+            
+        }
+
+        $ret->save();
+
+        Toast::title(__('User saved!'))->autoDismiss(5);
+
+        return redirect()->back();
     }
 
 }

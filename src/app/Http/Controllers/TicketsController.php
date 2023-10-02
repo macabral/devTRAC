@@ -52,7 +52,7 @@ class TicketsController extends Controller
             ->orderby('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
             ->allowedFilters(['id','title', 'status', 'resp', $globalSearch])
-            ->paginate(10)
+            ->paginate(7)
             ->withQueryString();
 
         return view('tickets.result-search', [
@@ -111,7 +111,7 @@ class TicketsController extends Controller
             ->orderby('status')
             ->orderBy('created_at', 'desc')
             ->allowedFilters(['id','title', 'status', $globalSearch])
-            ->paginate(10)
+            ->paginate(7)
             ->withQueryString();
 
         return view('tickets.result-search', [
@@ -163,7 +163,7 @@ class TicketsController extends Controller
             ->orderBy('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
             ->allowedFilters(['id','title', 'status', $globalSearch])
-            ->paginate(10)
+            ->paginate(7)
             ->withQueryString();
 
         return view('tickets.result-search', [

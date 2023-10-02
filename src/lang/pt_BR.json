@@ -189,5 +189,10 @@
   "email sent to Administrator.": "e-mail enviado ao administrador",
   "Project Associated.": "Projeto Associado.",
   "Comment saved!": "Comentário salvo!",
-  "Email sent!": "Email enviado!"
+  "Email sent!": "Email enviado!",
+  "is Admin?": "É Administrador?",
+  "is Active?": "Ativo?",
+  "Yes": "Sim",
+  "No": "Não",
+  "User saved!": "Usuário salvo!"
 }

@@ -105,7 +105,7 @@ docker-compose build
 
 docker-compose up -d
 
-docker exec -it php sh
+docker
 
     mv .env.example .env
 
@@ -121,7 +121,24 @@ docker exec -it php sh
         && php artisan config:clear \
         && php artisan config:cache \
         && php artisan view:clear \
-        && php artisan view:cache´
+        && php artisan view:cache
 
     chmod -R 777 storage
-    
+    chmod -R 777 public/uploads
+
+
+http://localhost:8989  # to open devTrac
+
+  frist login: admin@admin.com / password
+  go to profile and change email and password
+
+http://localhost:8990  # to open phpMyAdmin
+  
+  host: mysql
+  user: devtrac
+  password: devtrac
+
+
+
+
+

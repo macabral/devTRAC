@@ -39,7 +39,7 @@ class ReleasesController extends Controller
             ->orderby('created_at', 'desc')
             ->allowedSorts(['version'])
             ->allowedFilters(['version', 'description', 'status',  $globalSearch])
-            ->paginate(10)
+            ->paginate(7)
             ->withQueryString();
 
         return view('releases.result-search', [
