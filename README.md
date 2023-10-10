@@ -140,9 +140,7 @@ http://localhost:8990  # to open phpMyAdmin
 
 To update:
 
-docker-compose down
 git pull
-docker-compose up -d
 
 
 

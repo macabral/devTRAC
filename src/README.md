@@ -44,6 +44,9 @@ v0.6 - 02/10/2023
 - incluir logo da empresa na janela de welcome
 - usuario inativo não acessar o devTrac
 
+v0.7 - 10/10/2023
+- permitir a qualquer usuário ver os tíquetes/releases do projeto
+
 ### Iniciando o projeto devTRAC ###
 
 Laravel v10.17.1 | Splade-Breeze 2.5 | PHP v8.1.3
