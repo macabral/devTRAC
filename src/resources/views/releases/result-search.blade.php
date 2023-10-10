@@ -4,12 +4,13 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Releases') }}
             </h2>
-
-            <x-splade-button>
-                <Link slideover href="{{ route('releases.show', base64_encode(0)) }}" class="pc-4 py-2 bg-indigo-400 hover:bg-indigo-600 text-black rounded-md">
-                    {{ __('New Release') }}
-                </Link>
-            </x-splade-button>
+            @if (Session::get('ret')[0]['gp'] == '1')
+                <x-splade-button>
+                    <Link slideover href="{{ route('releases.show', base64_encode(0)) }}" class="pc-4 py-2 bg-indigo-400 hover:bg-indigo-600 text-black rounded-md">
+                        {{ __('New Release') }}
+                    </Link>
+                </x-splade-button>
+            @endif
         </div>
     </x-slot>
    
