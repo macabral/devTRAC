@@ -83,13 +83,13 @@ Route::middleware('splade')->group(function () {
         Route::patch('/users-update/{id}', [UsersController::class, 'update'])->middleware(['adminAccess'])->name('users.update');
 
         // Releases
-        Route::get('/releases', [ReleasesController::class, 'index'])->middleware(['gpAccess'])->name('releases.index');
+        Route::get('/releases', [ReleasesController::class, 'index'])->name('releases.index');
         Route::get('/releases/{id}', [ReleasesController::class, 'show'])->middleware(['gpAccess'])->name('releases.show');
         Route::post('/releases', [ReleasesController::class, 'create'])->middleware(['gpAccess'])->name('releases.create');
         Route::patch('/releases/{id}', [ReleasesController::class, 'update'])->middleware(['gpAccess'])->name('releases.update');
         Route::get('/releases-delete/{id}', [ReleasesController::class, 'delete'])->middleware(['gpAccess'])->name('releases.delete');
         Route::delete('/releases/{id}', [ReleasesController::class, 'destroy'])->middleware(['gpAccess'])->name('releases.destroy');
-        Route::get('/export-tickets/{id}', [ReleasesController::class, 'exports'])->middleware(['gpAccess'])->name('releases.exports');
+        Route::get('/export-tickets/{id}', [ReleasesController::class, 'exports'])->name('releases.exports');
 
         // Tickets
         Route::get('/tickets', [TicketsController::class, 'index'])->name('tickets.index');
