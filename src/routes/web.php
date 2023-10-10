@@ -89,7 +89,7 @@ Route::middleware('splade')->group(function () {
         Route::patch('/releases/{id}', [ReleasesController::class, 'update'])->middleware(['gpAccess'])->name('releases.update');
         Route::get('/releases-delete/{id}', [ReleasesController::class, 'delete'])->middleware(['gpAccess'])->name('releases.delete');
         Route::delete('/releases/{id}', [ReleasesController::class, 'destroy'])->middleware(['gpAccess'])->name('releases.destroy');
-        Route::get('/export-tickets/{id}', [ReleasesController::class, 'exports'])->middleware(['gpAccess'])->name('releases.exports');
+        Route::get('/export-tickets/{id}', [ReleasesController::class, 'exports'])->name('releases.exports');
 
         // Tickets
         Route::get('/tickets', [TicketsController::class, 'index'])->name('tickets.index');
