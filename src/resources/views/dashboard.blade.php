@@ -32,7 +32,9 @@
             <thead class="border-b font-medium dark:border-neutral-500">
                 <tr>
                   <th class="text-left">Projeto</th>
-                  <th class="text-left">Release</th>
+                  <th class="text-left">Sprint</th>
+                  <th class="text-left">Início</th>
+                  <th class="text-left">Fim</th>
                   <th class="text-left">Tipo</th>
                   <th class="text-center">Open</th>
                   <th class="text-center">Testing</th>
@@ -41,11 +43,22 @@
                 </tr>
               </thead>
               <tbody>
+                    @php
+                        $totalOpen = 0; $totalClosed = 0; $totalTesting = 0;
+                    @endphp
                     @foreach($stats as $item)
+                    @php
+                        $totalOpen +=  $item['open'];
+                        $totalClosed += $item['closed'];
+                        $totalTesting += $item['testing'];
+                    @endphp
                     <tr class="border-b dark:border-neutral-500">
-                        <td>{{ $item['project'] }}</td><td>{{ $item['release'] }}</td><td>{{ $item['type'] }}</td><td class="text-center">{{ $item['open'] }}</td><td class="text-center">{{ $item['testing'] }}</td><td class="text-center">{{ $item['closed'] }}</td><td class="text-center">{{ $item['open'] + $item['closed'] + $item['testing'] }}</td>
+                        <td>{{ $item['project'] }}</td><td>{{ $item['release'] }}</td><td>{{ date('d/m/Y', strtotime($item['start'])) }}</td><td>{{ date('d/m/Y', strtotime($item['end'])) }}</td><td>{{ $item['type'] }}</td><td class="text-center">{{ $item['open'] }}</td><td class="text-center">{{ $item['testing'] }}</td><td class="text-center">{{ $item['closed'] }}</td><td class="text-center">{{ $item['open'] + $item['closed'] + $item['testing'] }}</td>
                     </tr>
                     @endforeach
+                    <tr class="border-b dark:border-neutral-500">
+                        <td></td><td></td><td></td><td></td><td></td><td class="text-center">{{ $totalOpen }}</td><td class="text-center">{{ $totalTesting }}</td><td class="text-center">{{ $totalClosed }}</td><td class="text-center">{{ $totalOpen + $totalClosed + $totalTesting }}</td>
+                    </tr>
               </tbody>
         </table>
     </div>
@@ -55,13 +68,22 @@
     </div>
     @endif
 
+    <div class="flex py-4 flex-wrap max-w-1xl mx-auto sm:px-6 lg:px-7 grid grid-cols-1 md:grid-cols-2">
+
+
+        <div id="chart" name="chart"></div>
+
+
+    </div>
+
+
     @if (count($perdev) > 0)
      <div class="flex py-2 flex-wrap max-w-1xl mx-auto sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2">
         <table class="min-w-full text-left text-sm font-light">
             <thead class="border-b font-medium dark:border-neutral-500">
                 <tr>
                   <th class="text-left">Projeto</th>
-                  <th class="text-left">Release</th>
+                  <th class="text-left">Sprint</th>
                   <th class="text-left">Tipo</th>
                   <th class="text-left">Dev</th>
                   <th class="text-center">Open</th>
@@ -80,5 +102,54 @@
         </table>
     </div>
     @endif
+    <x-splade-script>
 
+        var cat = "{{ $chart['categories'] }}"
+        var data1 = {{ $chart['data1'] }}
+        var data2 = {{ $chart['data2'] }}
+        var title = "{{ $chart['title'] }}"
+
+        var categories = cat.split(',')
+
+        var options = {
+            series: [{
+              name: "Estimado",
+              data: data1
+            },
+            {
+            name: "Real",
+            data:  data2
+            }],
+            chart: {
+            height: 350,
+            width:'100%',
+            type: 'line',
+            zoom: {
+              enabled: false
+            }
+          },
+          dataLabels: {
+            enabled: false
+          },
+          stroke: {
+            curve: 'straight'
+          },
+          title: {
+            text: title,
+            align: 'left'
+          },
+          grid: {
+            row: {
+              colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+              opacity: 0.5
+            },
+          },
+          xaxis: {
+            categories: categories,
+          }
+          };
+  
+          var chart = new ApexCharts(document.querySelector("#chart"), options);
+          chart.render();
+    </x-splade-script>
 </x-app-layout>

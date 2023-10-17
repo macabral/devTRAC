@@ -63,7 +63,7 @@
                             <x-slot name="content">
 
                                 <x-dropdown-link :href="route('releases.index')">
-                                    {{ __('Releases') }}
+                                    {{ __('Sprint') }}
                                 </x-dropdown-link>
 
                                 <x-dropdown-link :href="route('tickets.index')">

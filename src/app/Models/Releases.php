@@ -13,6 +13,9 @@ class Releases extends Model
         'version',
         'description',
         'projects_id',
-        'status'
+        'status',
+        'start',
+        'end',
+        'lessons'
     ];
 }

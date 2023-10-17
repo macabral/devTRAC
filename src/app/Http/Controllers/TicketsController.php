@@ -49,6 +49,7 @@ class TicketsController extends Controller
             ->leftJoin('users as b','b.id','=','relator_id')
             ->leftJoin('types','types.id','=','types_id')
             ->leftJoin('releases','releases.id','=','tickets.releases_id')
+            ->orderby('prioridade')
             ->orderby('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
             ->allowedFilters(['id','title', 'status', 'resp', $globalSearch])
@@ -61,10 +62,64 @@ class TicketsController extends Controller
                 ->withGlobalSearch()
                 ->column('id', label: __('ID'), searchable: true)
                 ->column('title', label: __('Title'), canBeHidden:false)
-                ->column('release', label: __('Release'))
+                ->column('release', label: __('Sprint'))
                 ->column('type', label: __('Type'))
                 ->column('relator', label: __('Relator'))
                 ->column('resp', label: __('Assign to'))
+                ->column('prioridade', label: __('Priority'))
+                ->column('status', label: __('Status'), searchable: true)
+                ->column('action', label: '', canBeHidden:false)
+        ]);
+    }
+
+    /**
+     * Lista tíquetes por Sprint.
+     */
+    public function sprint($id)
+    {
+        $project = Session::get('ret')[0]['id'];
+
+        $sprintId = base64_decode($id);
+
+        $globalSearch = AllowedFilter::callback('global', function ($query,$value) {
+            $query->where(function ($query) use ($value) {
+                Collection::wrap($value)->each(function ($value) use ($query) {
+                    $query
+                        ->orwhere('tickets.title', 'LIKE', "%$value%")
+                        ->orwhere('tickets.description', 'LIKE', "%$value%")
+                        ->orwhere('releases.version', 'LIKE', "%$value%")
+                        ->orwhere('types.title', 'LIKE', "%$value%")
+                        ->orwhere('a.name', 'LIKE', "%$value%");
+                });
+            });
+        });
+
+        $ret = QueryBuilder::for(Tickets::class)
+            ->select("tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
+            ->where('tickets.projects_id', $project)
+            ->where('tickets.releases_id', $sprintId)
+            ->leftJoin('users as a','a.id','=','resp_id')
+            ->leftJoin('users as b','b.id','=','relator_id')
+            ->leftJoin('types','types.id','=','types_id')
+            ->leftJoin('releases','releases.id','=','tickets.releases_id')
+            ->orderby('prioridade')
+            ->orderby('created_at', 'desc')
+            ->allowedSorts(['title','type','relator'])
+            ->allowedFilters(['id','title', 'status', 'resp', $globalSearch])
+            ->paginate(7)
+            ->withQueryString();
+
+        return view('tickets.result-search', [
+            'ret' => SpladeTable::for($ret)
+                ->perPageOptions([])
+                ->withGlobalSearch()
+                ->column('id', label: __('ID'), searchable: true)
+                ->column('title', label: __('Title'), canBeHidden:false)
+                ->column('release', label: __('Sprint'))
+                ->column('type', label: __('Type'))
+                ->column('relator', label: __('Relator'))
+                ->column('resp', label: __('Assign to'))
+                ->column('prioridade', label: __('Priority'))
                 ->column('status', label: __('Status'), searchable: true)
                 ->column('action', label: '', canBeHidden:false)
         ]);
@@ -104,10 +159,15 @@ class TicketsController extends Controller
                     ->orwhere('tickets.status', '=', 'Testing');
                 })
             ->Where(function($query) {
-                $query->where('tickets.resp_id', '=', auth('sanctum')->user()->id)
-                    ->orwhere('tickets.relator_id', '=', auth('sanctum')->user()->id);
+                    if (Session::get('ret')[0]['relator'] == '1') {
+                        $query->orwhere('tickets.relator_id', '=', auth('sanctum')->user()->id);
+                    }
+                    if (Session::get('ret')[0]['dev'] == '1') {
+                        $query->orwhere('tickets.resp_id', '=', auth('sanctum')->user()->id);
+                    }
                 })
             ->where('releases.status', '=', 'Open')
+            ->orderby('prioridade')
             ->orderby('status')
             ->orderBy('created_at', 'desc')
             ->allowedFilters(['id','title', 'status', $globalSearch])
@@ -121,10 +181,11 @@ class TicketsController extends Controller
                 ->column('id', label: __('ID'), searchable: true)
                 ->column('title', label: __('Title'))
                 ->column('project', label: __('Project'))
-                ->column('release', label: __('Release'))
+                ->column('release', label: __('Sprint'))
                 ->column('type', label: __('Type'))
                 ->column('relator', label: __('Relator'))
                 ->column('resp', label: __('Assign to'))
+                ->column('prioridade', label: __('Priority'))
                 ->column('status', label: __('Status'))
                 ->column('action', label: '', canBeHidden:false, exportAs: false)
         ]);
@@ -159,6 +220,7 @@ class TicketsController extends Controller
             ->leftJoin('types','types.id','=','types_id')
             ->leftJoin('releases','releases.id','=','tickets.releases_id')
             ->leftJoin('projects','projects.id','=','tickets.projects_id')
+            ->orderby('prioridade')
             ->orderBy('status')
             ->orderBy('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
@@ -174,9 +236,10 @@ class TicketsController extends Controller
                 ->column('title', label: __('Title'), canBeHidden:false)
                 ->column('project', label: __('Project'), canBeHidden:false)
                 ->column('type', label: __('Type'))
-                ->column('release', label: __('Release'))
+                ->column('release', label: __('Sprint'))
                 ->column('relator', label: __('Relator'))
                 ->column('resp', label: __('Assign to'))
+                ->column('prioridade', label: __('Priority'))
                 ->column('status', label: __('Status'), searchable: true)
                 ->column('action', label: '', canBeHidden:false)
         ]);
@@ -192,8 +255,11 @@ class TicketsController extends Controller
         $project = $project = Session::get('ret')[0]['id'];
 
         // releases
-        $releases = Releases::select('id','version')->where('status','Open')->orwhere('status','Waiting')->where('projects_id', $project)->orderBy('version')->get();
-
+        if (Session::get('ret')[0]['gp'] == '1') {
+            $releases = Releases::select('id','version')->where('status','Open')->orwhere('status','Waiting')->where('projects_id', $project)->orderBy('version')->get();
+        } else {
+            $releases = Releases::select('id','version')->where('status','Waiting')->where('projects_id', $project)->orderBy('version')->get();
+        }
         // devs
         $devs = UsersProjects::select('users_id','name')->where('projects_id', $project)->where('dev', '1')->leftJoin('users','users.id','=','users_id')->where('users.active','=',1)->orderby('name')->get();
 
@@ -270,8 +336,8 @@ class TicketsController extends Controller
             'description' => 'required',
             'status' => 'required',
             'releases_id' => 'required',
-            'resp_id' => 'required',
-            'types_id' => 'required'
+            'types_id' => 'required',
+            'prioridade' => 'required'
         ]);
 
         $input = $request->all();
@@ -372,7 +438,6 @@ class TicketsController extends Controller
             'description' => 'required',
             'status' => 'required',
             'releases_id' => 'required',
-            'resp_id' => 'required',
             'types_id' => 'required'
         ]);
 

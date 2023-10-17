@@ -19,7 +19,8 @@ class Tickets extends Model
         'projects_id',
         'types_id',
         'file',
-        'docs'
+        'docs',
+        'prioridade'
     ];
 
 }

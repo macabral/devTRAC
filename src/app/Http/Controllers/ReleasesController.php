@@ -47,8 +47,10 @@ class ReleasesController extends Controller
                 ->withGlobalSearch()
                 ->perPageOptions([])
                 ->defaultSort('title','desc')
-                ->column('version', label: __('Version'), sortable: true, searchable: true, canBeHidden:false)
+                ->column('version', label: __('Sprint'), sortable: true, searchable: true, canBeHidden:false)
                 ->column('description', label: __('Description'), searchable: true)
+                ->column('start', label: __('Start'), searchable: false, as: fn ($datadoc) => date('d/m/Y', strtotime($datadoc)))
+                ->column('end', label: __('End'), searchable: false, as: fn ($datadoc) => date('d/m/Y', strtotime($datadoc)))
                 ->column('status', label: __('Status'), searchable: true)
                 ->column('action', label: '', canBeHidden:false)
         ]);

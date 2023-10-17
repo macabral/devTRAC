@@ -47,6 +47,16 @@ v0.6 - 02/10/2023
 v0.7 - 10/10/2023
 - permitir a qualquer usuário ver os tíquetes/releases do projeto
 
+v0.8 - 17/10/2023
+- alteração de 'release' para 'sprint'
+- inclusão dos campos start, end e lições aprendidas para a sprint
+- gráfico de burndow no painel de controle
+- priorização dos tíquetes
+- quando usuário é relator somente pode abrir tíquete para Sprint 'waiting'
+- lista de tíquetes por sprint
+
+
+
 ### Iniciando o projeto devTRAC ###
 
 Laravel v10.17.1 | Splade-Breeze 2.5 | PHP v8.1.3

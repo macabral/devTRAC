@@ -42,7 +42,7 @@
         </div>
 
             <div class="ml-4 pt-5 text-center text-sm text-gray-500 sm:text-right sm:ml-0">
-                v 0.7
+                v 0.8
             </div>
 
     </div>

@@ -29,11 +29,18 @@ class LogService
           $texto .= 'Release alterado! [' . $query1[0]['version'] .'] => [' .  $query2[0]['version'] . ']' . chr(13);
       }
 
-      if ($ret['resp_id'] != $input['resp_id']) {
-        $query1 = User::Select('name')->where('id', '=', $ret['resp_id'])->get();
-        $query2 = User::Select('name')->where('id', '=', $input['resp_id'])->get();
-        $texto .= 'Responsável alterado! [' . $query1[0]['name'] .'] => [' .  $query2[0]['name'] . ']' . chr(13);
-    }
+      if (isset($input['resp_id'])) {
+        if (is_null($ret['resp_id'])) {
+          $query2 = User::Select('name')->where('id', '=', $input['resp_id'])->get();
+          $texto .= 'Responsável atribuído! [' .  $query2[0]['name'] . ']' . chr(13);
+        } else {
+          if ($ret['resp_id'] != $input['resp_id']) {
+            $query1 = User::Select('name')->where('id', '=', $ret['resp_id'])->get();
+            $query2 = User::Select('name')->where('id', '=', $input['resp_id'])->get();
+            $texto .= 'Responsável alterado! [' . $query1[0]['name'] .'] => [' .  $query2[0]['name'] . ']' . chr(13);
+          }
+        }
+      }
 
       if ($ret['types_id'] != $input['types_id']) {
         $query1 = Type::Select('title')->where('id', '=', $ret['types_id'])->get();

@@ -96,6 +96,7 @@ Route::middleware('splade')->group(function () {
         Route::get('/mytickets', [TicketsController::class, 'mytickets'])->name('tickets.mytickets');
         Route::get('/testing', [TicketsController::class, 'testing'])->name('tickets.testing');
         Route::get('/tickets/{id}', [TicketsController::class, 'show'])->name('tickets.show');
+        Route::get('/tickets-sprint/{id}', [TicketsController::class, 'sprint'])->name('tickets.sprint');
         Route::get('/tickets-edit/{id}', [TicketsController::class, 'edit'])->name('tickets.edit');
         Route::post('/tickets', [TicketsController::class, 'create'])->name('tickets.create');
         Route::patch('/tickets/{id}', [TicketsController::class, 'update'])->name('tickets.update');
