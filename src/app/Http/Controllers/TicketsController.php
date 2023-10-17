@@ -53,7 +53,7 @@ class TicketsController extends Controller
             ->orderby('prioridade')
             ->orderby('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
-            ->allowedFilters(['id','title', 'status', 'resp', $globalSearch])
+            ->allowedFilters(['id','title', 'status', 'resp', 'prioridade', $globalSearch])
             ->paginate(7)
             ->withQueryString();
 
