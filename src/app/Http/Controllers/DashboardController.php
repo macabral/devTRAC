@@ -95,6 +95,7 @@ class DashboardController extends Controller
             }
             if (! $found) {
                 $raj = array(
+                    'versionId' => $item->versionId,
                     'release' => $item->version,
                     'start' => $item->start,
                     'end' => $item->end,
@@ -185,7 +186,7 @@ class DashboardController extends Controller
             $categories .= $i->format('d') . ',';
         }
 
-        $sprint = $result[0]['versionId'];
+        $sprint = $result1[0]['versionId'];
         $sql = "select count(*) as vlr from tickets where releases_id = $sprint";
         $total = DB::select($sql);
 
