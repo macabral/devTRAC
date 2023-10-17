@@ -37,6 +37,7 @@ class TicketsController extends Controller
                         ->orwhere('tickets.description', 'LIKE', "%$value%")
                         ->orwhere('releases.version', 'LIKE', "%$value%")
                         ->orwhere('types.title', 'LIKE', "%$value%")
+                        ->orwhere('tickets.prioridade', 'LIKE', "%$value%")
                         ->orwhere('a.name', 'LIKE', "%$value%");
                 });
             });
@@ -86,6 +87,7 @@ class TicketsController extends Controller
                 Collection::wrap($value)->each(function ($value) use ($query) {
                     $query
                         ->orwhere('tickets.title', 'LIKE', "%$value%")
+                        ->orwhere('tickets.prioridade', 'LIKE', "%$value%")
                         ->orwhere('tickets.description', 'LIKE', "%$value%")
                         ->orwhere('releases.version', 'LIKE', "%$value%")
                         ->orwhere('types.title', 'LIKE', "%$value%")
@@ -138,6 +140,7 @@ class TicketsController extends Controller
                 Collection::wrap($value)->each(function ($value) use ($query) {
                     $query
                         ->orwhere('tickets.title', 'LIKE', "%$value%")
+                        ->orwhere('tickets.prioridade', 'LIKE', "%$value%")
                         ->orwhere('tickets.description', 'LIKE', "%$value%")
                         ->orwhere('releases.version', 'LIKE', "%$value%")
                         ->orwhere('types.title', 'LIKE', "%$value%")
@@ -207,6 +210,7 @@ class TicketsController extends Controller
                         ->orwhere('tickets.title', 'LIKE', "%$value%")
                         ->orwhere('tickets.description', 'LIKE', "%$value%")
                         ->orwhere('releases.version', 'LIKE', "%$value%")
+                        ->orwhere('tickets.prioridade', 'LIKE', "%$value%")
                         ->orwhere('types.title', 'LIKE', "%$value%");
                 });
             });
