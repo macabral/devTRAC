@@ -6,8 +6,8 @@
                 <div class="flex">
                     <!-- Logo -->
                     <div class="shrink-0 flex items-center">
-                        <Link href="/">
-                            <img src="/assets/logo.jpg" width="70" dalt="logo!">
+                        <Link href="http://localhost/devTrac/src/public">
+                            <img src="http://localhost/devTrac/src/public/assets/logo.jpg" width="70" dalt="logo!">
                         </Link>
                     </div>
 
@@ -50,7 +50,7 @@
                         <x-dropdown placement="bottom-end">
                             <x-slot name="trigger">
                                 <button class="flex items-center text-sm font-medium text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition duration-150 ease-in-out">
-                                    <div>{{ Session::get('ret')[0]['title'] }}</div>
+                                    <div>{{ __('Sprint') }}</div>
 
                                     <div class="ml-1">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -62,7 +62,7 @@
 
                             <x-slot name="content">
 
-                                <x-dropdown-link :href="route('releases.index')">
+                                <x-dropdown-link :href="route('releases.index', base64_encode(0))">
                                     {{ __('Sprint') }}
                                 </x-dropdown-link>
 
@@ -96,13 +96,17 @@
                                         {{ __('Projects') }}
                                     </x-dropdown-link>
 
-                                    <x-dropdown-link :href="route('typetickets.index')">
+                                    {{-- <x-dropdown-link :href="route('typetickets.index')">
                                         {{ __('Type of Tickets') }}
-                                    </x-dropdown-link>
+                                    </x-dropdown-link> --}}
 
                                     <x-dropdown-link :href="route('users.index')">
                                         {{ __('Users') }}
                                     </x-dropdown-link>
+
+                                    {{-- <x-dropdown-link :href="route('config.index')">
+                                        {{ __('Configurations') }}
+                                    </x-dropdown-link> --}}
 
                                 </x-slot>
                             </x-dropdown>
@@ -110,15 +114,6 @@
                     @endif
 
                 </div>
-
-                @if (Session::get('ret')[0]['qtd'] > 1)
-                <div class="hidden sm:flex sm:items-center sm:ml-6">
-                    <!-- Project Title -->
-                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex bg-indigo-500">
-                        <div class="text-white">&nbsp;{{ Session::get('ret')[0]['title'] }}&nbsp;</div>
-                    </div>
-                </div>
-                @endif
 
                 <!-- Settings Dropdown -->
                 <div class="hidden sm:flex sm:items-center sm:ml-6">

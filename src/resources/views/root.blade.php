@@ -19,4 +19,9 @@
     <body class="font-sans antialiased">
         @splade
     </body>
+    <script>
+    function GoBackWithRefresh(event) {
+            window.history.back();
+    }
+    </script>
 </html>

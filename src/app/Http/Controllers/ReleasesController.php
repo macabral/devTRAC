@@ -10,7 +10,9 @@ use ProtoneMedia\Splade\Facades\Toast;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use App\Models\Releases;
+use App\Models\Projects;
 use App\Models\Tickets;
+use App\Models\UsersProjects;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -22,23 +24,36 @@ class ReleasesController extends Controller
      */
     public function index()
     {
-        $project = Session::get('ret')[0]['id'];
 
+        $userId = auth('sanctum')->user()->id;
+
+        if (! isset(Session::get('ret')[0]['id'])) {
+
+            return redirect()->back();
+
+        }
+
+        $projects_id = Session::get('ret')[0]['id'];
+        
         $globalSearch = AllowedFilter::callback('global', function ($query,$value) {
             $query->where(function ($query) use ($value) {
                 Collection::wrap($value)->each(function ($value) use ($query) {
                     $query
                         ->orwhere('version', 'LIKE', "%$value%")
-                        ->orwhere('description', 'LIKE', "%$value%");
+                        ->orwhere('releases.description', 'LIKE', "%$value%")
+                        ->orwhere('releases.projects_id', '=', $value);
                 });
             });
         });
 
+
         $ret = QueryBuilder::for(Releases::class)
-            ->where('projects_id','=', $project)
-            ->orderby('created_at', 'desc')
+            ->select("projects.title as project","releases.id","releases.version","releases.description as desc","releases.start","releases.end","releases.status")
+            ->leftJoin('projects','projects.id','=','releases.projects_id')
+            ->where('releases.projects_id','=',$projects_id)
+            ->orderby('projects_id','asc','releases.created_at', 'desc')
             ->allowedSorts(['version'])
-            ->allowedFilters(['version', 'description', 'status',  $globalSearch])
+            ->allowedFilters(['version', 'description', 'status', 'projects_id', $globalSearch])
             ->paginate(7)
             ->withQueryString();
 
@@ -47,8 +62,9 @@ class ReleasesController extends Controller
                 ->withGlobalSearch()
                 ->perPageOptions([])
                 ->defaultSort('title','desc')
+                ->column('project', label: __('Project'), sortable: true, searchable: true, canBeHidden:false)
                 ->column('version', label: __('Sprint'), sortable: true, searchable: true, canBeHidden:false)
-                ->column('description', label: __('Description'), searchable: true)
+                ->column('desc', label: __('Description'), searchable: true)
                 ->column('start', label: __('Start'), searchable: false, as: fn ($datadoc) => date('d/m/Y', strtotime($datadoc)))
                 ->column('end', label: __('End'), searchable: false, as: fn ($datadoc) => date('d/m/Y', strtotime($datadoc)))
                 ->column('status', label: __('Status'), searchable: true)
@@ -63,17 +79,43 @@ class ReleasesController extends Controller
     {
         $id = base64_decode($id);
 
+        if (! isset(Session::get('ret')[0]['id'])) {
+
+            return redirect()->back();
+
+        }
+
+        $projects_id = Session::get('ret')[0]['id'];
+
+        $userId = auth('sanctum')->user()->id;
+
+        $projects = UsersProjects::select('projects.id','title')
+            ->leftJoin('projects','projects.id','=','projects_id')
+            ->where('users_id','=',$userId)
+            ->where('relator','=','1')
+            ->where('projects_id','=',$projects_id)
+            ->get();
+
+        if (isset($projects) && $id == 0) {
+            $project = $projects[0]->id;
+        } else {
+            $project = 0;
+        }
+
         if ($id == 0) {
 
             $ret = array(
                 'id' => 0,
                 'version' => '',
                 'description' => '',
-                'status' => 'Open'
+                'status' => 'Open',
+                'projects_id' => $project,
+
             );
 
             return view('releases.new-form', [
                 'ret' => $ret,
+                'projects' => $projects,
             ]);
 
         } else {
@@ -82,6 +124,7 @@ class ReleasesController extends Controller
 
             return view('releases.edit-form', [
                 'ret' => $ret,
+                'projects' => $projects
             ]);
 
         }
@@ -97,12 +140,11 @@ class ReleasesController extends Controller
         $this->validate($request, [
             'version' => 'required|max:255',
             'description' => 'max:255',
-            'status' => 'required'
+            'status' => 'required',
+            'projects_id' => 'required'
         ]);
 
         $input = $request->all();
-
-        $input['projects_id'] = Session::get('ret')[0]['id'];
 
         try {
             
@@ -117,7 +159,7 @@ class ReleasesController extends Controller
 
         Toast::title(__('Release saved!'))->autoDismiss(5);
 
-        return redirect()->route('releases.index');
+        return redirect()->route('releases.index',0);
     }
 
     /**

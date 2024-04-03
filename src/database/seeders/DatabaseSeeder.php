@@ -46,6 +46,10 @@ class DatabaseSeeder extends Seeder
             'tester' => '1'
         ]);
 
+        DB::table('config')->insert([
+            'storypoint' => '30'
+        ]);
+
 
 
     }

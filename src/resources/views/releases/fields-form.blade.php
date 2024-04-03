@@ -1,3 +1,4 @@
+<x-splade-select id="projects_id" name="projects_id" :options="$projects" option-label="title" option-value="id" autofocus :label="__('Project')" required />
 <x-splade-input id="version" name="version" type="text" :label="__('Sprint')" required autofocus autocomplete="title" />
 <x-splade-textarea id="description" name="description" autosize :label="__('Description')" autocomplete="description" />
 <x-splade-input id="start" name="start" type="date" :label="__('Start')" required autofocus autocomplete="start" />

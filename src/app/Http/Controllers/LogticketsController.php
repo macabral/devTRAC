@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use ProtoneMedia\Splade\Facades\Toast;
-use Illuminate\Support\Facades\Session;
 use App\Models\Logtickets;
 use App\Models\Tickets;
 use App\Models\UsersProjects;
 use App\Library\TracMail;
+use Illuminate\Support\Facades\Session;
 class LogticketsController extends Controller
+
 {
 
     /**
@@ -33,7 +34,7 @@ class LogticketsController extends Controller
 
         } catch (\Exception $e) {
 
-            Toast::title(__('Release error!' . $e))->autoDismiss(5);
+            Toast::title(__('Error!' . $e))->autoDismiss(5);
             return response()->json(['messagem' => $e], 422);
             
         }
@@ -48,14 +49,29 @@ class LogticketsController extends Controller
 
         $input['users_id'] = auth('sanctum')->user()->id;
         $input['tickets_id'] = $id;
-        $project = Session::get('ret')[0]['id'];
+
+        // if (! empty($description)) {
+        //     $input['description'] = $description;
+        //     try {
+            
+        //         Logtickets::create($input);
+    
+        //     } catch (\Exception $e) {
+    
+        //         Toast::title(__('Error!' . $e))->autoDismiss(5);
+                
+        //     }
+        // }
+  
 
         if ($status == 'Testing') {
-            $input['description'] = "Ticket submited for testing";
+            $input['description'] = "Tíquete enviado para teste.";
 
             try {
 
                 $destinatario = '';
+
+                $project = Session::get('ret')[0]['id'];
 
                 $ret = UsersProjects::select('a.email')->where('projects_id','=',$project)->where('tester','=','1')->leftJoin('users as a','a.id','=','users_id')->get();
                 foreach($ret as $elem) {
@@ -81,15 +97,19 @@ class LogticketsController extends Controller
             }
 
         } else if (($status == 'Open')) {
-            $input['description'] = "Ticket Opened";
+            $input['description'] = "Tíquete Aberto.";
         } else if (($status == 'Closed')) {
-            $input['description'] = "Ticket Closed";
+            $input['description'] = "Tíquete Fechado.";
         }
 
-        $ticket = Tickets::findOrFail($id);
+        if (! empty($input['description'])) {
+            
+            $ticket = Tickets::findOrFail($id);
 
-        $ticket['status'] = $status;
-        $ticket->save();
+            $ticket['status'] = $status;
+            $ticket->save();
+
+        }
 
         try {
             

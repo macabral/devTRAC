@@ -20,6 +20,21 @@
                             <x-splade-form method="patch" :action="route('users.update', base64_encode($ret->id))" :default="$ret" class="mt-4 space-y-4" preserve-scroll>
                                 @include('users.users-form')
                             </x-splade-form>
+
+                            <div>
+                                <x-splade-form method="get" :action="route('users.reset', base64_encode($ret->id))"  class="mt-4 space-y-4" preserve-scroll
+                                    confirm="Confirma Resetar a Senha do Usuário?"
+                                    confirm-text="Uma nova senha será gerada e encaminhada ao Usuário."
+                                    confirm-button="Confirmar"
+                                    cancel-button="Cancelar"
+                                >
+                                    <div class="inline-flex gap-4">
+                                        <x-splade-submit :label="__('Password Reset')" />
+                                    </div>
+                                </x-splade-form>
+                            </div>
+
+
                         </x-splade-modal>
                         
                     </section>

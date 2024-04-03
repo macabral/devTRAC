@@ -166,7 +166,7 @@
   "New Type": "Novo Tipo",
   "Created At": "Criado em",
   "Files": "Arquivos",
-  "devTRAC is an issue tracking system for a small software development projects. It helps developers to view theirs tasks and interact with a Project Manager.": "devTRAC é um sistema para registrar tarefas para pequenos projetos de desenvolvimento de software.  Ele ajuda o Desenvolvedor a ver suas tarefas e a interagir com o Gerente de Projeto.",
+  "devTRAC is an issue tracking tool for a small software development projects. It helps developers to view theirs tasks and interact with a Project Manager.": "devTRAC é um aplicativo para registrar tarefas para pequenos projetos de desenvolvimento de software.  Ele ajuda o Desenvolvedor a ver suas tarefas e a interagir com o Gerente de Projeto.",
   "Select Project": "Selecione o Projeto",
   "Release cannot be deleted!": "O Release não pode ser excluído.",
   "Type cannot be deleted!": "O Tipo não pode ser excluído!",
@@ -199,5 +199,15 @@
   "Start": "Início",
   "End": "Fim",
   "Learned Lessons": "Lições Aprendidas",
-  "Priority": "Prioridade"
+  "Priority": "Prioridade",
+  "Configurations": "Configurações",
+  "Story points in Scrum are units of measurement used to estimate the effort required to complete a story. When planning an upcoming sprint, Scrum teams use story point estimation to assess how much effort is needed to develop a new feature or software update. Report the average story points based on previous estimates.": "Os pontos da história no Scrum são unidades de medida usadas para estimar o esforço necessário para completar uma história. Ao planejar um próximo sprint, as equipes Scrum usam a estimativa de pontos da história para avaliar quanto esforço é necessário para desenvolver um novo recurso ou atualização de software. Informe a média de pontos de história com base em estimativas anteriores.",
+  "Config saved!": "Configurações salvas!",
+  "New User": "Novo Usuário",
+  "User has no project!": "Usuário não tem Projeto associado.",
+  "Password Reset": "Resetar Senha",
+  "Password was reseted!": "A senha foi resetada!",
+  "Save Comments" : "Salvar Comentário",
+  "Ticket not found.": "Tíquete não encontrado.",
+  "Average Story Point":"Média de Story Point"
 }

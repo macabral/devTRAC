@@ -13,11 +13,19 @@
             @endif
         </div>
     </x-slot>
-   
+
     <div class="py-12">
-        <div class="max-w-1xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-1xl mx-auto sm:px-6 lg:px-8 space-y-4">
+
             <section>
                 <x-splade-table :for="$ret" striped>
+                    @cell('desc', $ret)
+                    <div>
+                        <div class="mt-1 pb-2 pt-2 text-blue-800" style="width: 10%;">
+                            {!! nl2br(wordwrap($ret->desc, 100,'<br>',true)) !!}
+                        </div>
+                    </div>
+                    @endcell
                     @cell('action', $ret)
                         <div class="flex flex-row">
                             @if (Session::get('ret')[0]['gp'] == '1')
@@ -55,4 +63,5 @@
             </section>
         </div> 
     </div>
+
 </x-app-layout>

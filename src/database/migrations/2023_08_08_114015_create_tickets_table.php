@@ -24,7 +24,7 @@ return new class extends Migration
             $table->tinyInteger('docs')->unsigned()->default(0);
             $table->string('file')->nullable();
 
-            $table->foreign('releases_id')->references('id')->on('releases')->onDelete('restrict');
+            $table->foreign('releases_id')->references('id')->on('releases')->onDelete('cascade');
             $table->foreign('resp_id')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('relator_id')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('projects_id')->references('id')->on('projects')->onDelete('cascade');

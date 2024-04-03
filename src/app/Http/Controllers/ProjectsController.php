@@ -90,7 +90,8 @@ class ProjectsController extends Controller
         $this->validate($request, [
             'title' => 'required|max:254',
             'description' => 'max:254',
-            'status' => 'required'
+            'status' => 'required',
+            'media_sp' => 'numeric|min:0|max:255'
         ]);
 
         $input = $request->all();
@@ -118,7 +119,8 @@ class ProjectsController extends Controller
         $this->validate($request, [
             'title' => 'required|max:254',
             'description' => 'max:254',
-            'status' => 'required'
+            'status' => 'required',
+            'media_sp' => 'numeric|min:0|max:255'
         ]);
 
         $id = base64_decode($id);
@@ -177,11 +179,11 @@ class ProjectsController extends Controller
 
         } catch (\Exception $e) {
 
-            Toast::title(__('Project cannot be deleted!'))->danger()->autoDismiss(5);
+            Toast::title(__('Project cannot be deleted!' . $e))->danger()->autoDismiss(5);
             
         }
 
-        return redirect()->back();
+        return redirect()->route('projects.index');
 
     }
 }

@@ -7,3 +7,4 @@
     <x-splade-submit :label="__('Save')" />
 
 </div>
+

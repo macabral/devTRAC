@@ -20,6 +20,28 @@
                             </Link>
                         </div>
                     @endcell
+                    @cell('prioridade', $ret)
+                        @if ($ret->prioridade == 'Crítica')
+                            <div class="bg-red-500 rounded text-white">
+                                &nbsp;{{ $ret->prioridade }}&nbsp;
+                            </div>
+                        @endif
+                        @if ($ret->prioridade == 'Importante')
+                            <div class="bg-indigo-500 rounded text-white">
+                                &nbsp;{{ $ret->prioridade }}&nbsp;
+                            </div>
+                        @endif
+                        @if ($ret->prioridade == 'Desejada')
+                        <div class="rounded text-black">
+                            &nbsp;{{ $ret->prioridade }}&nbsp;
+                        </div>
+                        @endif
+                        @if ($ret->prioridade == 'Pode Esperar')
+                        <div class="rounded text-black">
+                            &nbsp;{{ $ret->prioridade }}&nbsp;
+                        </div>
+                        @endif
+                    @endcell
                     @cell('action', $ret)
                         <div class="w-100 inline-flex">
                             @if ((Session::get('ret')[0]['relator'] == '1'  && $ret->user_id == auth('sanctum')->user()->id) || Session::get('ret')[0]['gp'] == '1')

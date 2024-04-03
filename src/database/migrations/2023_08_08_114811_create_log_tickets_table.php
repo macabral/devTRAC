@@ -16,10 +16,11 @@ return new class extends Migration
             $table->longText('description');
             $table->biginteger('tickets_id')->unsigned();
             $table->biginteger('users_id')->unsigned();
-            $table->foreign('tickets_id')->references('id')->on('tickets')->onDelete('restrict');
+            $table->foreign('tickets_id')->references('id')->on('tickets')->onDelete('cascade');
             $table->foreign('users_id')->references('id')->on('users')->onDelete('restrict');
 
             $table->timestamps();
+
         });
     }
 

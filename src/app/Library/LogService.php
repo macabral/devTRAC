@@ -15,6 +15,10 @@ class LogService
 
       $texto = '';
 
+      if ($ret['storypoint'] != $input['storypoint']) {
+        $texto .= 'Story Point alterado! [' . $ret['storypoint'] .'] => [' . $input['storypoint'] . ']' . chr(13);
+      }
+
       if ($ret['title'] != $input['title']) {
         $texto .= 'Título alterado! [' . $ret['title'] .'] => [' . $input['title'] . ']' . chr(13);
       }
@@ -26,7 +30,7 @@ class LogService
       if ($ret['releases_id'] != $input['releases_id']) {
           $query1 = Releases::Select('version')->where('id', '=', $ret['releases_id'])->get();
           $query2 = Releases::Select('version')->where('id', '=', $input['releases_id'])->get();
-          $texto .= 'Release alterado! [' . $query1[0]['version'] .'] => [' .  $query2[0]['version'] . ']' . chr(13);
+          $texto .= 'Sprint alterada! [' . $query1[0]['version'] .'] => [' .  $query2[0]['version'] . ']' . chr(13);
       }
 
       if (isset($input['resp_id'])) {

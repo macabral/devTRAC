@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use ProtoneMedia\Splade\Facades\Toast;
 use App\Models\User;
+use App\Models\Releases;
+use App\Models\UsersProjects;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -17,70 +20,93 @@ class DashboardController extends Controller
         $input = $request->all();
 
         $userId = auth('sanctum')->user()->id;
+
         $ret = User::where('id', $userId)->where('active','=',1)->with('projects')->get();
 
-        if (empty($ret[0])) {
-            Session::forget(Session::driver()->getId());
-            Session::invalidate();
-            Auth::guard('web')->logout();
-            return redirect('/login');
-        }
+        if (empty($input)) {
+           
+            // se usuário não tiver projeto associado retorna para o login.
+            if (count($ret[0]->projects) == 0) {
 
-        // se usuário não tiver projeto associado retorna para o login.
-        if (count($ret[0]->projects) == 0) {
+                Toast::title(__('User has no project!'))->autoDismiss(5);
+                Session::forget(Session::driver()->getId());
+                Session::invalidate();
+                Auth::guard('web')->logout();
+                return redirect('/login');
 
-            Session::forget(Session::driver()->getId());
-            Session::invalidate();
-            Auth::guard('web')->logout();
-            return redirect('/login');
-
-        } else {
-
-            if (isset($input['selProject'])) {
-                foreach($ret[0]->projects as $item) {
-                    if ($item->id == $input['selProject']) {
-                        $project = $item;
-                        $selProject = $item->id;
-                    }
-                }
             } else {
-                $project = $ret[0]->projects[0];
-                $selProject = $project->id;
+
+                $projetos = $ret[0]->projects;
+
+                if (isset(Session::get('ret')[0]['id']) && Session::get('ret')[0]['id'] != 0) {
+
+                    $projects_id = Session::get('ret')[0]['id'];
+        
+                } else {
+
+                    $projects_id = $projetos[0]->id;
+
+                }
+        
+                $releases = Releases::Select('id')->where('status','Open')->where('projects_id','=',$projects_id)->limit(1)->get();
+
+                $releases_id = $releases[0]->id;
+
+                $input['projects_id'] = $projects_id;
+                $input['releases_id'] = $releases_id;
             }
 
-            $ar = Array(
-                'qtd' => count($ret[0]->projects),
-                'admin' => auth('sanctum')->user()->admin,
-                'id' => $project->id,
-                'description' => $project->description, 
-                'title' => $project->title,
-                'gp' => $project->pivot->gp,
-                'dev' => $project->pivot->dev,
-                'relator' => $project->pivot->relator,
-                'tester' => $project->pivot->tester
-            );
-            Session::forget('ret');
-            Session::push("ret", $ar);
-
-        }
-
-        if ($project->pivot->gp == '1' || $project->pivot->tester == '1' || $project->pivot->relator == '1' || auth('sanctum')->user()->admin == 1) {
-            $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, tickets.status, count(*) as qtd from tickets inner join releases on releases.id = tickets.releases_id and releases.status = 'Open' left join projects on projects.id = tickets.projects_id left join types on types.id = tickets.types_id where projects.id =  $project->id group by tickets.projects_id, tickets.releases_id, tickets.types_id, tickets.status order by releases.version, types.title, tickets.status";
         } else {
-            $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, tickets.status, count(*) as qtd from tickets inner join releases on releases.id = tickets.releases_id and releases.status = 'Open' left join projects on projects.id = tickets.projects_id left join types on types.id = tickets.types_id where projects.id =  $project->id and (tickets.resp_id = $userId  or tickets.relator_id = $userId) group by tickets.projects_id, releases.id, releases.version, types.title, tickets.status order by releases.version, types.title, tickets.status";
+
+            $projects_id = $input['projects_id'];
+            $releases_id = $input['releases_id'];
+            
         }
+
+        $projetos = UsersProjects::leftJoin('projects','projects.id','=','users_projects.projects_id')->Where('projects_id','=',$projects_id)->where('users_id','=',$userId)->get();
+
+        // permissões de acesso do usuário logado
+        $ar = Array(
+            'admin' => auth('sanctum')->user()->admin,
+            'id' => $projetos[0]->projects_id,
+            'description' => $projetos[0]->description, 
+            'title' => $projetos[0]->title,
+            'gp' => $projetos[0]->gp,
+            'dev' => $projetos[0]->dev,
+            'relator' => $projetos[0]->relator,
+            'tester' => $projetos[0]->tester
+        );
+
+        Session::forget('ret');
+        Session::push("ret", $ar);
+
+        // releases
+        $releases = Releases::select('id','version')->where('status','Open')->where('projects_id', $projects_id)->orderBy('version')->get();
+
+        // estatísticas do release
+
+        $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, tickets.status, count(*) as qtd, sum(cast(storypoint as unsigned)) as storypoint
+            from tickets 
+            inner join releases on releases.id = tickets.releases_id and releases.status = 'Open' 
+            left join projects on projects.id = tickets.projects_id 
+            left join types on types.id = tickets.types_id 
+            where  releases.id = $releases_id
+            group by tickets.projects_id, tickets.releases_id, tickets.types_id, tickets.status 
+            order by releases.version, types.title, tickets.status";
 
         $stats = DB::select($sql);
 
-        $result = []; $result1 = []; $result2 = [];
+        $result = []; $result1 = []; $result2 = []; $totalStoryPoint = 0; 
  
         foreach($stats as $item) {
 
-            $found = false;
+            $found = false; 
+            
+            $totalStoryPoint += $item->storypoint;
 
             for ($i=0; $i<count($result); $i++) {
 
-                if ($result[$i]['release'] == $item->version && $result[$i]['type'] == $item->type)  {
+                if ($result[$i]['type'] == $item->type)  {
                     if ($item->status == 'Open') {
                         $result[$i]['open'] += $item->qtd;
                     } else if ($item->status == 'Closed') {
@@ -89,10 +115,11 @@ class DashboardController extends Controller
                         $result[$i]['testing'] += $item->qtd;
                     }
                     $found = true;
-                    break;
+                    $result[$i]['storypoint'] += $item->storypoint;
                 }
    
             }
+
             if (! $found) {
                 $raj = array(
                     'versionId' => $item->versionId,
@@ -103,7 +130,8 @@ class DashboardController extends Controller
                     'type' => $item->type,
                     'open' => 0,
                     'testing' => 0,
-                    'closed' => 0
+                    'closed' => 0,
+                    'storypoint' => 0
                 );
 
                 if ($item->status == 'Open') {
@@ -114,136 +142,223 @@ class DashboardController extends Controller
                     $raj['testing'] += $item->qtd;
                 }
 
+                $raj['storypoint'] += $item->storypoint;
+
                 array_push($result, $raj);
             }
         }
 
         $result1 = $result;
 
-        if ($project->pivot->gp == '1' || auth('sanctum')->user()->admin == 1) {
-            $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, users.name, tickets.status, count(*) as qtd from tickets left join users on users.id = tickets.resp_id inner join releases on releases.id = tickets.releases_id and releases.status = 'Open' left join projects on projects.id = tickets.projects_id left join types on types.id = tickets.types_id where projects.id =  $project->id group by tickets.projects_id, tickets.releases_id, tickets.resp_id, tickets.types_id, tickets.status order by releases.version, types.title, tickets.status";
-            $stats = DB::select($sql);
+        // total de story points
+        $storyPointRelease = $totalStoryPoint;
 
-            $result = [];
+    
+        // estatísticas por Dev
+
+        $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, users.name, tickets.status, count(*) as qtd, sum(storypoint) as storypoint 
+            from tickets 
+            left join users on users.id = tickets.resp_id 
+            inner join releases on releases.id = tickets.releases_id and releases.status = 'Open' 
+            left join projects on projects.id = tickets.projects_id 
+            left join types on types.id = tickets.types_id 
+            where projects.id =  $projects_id and releases.id = $releases_id
+            group by tickets.projects_id, tickets.releases_id, tickets.resp_id, tickets.types_id, tickets.status 
+            order by users.name, releases.version, types.title, tickets.status";
+        $stats = DB::select($sql);
+
+        $result = [];
      
-            foreach($stats as $item) {
+        foreach($stats as $item) {
     
-                $found = false;
+            $found = false;
     
-                for ($i=0; $i<count($result); $i++) {
+            for ($i=0; $i<count($result); $i++) {
     
-                    if ($result[$i]['release'] == $item->version && $result[$i]['type'] == $item->type && $result[$i]['name'] == $item->name)  {
-                        if ($item->status == 'Open') {
-                            $result[$i]['open'] += $item->qtd;
-                        } else if ($item->status == 'Closed') {
-                            $result[$i]['closed'] += $item->qtd;
-                        } else {
-                            $result[$i]['testing'] += $item->qtd;
-                        }
-                        $found = true;
-                        break;
-                    }
-       
-                }
-                if (! $found) {
-                    $raj = array(
-                        'versionId' => $item->versionId,
-                        'release' => $item->version,
-                        'start' => $item->start,
-                        'end' => $item->end,
-                        'project' => $item->project,
-                        'type' => $item->type,
-                        'name' => $item->name,
-                        'open' => 0,
-                        'testing' => 0,
-                        'closed' => 0
-                    );
-    
+                if ($result[$i]['release'] == $item->version && $result[$i]['type'] == $item->type && $result[$i]['name'] == $item->name)  {
                     if ($item->status == 'Open') {
-                        $raj['open'] += $item->qtd;
+                        $result[$i]['open'] += $item->qtd;
                     } else if ($item->status == 'Closed') {
-                        $raj['closed'] += $item->qtd;
+                        $result[$i]['closed'] += $item->qtd;
                     } else {
-                        $raj['testing'] += $item->qtd;
+                        $result[$i]['testing'] += $item->qtd;
                     }
-    
-                    array_push($result, $raj);
+                    $result[$i]['storypoint'] += $item->storypoint;
+                    $found = true;
+                    break;
                 }
+     
             }
+            if (! $found) {
+                $raj = array(
+                    'versionId' => $item->versionId,
+                    'release' => $item->version,
+                    'start' => $item->start,
+                    'end' => $item->end,
+                    'project' => $item->project,
+                    'type' => $item->type,
+                    'name' => $item->name,
+                    'open' => 0,
+                    'testing' => 0,
+                    'closed' => 0,
+                    'storypoint' => 0
+                );
+    
+                if ($item->status == 'Open') {
+                    $raj['open'] += $item->qtd;
+                } else if ($item->status == 'Closed') {
+                    $raj['closed'] += $item->qtd;
+                } else {
+                    $raj['testing'] += $item->qtd;
+                }
 
-            $result2 = $result;
+                $raj['storypoint'] += $item->storypoint;
+                array_push($result, $raj);
+            }
         }
 
+        $result2 = $result;
 
         // gráfico burndown da primeira sprint
-        $start_time = Carbon::parse($result[0]['start']);
-        $finish_time =  Carbon::parse($result[0]['end']);
-        $totalDays = $start_time->diffInDays($finish_time) - 1;
-        $storyPoint = 16;
 
-        $categories = ''; $count = 0;
-        for($i=$start_time; $i<=$finish_time; $i->addDays(1)) {
-            $categories .= $i->format('d') . ',';
-        }
+        if ($result) {
+            $start_time = Carbon::parse($result[0]['start']);
+            $finish_time =  Carbon::parse($result[0]['end']);
+            $totalDays = $start_time->diffInDays($finish_time) - 1;
 
-        $sprint = $result1[0]['versionId'];
-        $sql = "select count(*) as vlr from tickets where releases_id = $sprint";
-        $total = DB::select($sql);
 
-        $sql = "select  count(*) as vlr from tickets where releases_id = $sprint and status='Closed'";
-        $closed = DB::select($sql);
-        $progressoReal = floor(($closed[0]->vlr * $storyPoint) / $totalDays);
-
-        $totalStoryPoint = $total[0]->vlr * $storyPoint;
-        $progresso = floor($totalStoryPoint / $totalDays);
-
-        $vlr = $totalStoryPoint; $estimado = $vlr . ',';
-        for($j=0; $j<=$totalDays; ++$j) {
-            $vlr = $vlr - $progresso;
-            if ($vlr < 0) {
-                $vlr = 0;
+            $categories = ''; $count = 0;
+            for($i=$start_time; $i<=$finish_time; $i->addDays(1)) {
+                $categories .= $i->format('d') . ',';
             }
-            error_log($vlr);
-            $estimado .= $vlr . ',';
-        }
 
-        $vlr = $totalStoryPoint; $real = $vlr . ',';
-        for($j=0; $j<=$totalDays; ++$j) {
-            $vlr = $vlr - $progressoReal;
-            if ($vlr < 0) {
-                $vlr = 0;
+            $sprint = $result1[0]['versionId'];
+
+            $sql = "select count(*) as vlr from tickets where releases_id = $sprint";
+            $total = DB::select($sql);
+
+            $sql = "select  count(*) as vlr from tickets where releases_id = $sprint and status='Closed'";
+            $closed = DB::select($sql);
+
+            $progressoReal = floor(($closed[0]->vlr * $storyPointRelease ) / $totalDays);
+
+            $totalStoryPoint = $total[0]->vlr * $storyPointRelease ;
+            $progresso = floor($totalStoryPoint / $totalDays);
+
+            $vlr = $totalStoryPoint; $estimado = $vlr . ','; $media = '';
+            for($j=0; $j<=$totalDays; ++$j) {
+                $vlr = $vlr - $progresso;
+                if ($vlr < 0) {
+                    $vlr = 0;
+                }
+                error_log($vlr);
+                $estimado .= $vlr . ',';
             }
-            error_log($vlr);
-            $real .= $vlr . ',';
+
+            $vlr = $totalStoryPoint; $real = $vlr . ',';
+            for($j=0; $j<=$totalDays; ++$j) {
+                $vlr = $vlr - $progressoReal;
+                if ($vlr < 0) {
+                    $vlr = 0;
+                }
+                error_log($vlr);
+                $real .= $vlr . ',';
+            }
+
+            $chart = [
+                'data1' => "[" . $estimado . "]",
+                'data2' => "[" . $real . "]",
+                'categories' => $categories,
+                'title' => "Sprint Burndown"
+            ];
+
+        } else {
+            $chart = null;
         }
 
-        $chart = [
-            'data1' => "[" . $estimado . "]",
-            'data2' => "[" . $real . "]",
-            'categories' => $categories,
-            'title' => "Sprint Burndown (esforço em horas)"
+        // gráfico sprint
+
+        $sql ="SELECT  tickets.releases_id, releases.version, 
+            (SELECT COUNT(*) FROM tickets where types_id = 1 AND tickets.releases_id = releases.id) AS melhoria, 
+            (SELECT COUNT(*) FROM tickets where types_id = 2 AND tickets.releases_id = releases.id) AS defeito,
+            (SELECT COUNT(*) FROM tickets where types_id = 3 AND tickets.releases_id = releases.id) AS suporte
+            FROM tickets
+            LEFT JOIN releases ON releases.id = tickets.releases_id
+            LEFT JOIN types ON types.id = tickets.types_id
+            WHERE tickets.projects_id = $projects_id AND  releases.status <> 'Waiting'
+            GROUP BY releases_id
+            order by releases_id
+            LIMIT 12";
+
+        $ticketsReleases = DB::select($sql);
+
+        $categ = ""; $series1 = ''; $series2 = ''; $series3 = '';
+
+        foreach($ticketsReleases as $item) {
+
+            $categ .=  $item->version . ",";
+            $series1 .= $item->melhoria . ',';
+            $series2 .= $item->defeito . ',';
+            $series3 .= $item->suporte . ',';
+
+        }
+
+        $chart2 = [
+            'data1' => "[" . $series1 . "]",
+            'data2' => "[" . $series2 . "]",
+            'data3' => "[" . $series3 . "]",
+            'categories' =>   substr($categ,0,strlen($categ)-1),
+            'title' => "Sprints"
         ];
+
+        // gráfico story points
+
+        $sql ="SELECT  tickets.releases_id, releases.version, 
+            SUM(tickets.storypoint) AS total
+            FROM tickets
+            LEFT JOIN releases ON releases.id = tickets.releases_id
+            LEFT JOIN types ON types.id = tickets.types_id
+            WHERE tickets.projects_id = $projects_id AND  releases.status <> 'Waiting'
+            GROUP BY releases_id
+            order by releases_id
+            LIMIT 12";
+
+        $ticketsStory = DB::select($sql);
+
+        $categ = ""; $series1 = ''; $total = 0; $media = 0;
+
+        foreach($ticketsStory as $item) {
+
+            $categ .=  $item->version . ",";
+            $series1 .= $item->total . ',';
+            $total += $item->total;
+            $media = $total / count($ticketsStory);
+
+        }
+
+        $chart3 = [
+            'data1' => "[" . $series1 . "]",
+            'categories' =>   substr($categ,0,strlen($categ)-1),
+            'title' => "Sprints/Story Points"
+        ];
+
+        // média de Story Points
+
+        $mediaPrevista = $projetos[0]->media_sp;
 
         return view('dashboard',[
             'proj' => $ret[0]->projects,
-            'selProject' => $selProject,
+            'input' => $input,
             'stats' => $result1,
             'perdev' => $result2,
-            'chart' => $chart
+            'chart' => $chart,
+            'chart2' => $chart2,
+            'chart3' => $chart3,
+            'releases' => $releases,
+            'storypoint_medio' => $media . "/" . $mediaPrevista
+
         ]);
 
     }
 
-    public function selproj(Request $request)
-    {
-
-        error_log("selecionou ");
-        $input = $request->all();
-
-        if (isset($input['sel'])) {
-            error_log($input['sel']);
-        }
-
-        return redirect()->back();
-    }
 }

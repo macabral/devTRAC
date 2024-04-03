@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use ProtoneMedia\Splade\SpladeTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use App\Models\User;
+
+
 
 class ProfileController extends Controller
 {
@@ -16,8 +20,22 @@ class ProfileController extends Controller
      */
     public function edit(Request $request)
     {
+
+        $userId = auth('sanctum')->user()->id;
+
+        $ret = User::where('id', $userId)->with('projects')->get();
+
         return view('profile.edit', [
             'user' => $request->user(),
+            'ret' => SpladeTable::for($ret[0]->projects)
+                ->perPageOptions([7, 10, 50, 100, 200])
+                ->defaultSort('','desc')
+                ->column('title', label: __('Project'), sortable: true, searchable: false, canBeHidden:false)
+                ->column('pivot.gp', label: __('gp'), searchable: false)
+                ->column('pivot.relator', label: __('relator'), searchable: false)
+                ->column('pivot.dev', label: __('dev'), searchable: false)
+                ->column('pivot.tester', label: __('tester'), searchable: false)
+                ->column('pivot.users_id', hidden: true)
         ]);
     }
 

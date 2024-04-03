@@ -13,7 +13,8 @@ class Projects extends Model
     protected $fillable = [
         'title',
         'description',
-        'status'
+        'status',
+        'media_sp'
     ];
 
     public function users(): BelongsToMany

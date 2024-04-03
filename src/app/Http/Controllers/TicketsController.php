@@ -27,7 +27,14 @@ class TicketsController extends Controller
      */
     public function index()
     {
-        $project = Session::get('ret')[0]['id'];
+
+        if (! isset(Session::get('ret')[0]['id'])) {
+
+            return redirect()->back();
+
+        }
+
+        $projects_id = Session::get('ret')[0]['id'];
 
         $globalSearch = AllowedFilter::callback('global', function ($query,$value) {
             $query->where(function ($query) use ($value) {
@@ -43,32 +50,40 @@ class TicketsController extends Controller
             });
         });
 
+        $releases = Releases::select('version','id')->where('projects_id','=',$projects_id)->get();
+
+        $releases = $releases->pluck('version','id')->toArray();
+
+    
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
-            ->where('tickets.projects_id', $project)
+            ->select("projects.title as project","tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
             ->leftJoin('users as a','a.id','=','resp_id')
             ->leftJoin('users as b','b.id','=','relator_id')
             ->leftJoin('types','types.id','=','types_id')
             ->leftJoin('releases','releases.id','=','tickets.releases_id')
+            ->leftJoin('projects','projects.id','=','releases.projects_id')
+            ->where('tickets.projects_id','=',$projects_id)
             ->orderby('prioridade')
             ->orderby('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
-            ->allowedFilters(['id','title', 'status', 'resp', 'prioridade', $globalSearch])
-            ->paginate(7)
+            ->allowedFilters(['id','title', 'status', 'resp', 'prioridade','releases_id', $globalSearch])
+            ->paginate(50)
             ->withQueryString();
 
         return view('tickets.result-search', [
             'ret' => SpladeTable::for($ret)
                 ->perPageOptions([])
                 ->withGlobalSearch()
+                ->selectFilter('releases_id',$releases)
                 ->column('id', label: __('ID'), searchable: true)
-                ->column('title', label: __('Title'), canBeHidden:false)
+                ->column('project', label: __('Project'), sortable: true, searchable: false, canBeHidden:false)
                 ->column('release', label: __('Sprint'))
+                ->column('title', label: __('Title'), canBeHidden:false)
                 ->column('type', label: __('Type'))
                 ->column('relator', label: __('Relator'))
                 ->column('resp', label: __('Assign to'))
                 ->column('prioridade', label: __('Priority'))
-                ->column('status', label: __('Status'), searchable: true)
+                ->column('status', label: __('Status'), searchable: false)
                 ->column('action', label: '', canBeHidden:false)
         ]);
     }
@@ -78,7 +93,6 @@ class TicketsController extends Controller
      */
     public function sprint($id)
     {
-        $project = Session::get('ret')[0]['id'];
 
         $sprintId = base64_decode($id);
 
@@ -97,18 +111,18 @@ class TicketsController extends Controller
         });
 
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
-            ->where('tickets.projects_id', $project)
-            ->where('tickets.releases_id', $sprintId)
+            ->select("projects.title as project","tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
             ->leftJoin('users as a','a.id','=','resp_id')
             ->leftJoin('users as b','b.id','=','relator_id')
             ->leftJoin('types','types.id','=','types_id')
             ->leftJoin('releases','releases.id','=','tickets.releases_id')
+            ->leftJoin('projects','projects.id','=','releases.projects_id')
+            ->where('tickets.releases_id', $sprintId)
             ->orderby('prioridade')
             ->orderby('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
             ->allowedFilters(['id','title', 'status', 'resp', $globalSearch])
-            ->paginate(7)
+            ->paginate(50)
             ->withQueryString();
 
         return view('tickets.result-search', [
@@ -116,8 +130,9 @@ class TicketsController extends Controller
                 ->perPageOptions([])
                 ->withGlobalSearch()
                 ->column('id', label: __('ID'), searchable: true)
-                ->column('title', label: __('Title'), canBeHidden:false)
+                ->column('project', label: __('Project'), sortable: true, searchable: true, canBeHidden:false)
                 ->column('release', label: __('Sprint'))
+                ->column('title', label: __('Title'), canBeHidden:false)
                 ->column('type', label: __('Type'))
                 ->column('relator', label: __('Relator'))
                 ->column('resp', label: __('Assign to'))
@@ -133,7 +148,13 @@ class TicketsController extends Controller
     public function mytickets()
     {
 
-        $userId = auth('sanctum')->user()->id;
+        if (! isset(Session::get('ret')[0]['id'])) {
+
+            return redirect()->back();
+
+        }
+
+        $projects_id = Session::get('ret')[0]['id'];
 
         $globalSearch = AllowedFilter::callback('global', function ($query,$value) {
             $query->where(function ($query) use ($value) {
@@ -169,10 +190,11 @@ class TicketsController extends Controller
                         $query->orwhere('tickets.resp_id', '=', auth('sanctum')->user()->id);
                     }
                 })
-            ->where('releases.status', '=', 'Open')
-            ->orderby('prioridade')
+            ->Where('releases.status', '=', 'Open')
+            ->Where('tickets.projects_id','=', $projects_id)
             ->orderby('status')
-            ->orderBy('created_at', 'desc')
+            ->orderby('prioridade')
+            ->orderBy('created_at')
             ->allowedFilters(['id','title', 'status', $globalSearch])
             ->paginate(7)
             ->withQueryString();
@@ -182,9 +204,9 @@ class TicketsController extends Controller
                 ->perPageOptions([])
                 ->withGlobalSearch()
                 ->column('id', label: __('ID'), searchable: true)
-                ->column('title', label: __('Title'))
-                ->column('project', label: __('Project'))
+                ->column('project', label: __('Project'), sortable: true, searchable: true, canBeHidden:false)
                 ->column('release', label: __('Sprint'))
+                ->column('title', label: __('Title'))
                 ->column('type', label: __('Type'))
                 ->column('relator', label: __('Relator'))
                 ->column('resp', label: __('Assign to'))
@@ -201,7 +223,13 @@ class TicketsController extends Controller
     public function testing()
     {
    
-        $user = auth('sanctum')->user()->id;
+        if (! isset(Session::get('ret')[0]['id'])) {
+
+            return redirect()->back();
+
+        }
+
+        $projects_id = Session::get('ret')[0]['id'];
 
         $globalSearch = AllowedFilter::callback('global', function ($query,$value) {
             $query->where(function ($query) use ($value) {
@@ -224,6 +252,7 @@ class TicketsController extends Controller
             ->leftJoin('types','types.id','=','types_id')
             ->leftJoin('releases','releases.id','=','tickets.releases_id')
             ->leftJoin('projects','projects.id','=','tickets.projects_id')
+            ->Where('tickets.projects_id','=',$projects_id)
             ->orderby('prioridade')
             ->orderBy('status')
             ->orderBy('created_at', 'desc')
@@ -237,10 +266,10 @@ class TicketsController extends Controller
                 ->perPageOptions([])
                 ->withGlobalSearch()
                 ->column('id', label: __('ID'), searchable: true)
-                ->column('title', label: __('Title'), canBeHidden:false)
-                ->column('project', label: __('Project'), canBeHidden:false)
-                ->column('type', label: __('Type'))
+                ->column('project', label: __('Project'), sortable: true, searchable: true, canBeHidden:false)
                 ->column('release', label: __('Sprint'))
+                ->column('title', label: __('Title'), canBeHidden:false)
+                ->column('type', label: __('Type'))
                 ->column('relator', label: __('Relator'))
                 ->column('resp', label: __('Assign to'))
                 ->column('prioridade', label: __('Priority'))
@@ -256,7 +285,28 @@ class TicketsController extends Controller
     {
         $id = base64_decode($id);
 
-        $project = $project = Session::get('ret')[0]['id'];
+        if (! isset(Session::get('ret')[0]['id'])) {
+
+            return redirect()->back();
+
+        }
+
+        $projects_id = Session::get('ret')[0]['id'];
+
+        $userId = auth('sanctum')->user()->id;
+
+        $projects = UsersProjects::select('projects.id','title')
+            ->leftJoin('projects','projects.id','=','projects_id')
+            ->where('users_id','=',$userId)
+            ->where('relator','=','1')
+            ->where('projects_id','=',$projects_id)
+            ->get();
+
+        if (isset($projects) && $id == 0) {
+            $project = $projects[0]->id;
+        } else {
+            $project = 0;
+        }
 
         // releases
         if (Session::get('ret')[0]['gp'] == '1') {
@@ -264,6 +314,7 @@ class TicketsController extends Controller
         } else {
             $releases = Releases::select('id','version')->where('status','Waiting')->where('projects_id', $project)->orderBy('version')->get();
         }
+        
         // devs
         $devs = UsersProjects::select('users_id','name')->where('projects_id', $project)->where('dev', '1')->leftJoin('users','users.id','=','users_id')->where('users.active','=',1)->orderby('name')->get();
 
@@ -276,25 +327,30 @@ class TicketsController extends Controller
                 'id' => 0,
                 'title' => '',
                 'description' => '',
-                'status' => 'Open'
+                'status' => 'Open',
+                'projects_id' => $project,
+                'perfil' => Session::get('ret')[0]['gp']
             );
 
             return view('tickets.new-form', [
                 'ret' => $ret,
                 'releases' => $releases,
                 'devs' => $devs,
-                'types' => $types
+                'types' => $types,
+                'projects' => $projects
             ]);
 
         } else {
 
             $ret = Tickets::findOrFail($id);
+            $ret['perfil'] = Session::get('ret')[0]['gp'];
 
             return view('tickets.edit-form', [
                 'ret' => $ret,
                 'releases' => $releases,
                 'devs' => $devs,
-                'types' => $types
+                'types' => $types,
+                'projects' => $projects
             ]);
 
         }
@@ -308,13 +364,31 @@ class TicketsController extends Controller
     {
         $id = base64_decode($id);
 
-        $queryTicket = Tickets::
-            select("tickets.*", "a.name as resp","b.name as relator","types.title as type","releases.version as release")
-            ->where('tickets.id', $id)
+        if (Session::get('ret')[0]['gp'] != '1' && Session::get('ret')[0]['relator'] != '1' && Session::get('ret')[0]['dev'] != '1' && Session::get('ret')[0]['tester'] != '1') {
+
+            return redirect()->back();
+
+        }
+
+        $projects_id = Session::get('ret')[0]['id'];
+
+        $ret = Tickets::
+            select("tickets.*","projects.title as project","a.name as resp","b.name as relator","types.title as type","releases.version as release")
+            ->leftJoin('projects','projects.id','=','tickets.projects_id')
             ->leftJoin('users as a','a.id','=','resp_id')
             ->leftJoin('users as b','b.id','=','relator_id')
             ->leftJoin('types','types.id','=','types_id')
-            ->leftJoin('releases','releases.id','=','tickets.releases_id')->get();
+            ->leftJoin('releases','releases.id','=','tickets.releases_id')
+            ->where('tickets.id', $id)
+            ->where('tickets.projects_id','=',$projects_id)
+            ->get();
+
+        if (count($ret) == 0) {
+            
+            Toast::title(__('Ticket not found.'))->danger()->autoDismiss(5);
+            return redirect()->back();
+
+        }
 
         $queryLogs = Logtickets::
             select("logtickets.*", "users.name")
@@ -323,7 +397,7 @@ class TicketsController extends Controller
             ->leftJoin('users','users.id','=','users_id')->get();
 
         return view('tickets.detail-form', [
-            'ret' => $queryTicket[0],
+            'ret' => $ret[0],
             'logs' => $queryLogs
         ]);
     }
@@ -336,6 +410,7 @@ class TicketsController extends Controller
     {
         
         $this->validate($request, [
+            'projects_id' => 'required',
             'title' => 'required|max:255',
             'description' => 'required',
             'status' => 'required',
@@ -346,7 +421,6 @@ class TicketsController extends Controller
 
         $input = $request->all();
 
-        $input['projects_id'] = Session::get('ret')[0]['id'];
         $input['relator_id'] = auth('sanctum')->user()->id;
 
         $arqs = $request->file('arquivos');
@@ -437,6 +511,7 @@ class TicketsController extends Controller
      */
     public function update(Request $request, string $id, LogService $logServiceInstance)
     {
+
         $this->validate($request, [
             'title' => 'required|max:255',
             'description' => 'required',

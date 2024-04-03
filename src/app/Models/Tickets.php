@@ -20,7 +20,8 @@ class Tickets extends Model
         'types_id',
         'file',
         'docs',
-        'prioridade'
+        'prioridade',
+        'storypoint'
     ];
 
 }

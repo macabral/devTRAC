@@ -10,6 +10,7 @@ use App\Http\Controllers\TicketsController;
 use App\Http\Controllers\FilesController;
 use App\Http\Controllers\LogticketsController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\ConfigController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -70,20 +71,9 @@ Route::middleware('splade')->group(function () {
         Route::get('/typetickets-delete/{id}', [TypeticketsController::class, 'delete'])->middleware(['adminAccess'])->name('typetickets.delete');
         Route::delete('/typetickets/{id}', [TypeticketsController::class, 'destroy'])->middleware(['adminAccess'])->name('typetickets.destroy');
 
-        // Users
-        Route::get('/users', [UsersController::class, 'index'])->middleware(['adminAccess'])->name('users.index');
-        Route::get('/users-projects/{userId}', [UsersController::class, 'projects'])->middleware(['adminAccess'])->name('users.projects');
-        Route::get('/users-new-projects/{id}', [UsersController::class, 'newprojects'])->middleware(['adminAccess'])->name('users.newprojects');
-        Route::get('/users-delete/{id}', [ProfileController::class, 'delete'])->middleware(['adminAccess'])->name('users.delete');
-        Route::post('/associate/{id}', [UsersController::class, 'associate'])->middleware(['adminAccess'])->name('users.associate');
-        Route::get('/users-project-delete/{userId}/{id}', [UsersController::class, 'deleteproj'])->middleware(['adminAccess'])->name('users.project-delete');
-        Route::get('/users-delete/{id}', [UsersController::class, 'delete'])->middleware(['adminAccess'])->name('users.delete');
-        Route::delete('/users/{id}', [UsersController::class, 'destroy'])->middleware(['adminAccess'])->name('users.destroy');
-        Route::get('/users/{id}', [UsersController::class, 'show'])->middleware(['adminAccess'])->name('users.show');
-        Route::patch('/users-update/{id}', [UsersController::class, 'update'])->middleware(['adminAccess'])->name('users.update');
 
         // Releases
-        Route::get('/releases', [ReleasesController::class, 'index'])->name('releases.index');
+        Route::get('/releases-index/{id}', [ReleasesController::class, 'index'])->name('releases.index');
         Route::get('/releases/{id}', [ReleasesController::class, 'show'])->middleware(['gpAccess'])->name('releases.show');
         Route::post('/releases', [ReleasesController::class, 'create'])->middleware(['gpAccess'])->name('releases.create');
         Route::patch('/releases/{id}', [ReleasesController::class, 'update'])->middleware(['gpAccess'])->name('releases.update');
@@ -114,8 +104,27 @@ Route::middleware('splade')->group(function () {
         Route::get('/download/{id}', [FilesController::class, 'download'])->name('files.download');
         Route::get('/delete-file/{id}/{nomearq}', [FilesController::class, 'deleteFile'])->name('files.delete');
 
+        
+        // Users
+        Route::get('/users', [UsersController::class, 'index'])->middleware(['adminAccess'])->name('users.index');
+        Route::get('/users-projects/{userId}', [UsersController::class, 'projects'])->middleware(['adminAccess'])->name('users.projects');
+        Route::get('/users-new-projects/{id}', [UsersController::class, 'newprojects'])->middleware(['adminAccess'])->name('users.newprojects');
+        Route::get('/users-delete/{id}', [ProfileController::class, 'delete'])->middleware(['adminAccess'])->name('users.delete');
+        Route::post('/associate/{id}', [UsersController::class, 'associate'])->middleware(['adminAccess'])->name('users.associate');
+        Route::get('/users-project-delete/{userId}/{id}', [UsersController::class, 'deleteproj'])->middleware(['adminAccess'])->name('users.project-delete');
+        Route::get('/users-delete/{id}', [UsersController::class, 'delete'])->middleware(['adminAccess'])->name('users.delete');
+        Route::delete('/users/{id}', [UsersController::class, 'destroy'])->middleware(['adminAccess'])->name('users.destroy');
+        Route::get('/users-reset/{id}', [UsersController::class, 'reset'])->middleware(['adminAccess'])->name('users.reset');
+        Route::get('/users/{id}', [UsersController::class, 'show'])->middleware(['adminAccess'])->name('users.show');
+        Route::patch('/users-update/{id}', [UsersController::class, 'update'])->middleware(['adminAccess'])->name('users.update');
+        Route::post('/users/{id}', [UsersController::class, 'create'])->middleware(['adminAccess'])->name('users.create');
+        
+        // Configurações
+        Route::get('/config', [ConfigController::class, 'index'])->name('config.index');
+        Route::patch('/config', [ConfigController::class, 'update'])->name('config.update');
 
         Route::get('send-mail', [MailController::class, 'index']);
+
 
     });
 
