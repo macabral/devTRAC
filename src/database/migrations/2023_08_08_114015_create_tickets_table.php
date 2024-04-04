@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id()->unsigned();
             $table->string('title');
-            $table->longText('description');
+            $table->longText('description')->nullable();
             $table->enum('status', ['Open', 'Closed','Testing']);
             $table->biginteger('releases_id')->unsigned();
             $table->biginteger('relator_id')->unsigned();

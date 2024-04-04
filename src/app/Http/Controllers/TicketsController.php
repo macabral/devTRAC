@@ -155,6 +155,10 @@ class TicketsController extends Controller
         }
 
         $projects_id = Session::get('ret')[0]['id'];
+        
+        $releases = Releases::select('version','id')->where('projects_id','=',$projects_id)->where('status','=','Open')->get();
+
+        $releases = $releases->pluck('version','id')->toArray();
 
         $globalSearch = AllowedFilter::callback('global', function ($query,$value) {
             $query->where(function ($query) use ($value) {
@@ -192,10 +196,11 @@ class TicketsController extends Controller
                 })
             ->Where('releases.status', '=', 'Open')
             ->Where('tickets.projects_id','=', $projects_id)
+            ->orderby('releases_id')
             ->orderby('status')
             ->orderby('prioridade')
             ->orderBy('created_at')
-            ->allowedFilters(['id','title', 'status', $globalSearch])
+            ->allowedFilters(['id','title', 'status', 'releases_id', $globalSearch])
             ->paginate(7)
             ->withQueryString();
 
@@ -203,8 +208,9 @@ class TicketsController extends Controller
             'ret' => SpladeTable::for($ret)
                 ->perPageOptions([])
                 ->withGlobalSearch()
+                ->selectFilter('releases_id',$releases)
                 ->column('id', label: __('ID'), searchable: true)
-                ->column('project', label: __('Project'), sortable: true, searchable: true, canBeHidden:false)
+                ->column('project', label: __('Project'), sortable: true, searchable: false, canBeHidden:false)
                 ->column('release', label: __('Sprint'))
                 ->column('title', label: __('Title'))
                 ->column('type', label: __('Type'))
@@ -230,6 +236,10 @@ class TicketsController extends Controller
         }
 
         $projects_id = Session::get('ret')[0]['id'];
+
+        $releases = Releases::select('version','id')->where('projects_id','=',$projects_id)->where('status','=','Open')->get();
+
+        $releases = $releases->pluck('version','id')->toArray();
 
         $globalSearch = AllowedFilter::callback('global', function ($query,$value) {
             $query->where(function ($query) use ($value) {
@@ -257,7 +267,7 @@ class TicketsController extends Controller
             ->orderBy('status')
             ->orderBy('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
-            ->allowedFilters(['id','title', 'status', $globalSearch])
+            ->allowedFilters(['id','title', 'status', 'releases_id', $globalSearch])
             ->paginate(7)
             ->withQueryString();
 
@@ -265,6 +275,7 @@ class TicketsController extends Controller
             'ret' => SpladeTable::for($ret)
                 ->perPageOptions([])
                 ->withGlobalSearch()
+                ->selectFilter('releases_id',$releases)
                 ->column('id', label: __('ID'), searchable: true)
                 ->column('project', label: __('Project'), sortable: true, searchable: true, canBeHidden:false)
                 ->column('release', label: __('Sprint'))
@@ -412,7 +423,6 @@ class TicketsController extends Controller
         $this->validate($request, [
             'projects_id' => 'required',
             'title' => 'required|max:255',
-            'description' => 'required',
             'status' => 'required',
             'releases_id' => 'required',
             'types_id' => 'required',
@@ -514,7 +524,6 @@ class TicketsController extends Controller
 
         $this->validate($request, [
             'title' => 'required|max:255',
-            'description' => 'required',
             'status' => 'required',
             'releases_id' => 'required',
             'types_id' => 'required'
