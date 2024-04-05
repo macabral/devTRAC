@@ -321,9 +321,9 @@ class TicketsController extends Controller
 
         // releases
         if (Session::get('ret')[0]['gp'] == '1') {
-            $releases = Releases::select('id','version')->where('projects_id', $project)->where('status','Open')->orwhere('status','Waiting')->orderBy('version')->get();
+            $releases = Releases::select('id','version')->where('projects_id', $project)->wherein('status',['Open','Waiting'])->orderBy('status')->get();
         } else {
-            $releases = Releases::select('id','version')->where('projects_id', $project)->where('status','=','Waiting')->orderBy('version')->get();
+            $releases = Releases::select('id','version')->where('projects_id', $project)->where('status','=','Waiting')->orderBy('status')->get();
         }
        
         // devs
