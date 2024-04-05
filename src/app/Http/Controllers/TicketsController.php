@@ -297,9 +297,7 @@ class TicketsController extends Controller
         $id = base64_decode($id);
 
         if (! isset(Session::get('ret')[0]['id'])) {
-
             return redirect()->back();
-
         }
 
         $projects_id = Session::get('ret')[0]['id'];
@@ -313,23 +311,15 @@ class TicketsController extends Controller
             ->where('projects_id','=',$projects_id)
             ->get();
 
-        if (isset($projects) && $id == 0) {
-            $project = $projects[0]->id;
-        } else {
-            $project = 0;
-        }
-
         // releases
         if (Session::get('ret')[0]['gp'] == '1') {
-            $releases = Releases::select('id','version')->where('projects_id', $project)->wherein('status',['Open','Waiting'])->orderBy('status')->get();
+            $releases = Releases::select('id','version')->wherein('status',['Open','Waiting'])->where('releases.projects_id', $projects_id)->orderBy('status')->get();
         } else {
-            $releases = Releases::select('id','version')->where('projects_id', $project)->where('status','=','Waiting')->orderBy('status')->get();
+            $releases = Releases::select('id','version')->where('projects_id', $projects_id)->where('status','Waiting')->orderBy('status')->get();
         }
-       
+
         // devs
-        $devs = UsersProjects::select('users_id as id','name')->where('projects_id', $project)->where('dev', '1')->leftJoin('users','users.id','=','users_id')->where('users.active','=',1)->orderby('name')->get();
-
-
+        $devs = UsersProjects::select('users_id as id','name')->where('projects_id', $projects_id)->where('dev', '1')->leftJoin('users','users.id','=','users_id')->where('users.active','=',1)->orderby('name')->get();
 
         // Type 
         $types = Type::select('id','title')->where('status','Enabled')->get();
@@ -341,24 +331,34 @@ class TicketsController extends Controller
                 'title' => '',
                 'description' => '',
                 'status' => 'Open',
-                'projects_id' => $project,
+                'projects_id' => $projects_id,
                 'perfil' => Session::get('ret')[0]['gp']
             );
+
+            return view('tickets.new-form', [
+                'ret' => $ret,
+                'releases' => $releases,
+                'devs' => $devs,
+                'types' => $types,
+                'projects' => $projects
+            ]);
 
         } else {
 
             $ret = Tickets::findOrFail($id);
-            $ret['perfil'] = Session::get('ret')[0]['gp'];
+
+            return view('tickets.edit-form', [
+                'ret' => $ret,
+                'releases' => $releases,
+                'devs' => $devs,
+                'types' => $types,
+                'projects' => $projects,
+                'perfil' => Session::get('ret')[0]['gp']
+            ]);
 
         }
 
-        return view('tickets.new-form', [
-            'ret' => $ret,
-            'releases' => $releases,
-            'devs' => $devs,
-            'types' => $types,
-            'projects' => $projects
-        ]);
+
 
     }
     
