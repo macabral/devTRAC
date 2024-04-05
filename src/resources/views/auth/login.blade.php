@@ -17,7 +17,19 @@
                 @endif
 
                 <x-splade-submit class="ml-3" :label="__('Log in')" />
+
             </div>
+            <p>
+            Database Connected:
+            <?php
+                try {
+                    \DB::connection()->getPDO();
+                    echo \DB::connection()->getDatabaseName();
+                    } catch (\Exception $e) {
+                    echo 'None';
+                }
+            ?>
+            </p>
         </x-splade-form>
     </x-auth-card>
 </x-guest-layout>

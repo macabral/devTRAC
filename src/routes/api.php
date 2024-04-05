@@ -34,12 +34,14 @@ Route::get('/releases/{project_id}/{perfil}', function ($project_id,$perfil) {
 
 Route::get('/releases-dashboard/{project_id}', function ($project_id) {
 
-    $releases = Releases::Select("id","version")
+    $ret = Releases::Select("id","version")
             ->Where('projects_id','=',$project_id)
             ->where('status','=','Open')
             ->get();
 
-    return response()->json($releases);
+    dd($ret);
+
+    return response()->json($ret);
 
 });
 

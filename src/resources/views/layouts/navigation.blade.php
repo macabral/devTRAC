@@ -6,7 +6,7 @@
                 <div class="flex">
                     <!-- Logo -->
                     <div class="shrink-0 flex items-center">
-                        <Link href="http://localhost/devTrac/src/public">
+                        <Link href="/">
                             <img src="http://localhost/devTrac/src/public/assets/logo.jpg" width="70" dalt="logo!">
                         </Link>
                     </div>

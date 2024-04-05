@@ -31,6 +31,11 @@ class DatabaseSeeder extends Seeder
             'status' => 'Enabled',
         ]);
 
+        DB::table('types')->insert([
+            'title' => 'Suporte Técnico',
+            'status' => 'Enabled',
+        ]);
+
         DB::table('projects')->insert([
             'title' => 'Project1',
             'description' => 'Projeto Exemplo',
@@ -45,11 +50,6 @@ class DatabaseSeeder extends Seeder
             'dev' => '1',
             'tester' => '1'
         ]);
-
-        DB::table('config')->insert([
-            'storypoint' => '30'
-        ]);
-
 
 
     }

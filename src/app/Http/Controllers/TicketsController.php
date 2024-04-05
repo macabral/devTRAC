@@ -321,13 +321,15 @@ class TicketsController extends Controller
 
         // releases
         if (Session::get('ret')[0]['gp'] == '1') {
-            $releases = Releases::select('id','version')->where('status','Open')->orwhere('status','Waiting')->where('projects_id', $project)->orderBy('version')->get();
+            $releases = Releases::select('id','version')->where('projects_id', $project)->where('status','Open')->orwhere('status','Waiting')->orderBy('version')->get();
         } else {
-            $releases = Releases::select('id','version')->where('status','Waiting')->where('projects_id', $project)->orderBy('version')->get();
+            $releases = Releases::select('id','version')->where('projects_id', $project)->where('status','=','Waiting')->orderBy('version')->get();
         }
-        
+       
         // devs
-        $devs = UsersProjects::select('users_id','name')->where('projects_id', $project)->where('dev', '1')->leftJoin('users','users.id','=','users_id')->where('users.active','=',1)->orderby('name')->get();
+        $devs = UsersProjects::select('users_id as id','name')->where('projects_id', $project)->where('dev', '1')->leftJoin('users','users.id','=','users_id')->where('users.active','=',1)->orderby('name')->get();
+
+
 
         // Type 
         $types = Type::select('id','title')->where('status','Enabled')->get();
@@ -343,28 +345,20 @@ class TicketsController extends Controller
                 'perfil' => Session::get('ret')[0]['gp']
             );
 
-            return view('tickets.new-form', [
-                'ret' => $ret,
-                'releases' => $releases,
-                'devs' => $devs,
-                'types' => $types,
-                'projects' => $projects
-            ]);
-
         } else {
 
             $ret = Tickets::findOrFail($id);
             $ret['perfil'] = Session::get('ret')[0]['gp'];
 
-            return view('tickets.edit-form', [
-                'ret' => $ret,
-                'releases' => $releases,
-                'devs' => $devs,
-                'types' => $types,
-                'projects' => $projects
-            ]);
-
         }
+
+        return view('tickets.new-form', [
+            'ret' => $ret,
+            'releases' => $releases,
+            'devs' => $devs,
+            'types' => $types,
+            'projects' => $projects
+        ]);
 
     }
     

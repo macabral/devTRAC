@@ -26,7 +26,7 @@ class DashboardController extends Controller
         if (empty($input)) {
            
             // se usuário não tiver projeto associado retorna para o login.
-            if (count($ret[0]->projects) == 0) {
+            if (count($ret[0]['projects']) == 0) {
 
                 Toast::title(__('User has no project!'))->autoDismiss(5);
                 Session::forget(Session::driver()->getId());
@@ -36,7 +36,7 @@ class DashboardController extends Controller
 
             } else {
 
-                $projetos = $ret[0]->projects;
+                $projetos = $ret[0]['projects'];
 
                 if (isset(Session::get('ret')[0]['id']) && Session::get('ret')[0]['id'] != 0) {
 
@@ -47,13 +47,19 @@ class DashboardController extends Controller
                     $projects_id = $projetos[0]->id;
 
                 }
-        
+
                 $releases = Releases::Select('id')->where('status','Open')->where('projects_id','=',$projects_id)->limit(1)->get();
 
-                $releases_id = $releases[0]->id;
+                if (count($releases) > 0) {
+                    $releases_id = $releases[0]['id'];
+                } else {
+                    $releases_id = 0;
+                }
 
                 $input['projects_id'] = $projects_id;
                 $input['releases_id'] = $releases_id;
+
+               
             }
 
         } else {
@@ -347,7 +353,7 @@ class DashboardController extends Controller
         $mediaPrevista = $projetos[0]->media_sp;
 
         return view('dashboard',[
-            'proj' => $ret[0]->projects,
+            'proj' => $ret[0]['projects'],
             'input' => $input,
             'stats' => $result1,
             'perdev' => $result2,

@@ -11,7 +11,7 @@
               <x-splade-select id="projects_id" name="projects_id" :options="$proj" option-label="title" option-value="id"  placeholder="Projeto" autofocus />
             </div>
             <div  class="mt-2">
-              <x-splade-select id="releases_id" name="releases_id" :options="$releases" option-label="version" option-value="id" placeholder="Sprint" required remote-url="`/devTrac/src/public/api/releases-dashboard/${form.projects_id}`" />
+              <x-splade-select id="releases_id" name="releases_id" :options="$releases" option-label="version" option-value="id" placeholder="Sprint" /> 
             </div>
             <div  class="mt-2">
               <x-splade-submit :label="__('Select Project')" />
