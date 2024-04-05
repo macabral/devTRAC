@@ -29,14 +29,14 @@ RUN docker-php-ext-install intl \
 && docker-php-ext-install zip \
 && docker-php-ext-install fileinfo
 
-RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
-RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+# RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
+# RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
 COPY ./src .
 
 RUN composer install --no-dev --no-scripts
-
-VOLUME ./src /var/www/app
 
 USER root
 
