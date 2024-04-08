@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tickets', function (Blueprint $table) {
-            $table->enum('storypoint', [0, 1, 2, 3, 5, 8, 13, 20, 40, 100]);
+            $table->tinyInteger('storypoint')->unsigned()->default(0);
+            $table->tinyInteger('valorsp')->unsigned()->default(0);
         });
     }
 

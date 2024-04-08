@@ -21,7 +21,8 @@ class Tickets extends Model
         'file',
         'docs',
         'prioridade',
-        'storypoint'
+        'storypoint',
+        'valorsp'
     ];
 
 }

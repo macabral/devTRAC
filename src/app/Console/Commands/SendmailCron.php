@@ -33,7 +33,7 @@ class SendmailCron extends Command
         $config = config('mail.mailers.smtp');
         $from = config('mail.from');
 
-        if (empty($from)) {
+        if (empty($from['address'])) {
             return;
         }
 

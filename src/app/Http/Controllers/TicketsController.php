@@ -425,6 +425,10 @@ class TicketsController extends Controller
 
         $input = $request->all();
 
+        $sp = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100];
+
+        $input['valorsp'] = $sp[$input['storypoint']];
+
         $input['relator_id'] = auth('sanctum')->user()->id;
 
         $arqs = $request->file('arquivos');
@@ -529,12 +533,16 @@ class TicketsController extends Controller
 
         $ret = Tickets::findOrFail($id);
 
-        // registra log das alterações
-        $logServiceInstance->saveLog($id, $ret, $input);
+        $sp = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100];
+
+        $input['valorsp'] = $sp[$input['storypoint']];
 
         try {
             
             $ret->fill($input);
+
+            // registra log das alterações
+            $logServiceInstance->saveLog($id, $ret, $input);
 
         } catch (\Exception $e) {
 

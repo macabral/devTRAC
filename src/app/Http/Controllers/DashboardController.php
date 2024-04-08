@@ -107,7 +107,7 @@ class DashboardController extends Controller
 
         // estatísticas do release
 
-        $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, tickets.status, count(*) as qtd, sum(cast(storypoint as unsigned)) as storypoint
+        $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, tickets.status, count(*) as qtd, sum(valorsp) as storypoint
             from tickets 
             inner join releases on releases.id = tickets.releases_id and releases.status = 'Open' 
             left join projects on projects.id = tickets.projects_id 
@@ -118,6 +118,7 @@ class DashboardController extends Controller
 
         $stats = DB::select($sql);
 
+ 
         $result = []; $result1 = []; $result2 = []; $totalStoryPoint = 0; 
  
         foreach($stats as $item) {
@@ -178,7 +179,7 @@ class DashboardController extends Controller
     
         // estatísticas por Dev
 
-        $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, users.name, tickets.status, count(*) as qtd, sum(storypoint) as storypoint 
+        $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, users.name, tickets.status, count(*) as qtd, sum(valorsp) as storypoint 
             from tickets 
             left join users on users.id = tickets.resp_id 
             inner join releases on releases.id = tickets.releases_id and releases.status = 'Open' 
@@ -336,7 +337,7 @@ class DashboardController extends Controller
         // gráfico story points
 
         $sql ="SELECT  tickets.releases_id, releases.version, 
-            SUM(tickets.storypoint) AS total
+            SUM(valorsp) AS total
             FROM tickets
             LEFT JOIN releases ON releases.id = tickets.releases_id
             LEFT JOIN types ON types.id = tickets.types_id
