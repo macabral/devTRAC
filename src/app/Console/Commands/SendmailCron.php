@@ -30,6 +30,13 @@ class SendmailCron extends Command
     public function handle()
     {
 
+        $config = config('mail.mailers.smtp');
+        $from = config('mail.from');
+
+        if (empty($from)) {
+            return;
+        }
+
         $cursor = Emails::where('sent', '=', 0)->orderby('priority')->take(10)->get();
 
         if (count($cursor) == 0) {
@@ -39,10 +46,7 @@ class SendmailCron extends Command
         require base_path("vendor/autoload.php");
 
         $mail = new PHPMailer(true);
-
-        $config = config('mail.mailers.smtp');
-        $from = config('mail.from');
-       
+      
         // SMTP configurations
         $mail->isSMTP();
         $mail->Host       = $config['host'];
