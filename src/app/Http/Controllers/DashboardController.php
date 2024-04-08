@@ -65,7 +65,13 @@ class DashboardController extends Controller
         } else {
 
             $projects_id = $input['projects_id'];
-            $releases_id = $input['releases_id'];
+
+
+            if(isset($input['releases_id'])) {
+                $releases_id = $input['releases_id'];
+            } else {
+                $releases_id = 0;
+            }
             
         }
 
