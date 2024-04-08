@@ -39,8 +39,6 @@ Route::get('/releases-dashboard/{project_id}', function ($project_id) {
             ->where('status','=','Open')
             ->get();
 
-    dd($ret);
-
     return response()->json($ret);
 
 });
