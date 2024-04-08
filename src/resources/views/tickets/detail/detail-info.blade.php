@@ -20,7 +20,7 @@
                 <td>{{ $ret->release }}</td>
                 <td>{{ $ret->type }}</td>
                 <td>{{ $ret->prioridade }}</td>
-                <td>{{ $ret->storypoint }}</td>
+                <td>{{ $ret->valorsp }}</td>
                 <td>{{ $ret->relator }}</td>
                 <td>{{ $ret->resp }}</td>
                 <td>{{ date('d/m/Y H:i', strtotime($ret->created_at)) }}</td>  
