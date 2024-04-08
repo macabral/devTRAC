@@ -63,6 +63,14 @@ class SendmailCron extends Command
         // Set email format to HTML
         $mail->isHTML(true);
 
+        // abrir template
+        $file ="./public/assets/template.html";
+
+        if (file_exists($file)) {
+            $template = file_get_contents($file);
+        } else {
+            $template = "[%BODY%]";
+        }
         // Image
         foreach($cursor as $item) {
 
@@ -88,7 +96,7 @@ class SendmailCron extends Command
 
                 $mail->Subject =  $item->subject;
 
-                $mail->Body = $item->body;
+                $mail->Body = str_replace("[%BODY%]",$item->body,$template);
 
                 // Anexos
                 if (! is_null($item->attachments)) {
