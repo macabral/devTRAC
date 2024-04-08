@@ -41,7 +41,19 @@ class DashboardController extends Controller
                 if (isset(Session::get('ret')[0]['id']) && Session::get('ret')[0]['id'] != 0) {
 
                     $projects_id = Session::get('ret')[0]['id'];
-        
+
+                    // verifica se o projeto anteriormente selecionado ainda está associado ao usuário
+                    $achou = false;
+                    for($i=0; $i<count($projetos);$i++) {
+                        if($projetos[$i]->id == $projects_id) {
+                            $achou = true;
+                            break;
+                        }
+                    }
+                    if (! $achou) {
+                        $projects_id = $projetos[0]->id;
+                    }
+
                 } else {
 
                     $projects_id = $projetos[0]->id;
@@ -59,13 +71,11 @@ class DashboardController extends Controller
                 $input['projects_id'] = $projects_id;
                 $input['releases_id'] = $releases_id;
 
-               
             }
 
         } else {
 
             $projects_id = $input['projects_id'];
-
 
             if(isset($input['releases_id'])) {
                 $releases_id = $input['releases_id'];
