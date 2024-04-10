@@ -5,6 +5,27 @@ networks:
         driver: bridge
 
 services: 
+
+    mysql:
+        platform: linux/amd64
+        image: mysql:8
+        container_name: mysql
+        restart: unless-stopped
+        tty: true
+        ports: 
+            - "3306:3306"
+        volumes: 
+            - ./mysql:/var/lib/mysql
+        environment: 
+            MYSQL_DATABASE: devtrac
+            MYSQL_USER: devtrac
+            MYSQL_PASSWORD: devtrac
+            MYSQL_ROOT_PASSWORD: devtrac
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks: 
+            - devtrac
+
     php:
         build:
             context: .
@@ -19,6 +40,7 @@ services:
             - "${PHP_HOST_PORT}:${PHP_DOCKER_CONTAINER_PORT}"
         networks: 
             - devtrac
+
     nginx:
         image: nginx:alpine
         container_name: nginx
@@ -42,6 +64,8 @@ services:
         command: "php artisan schedule:work"
         volumes:
             - ./src:/var/www/app
+        depends_on: 
+            - php            
         networks:
             - devtrac
 
@@ -60,22 +84,3 @@ services:
         networks:
             - devtrac
 
-    mysql:
-        platform: linux/amd64
-        image: mysql:8
-        container_name: mysql
-        restart: unless-stopped
-        tty: true
-        ports: 
-            - "3306:3306"
-        volumes: 
-            - ./mysql:/var/lib/mysql
-        environment: 
-            MYSQL_DATABASE: devtrac
-            MYSQL_USER: devtrac
-            MYSQL_PASSWORD: devtrac
-            MYSQL_ROOT_PASSWORD: devtrac
-            SERVICE_TAGS: dev
-            SERVICE_NAME: mysql
-        networks: 
-            - devtrac

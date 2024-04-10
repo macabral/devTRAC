@@ -21,8 +21,7 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
-        depends_on:
-            - mysql
+
     # mysql:
     #     image: 'mysql/mysql-server:8.0'
     #     ports:
@@ -50,6 +49,4 @@ services:
 networks:
     sail:
         driver: bridge
-volumes:
-    sail-mysql:
-        driver: local
+

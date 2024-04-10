@@ -22,9 +22,10 @@ MAIL_ENCRYPTION=
 MAIL_FROM_NAME="${APP_NAME}"
 
 
->docker-compose up -d   
-
-na primeira vez realizará todas as instalações e executará os containers.
+>docker-compose build
+>docker-compose up -d 
+>docker exec -it php sh
+#composer install
 
 ====
 
@@ -35,8 +36,6 @@ Em outro terminal:
 na pasta ./src:
 
 >./vendor/bin/sail up -d
-
 >./vendor/bin/sail artisan migrate
 >./vendor/bin/sail artisan db:seed
-
 >./vendor/bin/sail down

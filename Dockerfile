@@ -29,9 +29,6 @@ RUN docker-php-ext-install intl \
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
-# RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-
 VOLUME ./src /var/www/app
 
 WORKDIR /var/www/app
@@ -42,9 +39,11 @@ RUN composer install --no-dev --no-scripts
 
 USER root
 
-RUN chmod 777 -R /var/www/app
-
 RUN chmod 777 -R /var/www/app/storage
+
+RUN chmod 777 -R /var/www/app/storage/logs
+
+RUN chmod 777 -R /var/www/app/storage/framework
 
 RUN chmod 777 -R /var/www/app/public
 
