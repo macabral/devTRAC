@@ -57,7 +57,13 @@
                         </a>
                     </td>
                     <td>
-                        <a href="{{ '../uploads/downloads/' . auth('sanctum')->user()->id . '/' . $ret['files'][$i][0] }}" onclick="window.open(this.href, 'new', 'popup'); return false;">{{ $ret['files'][$i][0] }}</a>
+
+                        @if(substr($ret['files'][$i][0], strrpos($ret['files'][$i][0], '.') + 1) == 'pdf')
+                            <a href="{{ 'uploads/downloads/' . auth('sanctum')->user()->id . '/' . $ret['files'][$i][0] }}" onclick="window.open(this.href, 'new', 'popup'); return false;">{{ $ret['files'][$i][0] }}</a>
+                        @else
+                            <a href="{{ 'uploads/downloads/' . auth('sanctum')->user()->id . '/' . $ret['files'][$i][0] }}" download>{{ $ret['files'][$i][0] }}</a>
+                        @endif
+
                     </td>
                 </tr>
             @endfor

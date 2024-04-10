@@ -120,7 +120,9 @@ class FilesController extends Controller
             }
         }
 
-        $file = ''; $list = []; $nomearq = $tickets['file'];
+        $file = ''; $list = []; 
+        
+        $nomearq = $tickets->file;
 
         if ($nomearq != '') {
             $created = date('Y', strtotime($tickets['created_at']));
