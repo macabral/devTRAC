@@ -45,37 +45,37 @@ services:
         networks:
             - devtrac
 
-    # phpmyadmin:
-    #     image: phpmyadmin/phpmyadmin
-    #     container_name: phpadmin
-    #     links:
-    #         - mysql
-    #     environment:
-    #         PMA_HOST: mysql
-    #         PMA_PORT: 3306
-    #         PMA_ARBITRARY: 1
-    #     restart: unless-stopped
-    #     ports:
-    #         - 8990:80
-    #     networks:
-    #         - devtrac
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpadmin
+        links:
+            - mysql
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
+        restart: unless-stopped
+        ports:
+            - 8990:80
+        networks:
+            - devtrac
 
-    # mysql:
-    #     platform: linux/amd64
-    #     image: mysql:8
-    #     container_name: mysql
-    #     restart: unless-stopped
-    #     tty: true
-    #     ports: 
-    #         - "3336:3306"
-    #     volumes: 
-    #         - ./mysql:/var/lib/mysql
-    #     environment: 
-    #         MYSQL_DATABASE: devtrac
-    #         MYSQL_USER: devtrac
-    #         MYSQL_PASSWORD: devtrac
-    #         MYSQL_ROOT_PASSWORD: devtrac
-    #         SERVICE_TAGS: dev
-    #         SERVICE_NAME: mysql
-    #     networks: 
-    #         - devtrac
+    mysql:
+        platform: linux/amd64
+        image: mysql:8
+        container_name: mysql
+        restart: unless-stopped
+        tty: true
+        ports: 
+            - "3336:3306"
+        volumes: 
+            - ./mysql:/var/lib/mysql
+        environment: 
+            MYSQL_DATABASE: devtrac
+            MYSQL_USER: devtrac
+            MYSQL_PASSWORD: devtrac
+            MYSQL_ROOT_PASSWORD: devtrac
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks: 
+            - devtrac
