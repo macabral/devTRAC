@@ -538,11 +538,11 @@ class TicketsController extends Controller
         $input['valorsp'] = $sp[$input['storypoint']];
 
         try {
-            
-            $ret->fill($input);
 
             // registra log das alterações
             $logServiceInstance->saveLog($id, $ret, $input);
+            
+            $ret->fill($input);
 
         } catch (\Exception $e) {
 

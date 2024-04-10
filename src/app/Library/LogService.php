@@ -13,10 +13,13 @@ class LogService
 
       $user_id = auth('sanctum')->user()->id;
 
-      $texto = '';
+      $texto = ''; $sp = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100];
 
-      if ($ret['storypoint'] != $input['storypoint']) {
-        $texto .= 'Story Point alterado! [' . $ret['storypoint'] .'] => [' . $input['storypoint'] . ']' . chr(13);
+      $sp_anterior = $ret['valorsp'];
+      $sp_atual = $input['valorsp'];
+
+      if ($sp_anterior != $sp_atual) {
+        $texto .= 'Story Point alterado! [' . $sp_anterior.'] => [' . $sp_atual . ']' . chr(13);
       }
 
       if ($ret['title'] != $input['title']) {
