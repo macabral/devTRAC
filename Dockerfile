@@ -2,8 +2,6 @@ FROM php:8.2-fpm-alpine
 
 ENV COMPOSER_ALLOW_SUPERUSER=1 
 
-WORKDIR /var/www/app
-
 RUN apk update && apk add \
     icu-dev \
     oniguruma-dev \
@@ -33,6 +31,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
 # RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
+WORKDIR /var/www/app
+
+VOLUME ./src /var/www/app
 
 COPY ./src .
 
