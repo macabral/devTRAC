@@ -4,10 +4,10 @@ Para executar o devTRAC em container Docker siga os passos:
 
 >git clone https://github.com/macabral/devTRAC
 
-Vá para a pasta devTRAC/src e renomeie o arquivo .env.example para .env e edite as informações:
+Vá para a pasta devTRAC/src e renomeie o arquivo '.env.example' para '.env' e edite as informações:
 
 DB_CONNECTION=mysql
-DB_HOST=localhost
+DB_HOST=mysql
 DB_PORT=3306
 DB_DATABASE=
 DB_USERNAME=
@@ -22,7 +22,21 @@ MAIL_ENCRYPTION=
 MAIL_FROM_NAME="${APP_NAME}"
 
 
-
 >docker-compose up -d   
 
-na primeira vez realizará todas as instalações.
+na primeira vez realizará todas as instalações e executará os containers.
+
+====
+
+Instalando o Banco de Dados (devtrac)
+
+Em outro terminal:
+
+na pasta ./src:
+
+>./vendor/bin/sail up -d
+
+>./vendor/bin/sail artisan migrate
+>./vendor/bin/sail artisan db:seed
+
+>./vendor/bin/sail down
