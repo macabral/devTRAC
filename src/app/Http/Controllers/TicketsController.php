@@ -22,20 +22,32 @@ use App\Library\TracMail;
 
 class TicketsController extends Controller
 {
+    private $projects_id;
+    private $userId;
+    private $relator;
+    private $dev;
+    private $gp;
+
+    private function init()
+    {
+        if (! isset(Session::get('ret')[0]['id'])) {
+            return redirect()->back();
+        }
+
+        $this->projects_id = Session::get('ret')[0]['id'];
+        $this->userId = auth('sanctum')->user()->id;
+        $this->relator = Session::get('ret')[0]['relator'];
+        $this->dev = Session::get('ret')[0]['dev'];
+        $this->gp = Session::get('ret')[0]['gp'];
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-
-        if (! isset(Session::get('ret')[0]['id'])) {
-
-            return redirect()->back();
-
-        }
-
-        $projects_id = Session::get('ret')[0]['id'];
-
+        $this->init();
+        
         $globalSearch = AllowedFilter::callback('global', function ($query,$value) {
             $query->where(function ($query) use ($value) {
                 Collection::wrap($value)->each(function ($value) use ($query) {
@@ -50,11 +62,10 @@ class TicketsController extends Controller
             });
         });
 
-        $releases = Releases::select('version','id')->where('projects_id','=',$projects_id)->get();
+        $releases = Releases::select('version','id')->where('projects_id','=',$this->projects_id)->get();
 
         $releases = $releases->pluck('version','id')->toArray();
 
-    
         $ret = QueryBuilder::for(Tickets::class)
             ->select("projects.title as project","tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
             ->leftJoin('users as a','a.id','=','resp_id')
@@ -62,7 +73,7 @@ class TicketsController extends Controller
             ->leftJoin('types','types.id','=','types_id')
             ->leftJoin('releases','releases.id','=','tickets.releases_id')
             ->leftJoin('projects','projects.id','=','releases.projects_id')
-            ->where('tickets.projects_id','=',$projects_id)
+            ->where('tickets.projects_id','=',$this->projects_id)
             ->orderby('prioridade')
             ->orderby('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
@@ -93,6 +104,8 @@ class TicketsController extends Controller
      */
     public function sprint($id)
     {
+
+        $this->init();
 
         $sprintId = base64_decode($id);
 
@@ -147,16 +160,10 @@ class TicketsController extends Controller
      */
     public function mytickets()
     {
+       
+        $this->init();
 
-        if (! isset(Session::get('ret')[0]['id'])) {
-
-            return redirect()->back();
-
-        }
-
-        $projects_id = Session::get('ret')[0]['id'];
-        
-        $releases = Releases::select('version','id')->where('projects_id','=',$projects_id)->where('status','=','Open')->get();
+        $releases = Releases::select('version','id')->where('projects_id','=',$this->projects_id)->where('status','=','Open')->get();
 
         $releases = $releases->pluck('version','id')->toArray();
 
@@ -187,15 +194,15 @@ class TicketsController extends Controller
                     ->orwhere('tickets.status', '=', 'Testing');
                 })
             ->Where(function($query) {
-                    if (Session::get('ret')[0]['relator'] == '1') {
-                        $query->orwhere('tickets.relator_id', '=', auth('sanctum')->user()->id);
+                    if ($this->relator == '1') {
+                        $query->orwhere('tickets.relator_id', '=', $this->userId);
                     }
-                    if (Session::get('ret')[0]['dev'] == '1') {
-                        $query->orwhere('tickets.resp_id', '=', auth('sanctum')->user()->id);
+                    if ($this->dev == '1') {
+                        $query->orwhere('tickets.resp_id', '=', $this->userId);
                     }
                 })
             ->Where('releases.status', '=', 'Open')
-            ->Where('tickets.projects_id','=', $projects_id)
+            ->Where('tickets.projects_id','=', $this->projects_id)
             ->orderby('releases_id')
             ->orderby('status')
             ->orderby('prioridade')
@@ -228,16 +235,9 @@ class TicketsController extends Controller
      */
     public function testing()
     {
+        $this->init();
    
-        if (! isset(Session::get('ret')[0]['id'])) {
-
-            return redirect()->back();
-
-        }
-
-        $projects_id = Session::get('ret')[0]['id'];
-
-        $releases = Releases::select('version','id')->where('projects_id','=',$projects_id)->where('status','=','Open')->get();
+        $releases = Releases::select('version','id')->where('projects_id','=',$this->projects_id)->where('status','=','Open')->get();
 
         $releases = $releases->pluck('version','id')->toArray();
 
@@ -262,7 +262,7 @@ class TicketsController extends Controller
             ->leftJoin('types','types.id','=','types_id')
             ->leftJoin('releases','releases.id','=','tickets.releases_id')
             ->leftJoin('projects','projects.id','=','tickets.projects_id')
-            ->Where('tickets.projects_id','=',$projects_id)
+            ->Where('tickets.projects_id','=',$this->projects_id)
             ->orderby('prioridade')
             ->orderBy('status')
             ->orderBy('created_at', 'desc')
@@ -294,32 +294,26 @@ class TicketsController extends Controller
     */
     public function show(string $id)
     {
+        $this->init();
+
         $id = base64_decode($id);
-
-        if (! isset(Session::get('ret')[0]['id'])) {
-            return redirect()->back();
-        }
-
-        $projects_id = Session::get('ret')[0]['id'];
-
-        $userId = auth('sanctum')->user()->id;
 
         $projects = UsersProjects::select('projects.id','title')
             ->leftJoin('projects','projects.id','=','projects_id')
-            ->where('users_id','=',$userId)
+            ->where('users_id','=',$this->userId)
             ->where('relator','=','1')
-            ->where('projects_id','=',$projects_id)
+            ->where('projects_id','=',$this->projects_id)
             ->get();
 
         // releases
-        if (Session::get('ret')[0]['gp'] == '1') {
-            $releases = Releases::select('id','version')->wherein('status',['Open','Waiting'])->where('releases.projects_id', $projects_id)->orderBy('status')->get();
+        if ($this->gp == '1') {
+            $releases = Releases::select('id','version')->wherein('status',['Open','Waiting'])->where('releases.projects_id', $this->projects_id)->orderBy('status')->get();
         } else {
-            $releases = Releases::select('id','version')->where('projects_id', $projects_id)->where('status','Waiting')->orderBy('status')->get();
+            $releases = Releases::select('id','version')->where('projects_id', $this->projects_id)->where('status','Waiting')->orderBy('status')->get();
         }
 
         // devs
-        $devs = UsersProjects::select('users_id as id','name')->where('projects_id', $projects_id)->where('dev', '1')->leftJoin('users','users.id','=','users_id')->where('users.active','=',1)->orderby('name')->get();
+        $devs = UsersProjects::select('users_id as id','name')->where('projects_id', $this->projects_id)->where('dev', '1')->leftJoin('users','users.id','=','users_id')->where('users.active','=',1)->orderby('name')->get();
 
         // Type 
         $types = Type::select('id','title')->where('status','Enabled')->get();
@@ -331,8 +325,8 @@ class TicketsController extends Controller
                 'title' => '',
                 'description' => '',
                 'status' => 'Open',
-                'projects_id' => $projects_id,
-                'perfil' => Session::get('ret')[0]['gp']
+                'projects_id' => $this->projects_id,
+                'perfil' => $this->gp
             );
 
             return view('tickets.new-form', [
@@ -353,12 +347,10 @@ class TicketsController extends Controller
                 'devs' => $devs,
                 'types' => $types,
                 'projects' => $projects,
-                'perfil' => Session::get('ret')[0]['gp']
+                'perfil' => $this->gp
             ]);
 
         }
-
-
 
     }
     
@@ -367,15 +359,15 @@ class TicketsController extends Controller
     */
     public function edit(string $id)
     {
+        $this->init();
+
         $id = base64_decode($id);
 
-        if (Session::get('ret')[0]['gp'] != '1' && Session::get('ret')[0]['relator'] != '1' && Session::get('ret')[0]['dev'] != '1' && Session::get('ret')[0]['tester'] != '1') {
+        if ($this->gp != '1' && $this->relator != '1') {
 
             return redirect()->back();
 
         }
-
-        $projects_id = Session::get('ret')[0]['id'];
 
         $ret = Tickets::
             select("tickets.*","projects.title as project","a.name as resp","b.name as relator","types.title as type","releases.version as release")
@@ -385,7 +377,7 @@ class TicketsController extends Controller
             ->leftJoin('types','types.id','=','types_id')
             ->leftJoin('releases','releases.id','=','tickets.releases_id')
             ->where('tickets.id', $id)
-            ->where('tickets.projects_id','=',$projects_id)
+            ->where('tickets.projects_id','=',$this->projects_id)
             ->get();
 
         if (count($ret) == 0) {
@@ -413,6 +405,7 @@ class TicketsController extends Controller
      */
     public function create(Request $request, TracMail $TracMailInstance)
     {
+        $this->init();
         
         $this->validate($request, [
             'projects_id' => 'required',
@@ -429,7 +422,7 @@ class TicketsController extends Controller
 
         $input['valorsp'] = $sp[$input['storypoint']];
 
-        $input['relator_id'] = auth('sanctum')->user()->id;
+        $input['relator_id'] = $this->userId;
 
         $arqs = $request->file('arquivos');
 
@@ -474,6 +467,8 @@ class TicketsController extends Controller
 
             Tickets::create($input);
 
+            Toast::title(__('Ticket saved!'))->autoDismiss(5);
+
         } catch (\Exception $e) {
 
             Toast::title(__('Error! ' .  $e))->danger()->autoDismiss(15);
@@ -502,14 +497,11 @@ class TicketsController extends Controller
                 
             $TracMailInstance->save($mailData);
 
-
         } catch (\Exception $e) {
 
             Toast::title(__('It was not possible to send email notification.'))->danger()->autoDismiss(5);
 
         }
-
-        Toast::title(__('Ticket saved!'))->autoDismiss(5);
 
         return redirect()->back();
     }
