@@ -114,7 +114,7 @@ class DashboardController extends Controller
         for($i=0; $i<count($result1); $i++) {
             $storyPointRelease += $result1[$i]['storypoint'];
         }
-    
+
         // estatísticas por Dev
 
         $result2 = $this->devEstat($projects_id,$releases_id);
@@ -127,7 +127,7 @@ class DashboardController extends Controller
             $totalDays = $start_time->diffInDays($finish_time) - 1;
 
 
-            $categories = ''; $count = 0;
+            $categories = '';
             for($i=$start_time; $i<=$finish_time; $i->addDays(1)) {
                 $categories .= $i->format('d') . ',';
             }
@@ -145,7 +145,7 @@ class DashboardController extends Controller
             $totalStoryPoint = $total[0]->vlr * $storyPointRelease ;
             $progresso = floor($totalStoryPoint / $totalDays);
 
-            $vlr = $totalStoryPoint; $estimado = $vlr . ','; $media = '';
+            $vlr = $totalStoryPoint; $estimado = $vlr . ',';
             for($j=0; $j<=$totalDays; ++$j) {
                 $vlr = $vlr - $progresso;
                 if ($vlr < 0) {
@@ -186,8 +186,6 @@ class DashboardController extends Controller
 
         // média de Story Points
 
-        $mediaPrevista = $projetos[0]->media_sp;
-
         return view('dashboard',[
             'proj' => $ret[0]['projects'],
             'input' => $input,
@@ -197,8 +195,7 @@ class DashboardController extends Controller
             'chart2' => $chart2,
             'chart3' => $chart3,
             'releases' => $releases,
-            'storypoint_medio' => $media . "/" . $mediaPrevista
-
+            'storypoint_medio' =>  $projetos[0]->media_sp
         ]);
 
     }
@@ -386,14 +383,13 @@ class DashboardController extends Controller
 
         $ticketsStory = DB::select($sql);
 
-        $categ = ""; $series1 = ''; $total = 0; $media = 0;
+        $categ = ""; $series1 = ''; $total = 0;
 
         foreach($ticketsStory as $item) {
 
             $categ .=  $item->version . ",";
             $series1 .= $item->total . ',';
             $total += $item->total;
-            $media = $total / count($ticketsStory);
 
         }
 

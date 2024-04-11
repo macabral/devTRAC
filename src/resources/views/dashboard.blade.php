@@ -131,7 +131,7 @@
 
 	<div id="chart3" name="chart3"></div>
 
-	<span>Média de Story Points(Atual/Prevista): {{ $storypoint_medio }}.</span>
+	<span>Média de Story Points Prevista: {{ $storypoint_medio }}.</span>
 	<br><br>
 
 </div>
