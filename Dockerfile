@@ -41,10 +41,4 @@ RUN composer install --no-dev --no-scripts
 
 RUN chmod 777 -R /var/www/app/storage
 
-RUN chmod 777 -R /var/www/app/storage/logs
-
-RUN chmod 777 -R /var/www/app/storage/framework
-
 RUN chmod 777 -R /var/www/app/public
-
-
