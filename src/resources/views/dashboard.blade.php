@@ -120,6 +120,7 @@
       </div>
     @else
     <div class="rounded">
+		<br><br>
         <p>Você não possui tarefas no momento.</p>
     </div>
   @endif
