@@ -2,6 +2,8 @@ FROM php:8.2-fpm-alpine
 
 ENV COMPOSER_ALLOW_SUPERUSER=1 
 
+USER root
+
 RUN apk update && apk add \
     icu-dev \
     oniguruma-dev \
@@ -36,8 +38,6 @@ WORKDIR /var/www/app
 COPY ./src .
 
 RUN composer install --no-dev --no-scripts
-
-USER root
 
 RUN chmod 777 -R /var/www/app/storage
 
