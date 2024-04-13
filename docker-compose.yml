@@ -48,7 +48,6 @@ services:
         restart: unless-stopped
         tty: true
         ports:
-            - "8000:80"
             - "8443:443"
         volumes: 
             - ./src:/var/www/app

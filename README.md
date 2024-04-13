@@ -33,13 +33,13 @@ MAIL_FROM_NAME="${APP_NAME}"
 >docker-compose up -d
 >docker exec -it php sh
 /var/www/app # composer install
-/var/www/app # chmode -R 777/var/www/app/storage
-/var/www/app # chmod -R777 /var/www/app/public
+/var/www/app # chmod -R 777/var/www/app/storage
+/var/www/app # chmod -R 777 /var/www/app/public
 /var/www/app # php artisan migrate
 /var/www/app # php artisan db:seed
 
 [4] Executando o devTRAC
 
- http://localhost:8000 para acessar a aplicação devTRAC com o usuário 'admin@admin.com' e senha 'password'.
+ https://localhost:8443 para acessar a aplicação devTRAC com o usuário 'admin@admin.com' e senha 'password'.
 
  http://localhost:8080 para acessar o phpmyadmin para administração do banco de dados.
