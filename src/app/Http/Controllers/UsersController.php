@@ -343,7 +343,7 @@ class UsersController extends Controller
                 'cc' => null,
                 'subject' => 'devTRAC: Você foi cadastrado.',
                 'title' => "Novo Cadastro",
-                'body' => "Você foi cadastrado no devTRAC com o email <b>$$email</b> e senha <b>$password</b>.<br>Não esqueça de trocar a senha no próximo login.",
+                'body' => "Você foi cadastrado no devTRAC com o email <b>$email</b> e senha <b>$password</b>.<br><br>Não esqueça de trocar a senha no próximo login.",
                 'priority' => 10,
                 'attachments' => null
             ];

@@ -63,6 +63,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        container_name: schedule
         restart: unless-stopped
         command: "php artisan schedule:work"
         volumes:
