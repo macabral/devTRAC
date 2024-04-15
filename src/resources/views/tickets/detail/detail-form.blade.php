@@ -1,6 +1,6 @@
- <x-splade-form method="post" :action="route('logtickets.create',  $ret->id)"  class="mt-4 space-y-4" preserve-scroll>
+ <x-splade-form method="post" :action="route('logtickets.create',  $ret->id)"  class="mt-4 space-y-4" preserve-scroll novalidate>
 
-    <x-splade-textarea id="description" name="description" autosize rows="7" :label="__('Add Comments')" required autocomplete="description" />
+    <x-splade-wysiwyg id="description" name="description" autosize rows="7" :label="__('Add Comments')" required autocomplete="description" />
 
     <x-splade-submit :label="__('Save Comments')" :spinner="true" />
 

@@ -18,7 +18,7 @@ class LogticketsController extends Controller
      */
     public function create(Request $request, $id)
     {
-        
+       
         $this->validate($request, [
             'description' => 'required'
         ]);

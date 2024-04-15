@@ -127,7 +127,7 @@
   @endif
 
   
-  <div class="rounded bg-zinc-400 bg-white mt-6">
+  <div class="rounded bg-white mt-6">
 
     <div id="chart2" name="chart2"></div>
 
