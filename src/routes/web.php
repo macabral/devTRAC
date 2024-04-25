@@ -55,9 +55,22 @@ Route::middleware('splade')->group(function () {
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+        // Tickets
+        Route::get('/tickets', [TicketsController::class, 'index'])->name('tickets.index');
+        Route::get('/mytickets', [TicketsController::class, 'mytickets'])->name('tickets.mytickets');
+        Route::get('/testing', [TicketsController::class, 'testing'])->name('tickets.testing');
+        Route::get('/tickets/{id}', [TicketsController::class, 'show'])->name('tickets.show');
+        Route::get('/tickets-sprint/{id}', [TicketsController::class, 'sprint'])->name('tickets.sprint');
+        Route::get('/tickets-edit/{id}', [TicketsController::class, 'edit'])->name('tickets.edit');
+        Route::post('/tickets', [TicketsController::class, 'create'])->name('tickets.create');
+        Route::patch('/tickets/{id}', [TicketsController::class, 'update'])->name('tickets.update');
+        Route::get('/tickets-delete/{id}', [TicketsController::class, 'delete'])->name('tickets.delete');
+        Route::delete('/tickets/{id}', [TicketsController::class, 'destroy'])->name('tickets.destroy');
+        
         // Projects
         Route::get('/projects', [ProjectsController::class, 'index'])->middleware(['adminAccess'])->name('projects.index');
         Route::get('/projects/{id}', [ProjectsController::class, 'show'])->middleware(['adminAccess'])->name('projects.show');
+        Route::get('/projects-users/{id}', [ProjectsController::class, 'users'])->middleware(['adminAccess'])->name('projects.users');
         Route::post('/projects', [ProjectsController::class, 'create'])->middleware(['adminAccess'])->name('projects.create');
         Route::patch('/projects/{id}', [ProjectsController::class, 'update'])->middleware(['adminAccess'])->name('projects.update');
         Route::get('/projects-delete/{id}', [ProjectsController::class, 'delete'])->middleware(['adminAccess'])->name('projects.delete');
@@ -80,19 +93,6 @@ Route::middleware('splade')->group(function () {
         Route::get('/releases-delete/{id}', [ReleasesController::class, 'delete'])->middleware(['gpAccess'])->name('releases.delete');
         Route::delete('/releases/{id}', [ReleasesController::class, 'destroy'])->middleware(['gpAccess'])->name('releases.destroy');
         Route::get('/export-tickets/{id}', [ReleasesController::class, 'exports'])->name('releases.exports');
-
-        // Tickets
-        Route::get('/tickets', [TicketsController::class, 'index'])->name('tickets.index');
-        Route::get('/mytickets', [TicketsController::class, 'mytickets'])->name('tickets.mytickets');
-        Route::get('/testing', [TicketsController::class, 'testing'])->name('tickets.testing');
-        Route::get('/tickets/{id}', [TicketsController::class, 'show'])->name('tickets.show');
-        Route::get('/tickets-sprint/{id}', [TicketsController::class, 'sprint'])->name('tickets.sprint');
-        Route::get('/tickets-edit/{id}', [TicketsController::class, 'edit'])->name('tickets.edit');
-        Route::post('/tickets', [TicketsController::class, 'create'])->name('tickets.create');
-        Route::patch('/tickets/{id}', [TicketsController::class, 'update'])->name('tickets.update');
-        Route::get('/tickets-delete/{id}', [TicketsController::class, 'delete'])->name('tickets.delete');
-        Route::delete('/tickets/{id}', [TicketsController::class, 'destroy'])->name('tickets.destroy');
-
 
         // Logtickets
         Route::post('/logtickets/{id}', [LogticketsController::class, 'create'])->name('logtickets.create');

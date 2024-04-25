@@ -6,9 +6,9 @@
     </x-slot>
  
     <x-splade-form name="form" method="post" :action="route('dashboard.project')" :default="$input" class="mt-4 sm:px-6 lg:px-8 grid grid-cols-3 md:grid-cols-3 gap-3" preserve-scroll>
-      <div class="">
+      <div>
             <div>
-              <x-splade-select id="projects_id" name="projects_id" :options="$proj" option-label="title" option-value="id"  placeholder="Projeto" autofocus />
+              <x-splade-select id="projects_id" name="projects_id" :options="$proj" option-label="title" option-value="projects_id"  placeholder="Projeto" autofocus />
             </div>
             <div  class="mt-2">
               <x-splade-select id="releases_id" name="releases_id" :options="$releases" option-label="version" option-value="id" placeholder="Sprint" remote-url="`api/releases-dashboard/${form.projects_id}`" /> 

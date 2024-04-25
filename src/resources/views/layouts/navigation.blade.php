@@ -1,3 +1,13 @@
+<?php
+  $dev = Session::get('ret')[0]['dev'];
+  if (is_null($dev)) {
+    Auth::guard('web')->logout();
+    return redirect('/login');
+  }
+  $relator = Session::get('ret')[0]['relator'];
+  $tester = Session::get('ret')[0]['tester'];
+  $admin = auth('sanctum')->user()->admin;
+?>
 <x-splade-toggle>
     <nav class="bg-white border-b border-gray-100">
         <!-- Primary Navigation Menu -->
@@ -19,7 +29,7 @@
                     </div>
 
                     <!-- My Tickets -->
-                    @if (Session::get('ret')[0]['dev'] == '1' || Session::get('ret')[0]['relator'] == '1')
+                    @if ($dev == '1' || $relator == '1')
                         <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                             <x-nav-link :href="route('tickets.mytickets')" :active="request()->routeIs('tckets.mytickets')">
                                 {{ __('My Tickets') }}
@@ -28,7 +38,7 @@
                     @endif
 
                     <!-- Testing -->
-                    @if (Session::get('ret')[0]['tester'] == '1')
+                    @if ($tester == '1')
                         <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                             <x-nav-link :href="route('tickets.testing')" :active="request()->routeIs('tckets.testing')">
                                 {{ __('Testing') }}
@@ -37,7 +47,7 @@
                     @endif
 
                     <!-- New Ticket -->
-                    @if (Session::get('ret')[0]['relator'] == '1')
+                    @if ($relator == '1')
                         <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                             <x-nav-link href="{{ route('tickets.show', base64_encode(0)) }}" :active="request()->routeIs('tickets.show')">
                                 {{ __('New Ticket') }}
@@ -75,7 +85,7 @@
                     </div>
 
                     <!-- Admin Dropdown -->
-                    @if (auth('sanctum')->user()->admin == 1)
+                    @if ($admin == 1)
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
                             <x-dropdown placement="bottom-end">
                                 <x-slot name="trigger">
@@ -167,7 +177,7 @@
             </div>
 
             <!-- My Tickets -->
-            @if (Session::get('ret')[0]['dev'] == '1' || Session::get('ret')[0]['relator'] == '1')
+            @if ($dev== '1' || $relator== '1')
                 <div class="pt-2 pb-3 space-y-1">
                     <x-responsive-nav-link :href="route('tickets.mytickets')" :active="request()->routeIs('tckets.mytickets')">
                         {{ __('My Tickets') }}
@@ -176,7 +186,7 @@
             @endif
 
             <!-- Testing -->
-            @if (Session::get('ret')[0]['tester'] == '1')
+            @if ($tester == '1')
                 <div class="pt-2 pb-3 space-y-1">
                     <x-responsive-nav-link :href="route('tickets.testing')" :active="request()->routeIs('tckets.testing')">
                         {{ __('Testing') }}
@@ -185,7 +195,7 @@
             @endif
 
             <!-- New Ticket -->
-            @if (Session::get('ret')[0]['relator'] == '1')
+            @if ($relator == '1')
                 <div class="pt-2 pb-3 space-y-1">
                     <x-responsive-nav-link href="{{ route('tickets.show', base64_encode(0)) }}" :active="request()->routeIs('tickets.show')">
                         {{ __('New Ticket') }}

@@ -1,15 +1,16 @@
 <x-splade-modal max-width="7xl">
-        <div class="flex justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Projects') }}
-            </h2>
+    <br>
+    <div class="flex justify-between">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Projects') }}
+        </h2>
 
-            <x-splade-button>
-                <Link slideover href="{{ route('users.newprojects', $userId) }}" class="pc-6 bg-indigo-400 hover:bg-indigo-600 text-black rounded-md">
-                    {{ __('Associate Project') }}
-                </Link>
-            </x-splade-button>
-        </div>
+        <x-splade-button>
+            <Link slideover href="{{ route('users.newprojects', $userId) }}" class="pc-6 text-white rounded-md">
+                {{ __('Associate Project') }}
+            </Link>
+        </x-splade-button>
+    </div>
    
     <div class="py-12">
         <div class="max-w-1xl mx-auto sm:px-6 lg:px-8 space-y-6">

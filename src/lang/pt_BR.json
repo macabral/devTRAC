@@ -209,5 +209,6 @@
   "Password was reseted!": "A senha foi resetada!",
   "Save Comments" : "Salvar Comentário",
   "Ticket not found.": "Tíquete não encontrado.",
-  "Average Story Point":"Média de Story Point"
+  "Average Story Point":"Média de Story Point",
+  "User": "Usuário"
 }

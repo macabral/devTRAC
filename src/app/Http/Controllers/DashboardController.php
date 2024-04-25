@@ -21,46 +21,55 @@ class DashboardController extends Controller
 
         $userId = auth('sanctum')->user()->id;
 
-        $ret = User::where('id', $userId)->where('active','=',1)->with('projects')->get();
+        $ret = UsersProjects::Select('projects.id as projects_id','title','media_sp','dev','relator','tester','gp')
+            ->leftJoin('projects','projects.id','=','users_projects.projects_id')
+            ->where('users_projects.users_id','=',$userId)
+            ->where('projects.status','=','Enabled')
+            ->orderby('title')
+            ->get();
+
+        // se usuário não tiver projeto associado retorna para o login.
+        if (count($ret) == 0) {
+
+            Toast::title(__('User has no project!'))->autoDismiss(5);
+            Session::forget(Session::driver()->getId());
+            Session::invalidate();
+            Auth::guard('web')->logout();
+            return redirect('/login');
+
+        }
+
+        $ind = 0;  // determina o projeto selecionado
 
         if (empty($input)) {
            
-            // se usuário não tiver projeto associado retorna para o login.
-            if (count($ret[0]['projects']) == 0) {
+            if (isset(Session::get('ret')[0]['id']) && Session::get('ret')[0]['id'] != 0) {
 
-                Toast::title(__('User has no project!'))->autoDismiss(5);
-                Session::forget(Session::driver()->getId());
-                Session::invalidate();
-                Auth::guard('web')->logout();
-                return redirect('/login');
+                $projects_id = Session::get('ret')[0]['id'];
+                $releases_id = Session::get('ret')[0]['sprint'];
+
+                // verifica se o projeto anteriormente selecionado ainda está associado ao usuário
+                $achou = false;
+                for($i=0; $i<count($ret);$i++) {
+                    if($ret[$i]->projects_id == $projects_id) {
+                        $achou = true;
+                        $ind = $i;
+                        break;
+                    }
+                }
+                if (! $achou) {
+                    $projects_id = $ret[0]->projects_id;
+                }
 
             } else {
 
-                $projetos = $ret[0]['projects'];
+                $projects_id = $ret[$ind]->projects_id;
 
-                if (isset(Session::get('ret')[0]['id']) && Session::get('ret')[0]['id'] != 0) {
-
-                    $projects_id = Session::get('ret')[0]['id'];
-
-                    // verifica se o projeto anteriormente selecionado ainda está associado ao usuário
-                    $achou = false;
-                    for($i=0; $i<count($projetos);$i++) {
-                        if($projetos[$i]->id == $projects_id) {
-                            $achou = true;
-                            break;
-                        }
-                    }
-                    if (! $achou) {
-                        $projects_id = $projetos[0]->id;
-                    }
-
-                } else {
-
-                    $projects_id = $projetos[0]->id;
-
-                }
-
-                $releases = Releases::Select('id')->where('status','Open')->where('projects_id','=',$projects_id)->limit(1)->get();
+                $releases = Releases::Select('id')
+                    ->where('status','Open')
+                    ->where('projects_id','=',$projects_id)
+                    ->limit(1)
+                    ->get();
 
                 if (count($releases) > 0) {
                     $releases_id = $releases[0]['id'];
@@ -68,41 +77,63 @@ class DashboardController extends Controller
                     $releases_id = 0;
                 }
 
-                $input['projects_id'] = $projects_id;
-                $input['releases_id'] = $releases_id;
-
             }
+
+            $input['projects_id'] = $projects_id;
+            $input['releases_id'] = $releases_id;
 
         } else {
 
             $projects_id = $input['projects_id'];
+            
+            // verifica se o projeto anteriormente selecionado ainda está associado ao usuário
+            $achou = false;
+            for($i=0; $i<count($ret); $i++) {
+                if($ret[$i]->projects_id == $projects_id) {
+                    $ind = $i;
+                    break;
+                }
+            }
+            if (! $achou) {
+                $projects_id = $ret[0]->projects_id;
+            }
 
             if(isset($input['releases_id'])) {
+
                 $releases_id = $input['releases_id'];
+
             } else {
-                $releases_id = 0;
+                if (isset(Session::get('ret')[0]['sprint']) && Session::get('ret')[0]['sprint'] != 0) {
+
+                    $releases_id = Session::get('ret')[0]['sprint'];
+
+                } else {
+
+                    $releases_id = 0;
+
+                }
+
             }
             
         }
 
-        $projetos = UsersProjects::leftJoin('projects','projects.id','=','users_projects.projects_id')->Where('projects_id','=',$projects_id)->where('users_id','=',$userId)->get();
-
         // permissões de acesso do usuário logado
         $ar = Array(
             'admin' => auth('sanctum')->user()->admin,
-            'id' => $projetos[0]->projects_id,
-            'description' => $projetos[0]->description, 
-            'title' => $projetos[0]->title,
-            'gp' => $projetos[0]->gp,
-            'dev' => $projetos[0]->dev,
-            'relator' => $projetos[0]->relator,
-            'tester' => $projetos[0]->tester
+            'id' => $ret[$ind]->projects_id,
+            'sprint' => $releases_id,
+            'title' => $ret[$ind]->title,
+            'gp' => $ret[$ind]->gp,
+            'dev' => $ret[$ind]->dev,
+            'relator' => $ret[$ind]->relator,
+            'tester' => $ret[$ind]->tester
         );
 
         Session::forget('ret');
         Session::push("ret", $ar);
 
         // releases
+        
         $releases = Releases::select('id','version')->where('status','Open')->where('projects_id', $projects_id)->orderBy('version')->get();
 
         // estatísticas do release
@@ -187,7 +218,7 @@ class DashboardController extends Controller
         // média de Story Points
 
         return view('dashboard',[
-            'proj' => $ret[0]['projects'],
+            'proj' => $ret,
             'input' => $input,
             'stats' => $result1,
             'perdev' => $result2,
@@ -195,7 +226,7 @@ class DashboardController extends Controller
             'chart2' => $chart2,
             'chart3' => $chart3,
             'releases' => $releases,
-            'storypoint_medio' =>  $projetos[0]->media_sp
+            'storypoint_medio' =>  $ret[$ind]->media_sp
         ]);
 
     }

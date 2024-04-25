@@ -10,6 +10,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Illuminate\Support\Facades\Session;
 use App\Models\Projects;
+use App\Models\UsersProjects;
 
 class ProjectsController extends Controller
 {
@@ -25,14 +26,15 @@ class ProjectsController extends Controller
                 Collection::wrap($value)->each(function ($value) use ($query) {
                     $query
                         ->orwhere('title', 'LIKE', "%$value%")
-                        ->orwhere('description', 'LIKE', "%$value%");
+                        ->orwhere('description', 'LIKE', "%$value%")
+                        ->orwhere('status', 'LIKE', "%$value%");
                 });
             });
         });
 
         $ret = QueryBuilder::for(Projects::class)
-            ->orderby('created_at', 'desc')
-            ->allowedSorts(['title'])
+            ->orderby('title')
+            ->allowedSorts(['title','status'])
             ->allowedFilters(['description', 'status',  $globalSearch])
             ->paginate(7)
             ->withQueryString();
@@ -184,6 +186,35 @@ class ProjectsController extends Controller
         }
 
         return redirect()->route('projects.index');
+
+    }
+
+    /**
+     * Display Users Associeted to a Project
+     */
+    public function users(string $id)
+    {
+        $projects_id = base64_decode($id);
+
+        $ret = UsersProjects::Select('name','email','gp','relator','tester','dev','admin','users.active')
+            ->leftJoin('projects','projects.id','=','users_projects.projects_id')
+            ->leftJoin('users','users.id','=','users_projects.users_id')
+            ->Where('projects_id','=',$projects_id)
+            ->orderby('name')
+            ->get();
+
+            return view('projects.users', [
+                'ret' => SpladeTable::for($ret)
+                    ->perPageOptions([50])
+                    ->defaultSort('','desc')
+                    ->column('name', label: __('User'), sortable: true, searchable: false, canBeHidden:false)
+                    ->column('email', label: __('Email'), sortable: true, searchable: false, canBeHidden:false)
+                    ->column('gp', label: __('gp'), searchable: false, canBeHidden:false)
+                    ->column('relator', label: __('relator'), searchable: false, canBeHidden:false)
+                    ->column('dev', label: __('dev'), searchable: false, canBeHidden:false)
+                    ->column('tester', label: __('tester'), searchable: false, canBeHidden:false)
+            ]);
+
 
     }
 }

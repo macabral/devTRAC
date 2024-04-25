@@ -11,6 +11,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use App\Library\LogService;
 use Ramsey\Uuid\Uuid;
+use Carbon\Carbon;
 use ZipArchive;
 use App\Models\Tickets;
 use App\Models\Releases;
@@ -298,6 +299,9 @@ class TicketsController extends Controller
 
         $id = base64_decode($id);
 
+        $hoje = Carbon::today();
+
+
         $projects = UsersProjects::select('projects.id','title')
             ->leftJoin('projects','projects.id','=','projects_id')
             ->where('users_id','=',$this->userId)
@@ -307,9 +311,9 @@ class TicketsController extends Controller
 
         // releases
         if ($this->gp == '1') {
-            $releases = Releases::select('id','version')->wherein('status',['Open','Waiting'])->where('releases.projects_id', $this->projects_id)->orderBy('status')->get();
+            $releases = Releases::select('id','version')->wherein('status',['Open','Waiting'])->where('releases.projects_id', $this->projects_id)->where('end','>=',$hoje)->orderBy('status')->get();
         } else {
-            $releases = Releases::select('id','version')->where('projects_id', $this->projects_id)->where('status','Waiting')->orderBy('status')->get();
+            $releases = Releases::select('id','version')->where('projects_id', $this->projects_id)->where('status','Waiting')->where('end','>=',$hoje)->orderBy('status')->get();
         }
 
         // devs
@@ -362,12 +366,6 @@ class TicketsController extends Controller
         $this->init();
 
         $id = base64_decode($id);
-
-        if ($this->gp != '1' && $this->relator != '1') {
-
-            return redirect()->back();
-
-        }
 
         $ret = Tickets::
             select("tickets.*","projects.title as project","a.name as resp","b.name as relator","types.title as type","releases.version as release")
