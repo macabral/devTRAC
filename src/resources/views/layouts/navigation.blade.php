@@ -1,9 +1,9 @@
 <?php
-  $dev = Session::get('ret')[0]['dev'];
-  if (is_null($dev)) {
+  if (Session::get('ret') == null) {
     Auth::guard('web')->logout();
     return redirect('/login');
   }
+  $dev = Session::get('ret')[0]['dev'];
   $relator = Session::get('ret')[0]['relator'];
   $tester = Session::get('ret')[0]['tester'];
   $admin = auth('sanctum')->user()->admin;

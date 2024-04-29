@@ -161,16 +161,15 @@
   "Associate": "Associar",
   "Associate Project": "Associar Projeto",
   "Unauthorized Access": "Acesso não autorizado",
-  "New Release": "Novo Release",
   "Version": "Versão",
   "New Type": "Novo Tipo",
   "Created At": "Criado em",
   "Files": "Arquivos",
   "devTRAC is an issue tracking tool for a small software development projects. It helps developers to view theirs tasks and interact with a Project Manager.": "devTRAC é um aplicativo para registrar tarefas para pequenos projetos de desenvolvimento de software.  Ele ajuda o Desenvolvedor a ver suas tarefas e a interagir com o Gerente de Projeto.",
-  "Select Project": "Selecione o Projeto",
-  "Release cannot be deleted!": "O Release não pode ser excluído.",
+  "Sprint cannot be deleted!": "A Sprint não pode ser excluída.",
   "Type cannot be deleted!": "O Tipo não pode ser excluído!",
-  "Release deleted!": "Release excluído!",
+  "Sprint deleted!": "Sprint excluída!",
+  "Sprint saved!": "Sprint salva!",
   "Type deleted!": "Tipo excluído!",
   "Do you confirm the deletion?": "Você confirma a exclusão?",
   "Ticket saved!": "Tíquete salvo!",
@@ -210,5 +209,7 @@
   "Save Comments" : "Salvar Comentário",
   "Ticket not found.": "Tíquete não encontrado.",
   "Average Story Point":"Média de Story Point",
-  "User": "Usuário"
+  "User": "Usuário",
+  "Start Task": "Iniciar Tarefa",
+  "Pause Task": "Pausar Tarefa"
 }

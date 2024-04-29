@@ -51,7 +51,7 @@ class ReleasesController extends Controller
             ->select("projects.title as project","releases.id","releases.version","releases.description as desc","releases.start","releases.end","releases.status")
             ->leftJoin('projects','projects.id','=','releases.projects_id')
             ->where('releases.projects_id','=',$projects_id)
-            ->orderby('projects_id','asc','releases.created_at', 'desc')
+            ->orderby('releases.version','asc')
             ->allowedSorts(['version'])
             ->allowedFilters(['version', 'description', 'status', 'projects_id', $globalSearch])
             ->paginate(7)
@@ -62,15 +62,18 @@ class ReleasesController extends Controller
                 ->withGlobalSearch()
                 ->perPageOptions([])
                 ->defaultSort('title','desc')
-                ->column('project', label: __('Project'), sortable: true, searchable: true, canBeHidden:false)
-                ->column('version', label: __('Sprint'), sortable: true, searchable: true, canBeHidden:false)
+                ->column('project', label: __('Project'),  canBeHidden:false)
+                ->column('version', label: __('Sprint'), searchable: true, canBeHidden:false)
                 ->column('desc', label: __('Description'), searchable: true)
                 ->column('start', label: __('Start'), searchable: false, as: fn ($datadoc) => date('d/m/Y', strtotime($datadoc)))
                 ->column('end', label: __('End'), searchable: false, as: fn ($datadoc) => date('d/m/Y', strtotime($datadoc)))
                 ->column('status', label: __('Status'), searchable: true)
                 ->column('action', label: '', canBeHidden:false)
+                ->column('action', label: '', canBeHidden:false)
         ]);
     }
+
+
 
     /**
      * Display the specified resource.
@@ -152,12 +155,12 @@ class ReleasesController extends Controller
 
         } catch (\Exception $e) {
 
-            Toast::title(__('Release error!' . $e))->danger()->autoDismiss(5);
+            Toast::title(__('Sprint error!' . $e))->danger()->autoDismiss(5);
             return response()->json(['messagem' => $e], 422);
             
         }
 
-        Toast::title(__('Release saved!'))->autoDismiss(5);
+        Toast::title(__('Sprint saved!'))->autoDismiss(5);
 
         return redirect()->route('releases.index',0);
     }
@@ -191,7 +194,7 @@ class ReleasesController extends Controller
 
         $ret->save();
 
-        Toast::title(__('Release saved!'))->autoDismiss(5);
+        Toast::title(__('Sprint saved!'))->autoDismiss(5);
 
         return redirect()->back();
     }
@@ -224,11 +227,11 @@ class ReleasesController extends Controller
             
             $ret->delete();
 
-            Toast::title(__('Release deleted!'))->autoDismiss(5);
+            Toast::title(__('Sprit deleted!'))->autoDismiss(5);
 
         } catch (\Exception $e) {
 
-            Toast::title(__('Release cannot be deleted!'))->danger()->autoDismiss(5);
+            Toast::title(__('Sprint cannot be deleted!'))->danger()->autoDismiss(5);
             
         }
 

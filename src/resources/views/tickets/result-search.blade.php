@@ -11,6 +11,11 @@
         <div class="max-w-1xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <section>
                 <x-splade-table :for="$ret" striped>
+                    @cell('start', $ret)
+                    @if ($ret->start == '1')
+                        <img src="assets/start.png" width="10" height="10" dalt="">
+                    @endif
+                    @endcell
                     @cell('title', $ret)
                         <div>
                             <Link  href="{{ route('tickets.edit', base64_encode($ret->id)) }}" title="{{ __('Detail') }}">

@@ -3,9 +3,9 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Ticket') }} #{{ $ret['id'] }}
         </h2>
-        <a href="#" class="pc-2 py-2 text-black rounded-md" onclick="GoBackWithRefresh();">
+        {{-- <a href="#" class="pc-2 py-2 text-black rounded-md" onclick="GoBackWithRefresh();">
             {{ __('Back') }}
-        </a>
+        </a> --}}
     </x-slot>
 
     <div class="py-4">

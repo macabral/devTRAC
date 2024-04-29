@@ -35,4 +35,22 @@
             </tr>
         </tbody>
     </table>
+    @if ($ret->status == 'Open' || $ret->status == 'Testing')
+    <div class="w-100 inline-flex">
+            @if($ret->start != 1)
+            <div class="pr-4">
+                <Link href="{{ route('tickets.start', base64_encode($ret->id)) }}" title="{{ __('Start Task') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M2 24v-24l20 12-20 12z"/></svg>
+                </Link>
+            </div>
+            @endif
+            @if($ret->start == 1)
+            <div class="pr-4">
+                <Link href="{{ route('tickets.pause', base64_encode($ret->id)) }}" title="{{ __('Pause Task') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M11 22h-4v-20h4v20zm6-20h-4v20h4v-20z"/></svg>
+                </Link>
+            </div>
+            @endif
+    </div>
+    @endif
 </div>

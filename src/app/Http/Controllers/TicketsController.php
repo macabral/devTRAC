@@ -68,7 +68,7 @@ class TicketsController extends Controller
         $releases = $releases->pluck('version','id')->toArray();
 
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("projects.title as project","tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
+            ->select("projects.title as project","tickets.id","tickets.title","tickets.status","tickets.start","tickets.created_at","tickets.prioridade", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
             ->leftJoin('users as a','a.id','=','resp_id')
             ->leftJoin('users as b','b.id','=','relator_id')
             ->leftJoin('types','types.id','=','types_id')
@@ -116,7 +116,6 @@ class TicketsController extends Controller
                     $query
                         ->orwhere('tickets.title', 'LIKE', "%$value%")
                         ->orwhere('tickets.prioridade', 'LIKE', "%$value%")
-                        ->orwhere('tickets.description', 'LIKE', "%$value%")
                         ->orwhere('releases.version', 'LIKE', "%$value%")
                         ->orwhere('types.title', 'LIKE', "%$value%")
                         ->orwhere('a.name', 'LIKE', "%$value%");
@@ -125,7 +124,7 @@ class TicketsController extends Controller
         });
 
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("projects.title as project","tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
+            ->select("projects.title as project","tickets.id","tickets.title","tickets.status","tickets.start","tickets.created_at","tickets.prioridade", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
             ->leftJoin('users as a','a.id','=','resp_id')
             ->leftJoin('users as b','b.id','=','relator_id')
             ->leftJoin('types','types.id','=','types_id')
@@ -184,7 +183,7 @@ class TicketsController extends Controller
         });
 
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release","projects.title as project")
+            ->select("tickets.title","tickets.id","tickets.status","tickets.start","tickets.created_at","tickets.prioridade","a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release","projects.title as project")
             ->Join('users as a','a.id','=','resp_id')
             ->Join('users as b','b.id','=','relator_id')
             ->Join('types','types.id','=','types_id')
@@ -220,6 +219,7 @@ class TicketsController extends Controller
                 ->column('id', label: __('ID'), searchable: true)
                 ->column('project', label: __('Project'), sortable: true, searchable: false, canBeHidden:false)
                 ->column('release', label: __('Sprint'))
+                ->column('start', label: __(''),searchable: false, canBeHidden:false)
                 ->column('title', label: __('Title'))
                 ->column('type', label: __('Type'))
                 ->column('relator', label: __('Relator'))
@@ -591,6 +591,42 @@ class TicketsController extends Controller
             Toast::title(__('Ticket cannot be deleted!'))->danger()->autoDismiss(5);
             
         }
+
+        return redirect()->back();
+
+    }
+
+    /**
+     * Inicia a tarefa
+     */
+    public function start(string $id)
+    {
+
+        $id = base64_decode($id);
+
+        $ret = Tickets::findOrFail($id);
+
+        $ret['start'] = 1;
+
+        $ret->save();
+
+        return redirect()->back();
+
+    }
+
+    /**
+     * Pausa a tarefa
+     */
+    public function pause(string $id)
+    {
+
+        $id = base64_decode($id);
+
+        $ret = Tickets::findOrFail($id);
+
+        $ret['start'] = 2;
+        
+        $ret->save();
 
         return redirect()->back();
 

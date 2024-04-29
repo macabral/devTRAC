@@ -66,6 +66,9 @@ Route::middleware('splade')->group(function () {
         Route::patch('/tickets/{id}', [TicketsController::class, 'update'])->name('tickets.update');
         Route::get('/tickets-delete/{id}', [TicketsController::class, 'delete'])->name('tickets.delete');
         Route::delete('/tickets/{id}', [TicketsController::class, 'destroy'])->name('tickets.destroy');
+        Route::get('/tickets-start/{id}', [TicketsController::class, 'start'])->name('tickets.start');
+        Route::get('/tickets-pause/{id}', [TicketsController::class, 'pause'])->name('tickets.pause');
+
         
         // Projects
         Route::get('/projects', [ProjectsController::class, 'index'])->middleware(['adminAccess'])->name('projects.index');
