@@ -283,14 +283,15 @@ class UsersController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
+        $id = base64_decode($id);
+
         $this->validate($request, [
             'name' => 'required|max:254',
-            'email' => 'required|max:254',
+            'email' => 'required|max:254|unique:users,email,'.$id,
             'admin' => 'required',
             'active' => 'required'
         ]);
-
-        $id = base64_decode($id);
         
         $input = $request->all();
 
@@ -313,7 +314,7 @@ class UsersController extends Controller
         return redirect()->back();
     }
 
-        /**
+    /**
      * Creating a new resource.
      */
     public function create(Request $request, TracMail $TracMailInstance)

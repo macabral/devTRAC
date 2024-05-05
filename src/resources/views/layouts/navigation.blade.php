@@ -1,7 +1,6 @@
 <?php
-  if (Session::get('ret') == null) {
-    Auth::guard('web')->logout();
-    return redirect('/login');
+  if (is_null(Session::get('ret'))) {
+    return redirect('/logout');
   }
   $dev = Session::get('ret')[0]['dev'];
   $relator = Session::get('ret')[0]['relator'];

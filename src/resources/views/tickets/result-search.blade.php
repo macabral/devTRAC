@@ -12,9 +12,9 @@
             <section>
                 <x-splade-table :for="$ret" striped>
                     @cell('start', $ret)
-                    @if ($ret->start == '1')
-                        <img src="assets/start.png" width="10" height="10" dalt="">
-                    @endif
+                        @if ($ret->start == 1)
+                            <img src="assets/start.png" width="10" height="10" dalt="">
+                        @endif
                     @endcell
                     @cell('title', $ret)
                         <div>

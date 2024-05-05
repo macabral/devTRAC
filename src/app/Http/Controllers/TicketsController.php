@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use ProtoneMedia\Splade\SpladeTable;
 use ProtoneMedia\Splade\Facades\Toast;
@@ -31,8 +32,11 @@ class TicketsController extends Controller
 
     private function init()
     {
-        if (! isset(Session::get('ret')[0]['id'])) {
-            return redirect()->back();
+        if (! isset(Session::get('ret')[0]['id']) || is_null(Session::get('ret'))) {
+            Session::forget(Session::driver()->getId());
+            Session::invalidate();
+            Auth::guard('web')->logout();
+            return redirect('/login');
         }
 
         $this->projects_id = Session::get('ret')[0]['id'];
@@ -301,7 +305,6 @@ class TicketsController extends Controller
 
         $hoje = Carbon::today();
 
-
         $projects = UsersProjects::select('projects.id','title')
             ->leftJoin('projects','projects.id','=','projects_id')
             ->where('users_id','=',$this->userId)
@@ -338,7 +341,8 @@ class TicketsController extends Controller
                 'releases' => $releases,
                 'devs' => $devs,
                 'types' => $types,
-                'projects' => $projects
+                'projects' => $projects,
+                'perfil' => $this->gp
             ]);
 
         } else {

@@ -39,9 +39,11 @@ class DashboardController extends Controller
 
         }
 
+        $chart1 = null; $chart2 = null; $chart3 = null;
+
         $ind = 0;  // determina o projeto selecionado
 
-        if (empty($input)) {
+        if (count($input) == 0) {
            
             if (isset(Session::get('ret')[0]['id']) && Session::get('ret')[0]['id'] != 0) {
 
@@ -91,6 +93,7 @@ class DashboardController extends Controller
             for($i=0; $i<count($ret); $i++) {
                 if($ret[$i]->projects_id == $projects_id) {
                     $ind = $i;
+                    $achou = true;
                     break;
                 }
             }
@@ -196,15 +199,13 @@ class DashboardController extends Controller
                 $real .= $vlr . ',';
             }
 
-            $chart = [
+            $chart1 = [
                 'data1' => "[" . $estimado . "]",
                 'data2' => "[" . $real . "]",
                 'categories' => $categories,
                 'title' => "Sprint Burndown"
             ];
 
-        } else {
-            $chart = null;
         }
 
         // gráfico sprint
@@ -222,11 +223,13 @@ class DashboardController extends Controller
             'input' => $input,
             'stats' => $result1,
             'perdev' => $result2,
-            'chart' => $chart,
+            'chart1' => $chart1,
             'chart2' => $chart2,
             'chart3' => $chart3,
             'releases' => $releases,
-            'storypoint_medio' =>  $ret[$ind]->media_sp
+            'storypoint_medio' =>  $ret[$ind]->media_sp,
+            'projeto' => $projects_id,
+            'sprint' => $releases_id
         ]);
 
     }

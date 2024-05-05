@@ -144,13 +144,13 @@
 
         <!-- Sprint Burndown -->
 
-        @if (! is_null($chart))
+        @if (! is_null($chart1))
 
-			var cat = "{{ $chart['categories'] }}"
+			var cat = "{{ $chart1['categories'] }}"
 			var categories = cat.split(',')
-			var data1 = {{ $chart['data1'] }}
-			var data2 = {{ $chart['data2'] }}
-			var title = "{{ $chart['title'] }}"
+			var data1 = {{ $chart1['data1'] }}
+			var data2 = {{ $chart1['data2'] }}
+			var title = "{{ $chart1['title'] }}"
 
 			var options = {
 				series: [
@@ -192,8 +192,8 @@
 			}
 			};
 	
-			var chart = new ApexCharts(document.querySelector("#chart1"), options);
-			chart.render();
+			var chart1 = new ApexCharts(document.querySelector("#chart1"), options);
+			chart1.render();
 
 		@endif
 
@@ -279,8 +279,8 @@
 			},
 			};
 	
-			var chart = new ApexCharts(document.querySelector("#chart2"), options);
-			chart.render();
+			var chart2 = new ApexCharts(document.querySelector("#chart2"), options);
+			chart2.render();
 		
 		@endif
 
@@ -351,8 +351,8 @@
 			},
 			};
 	
-			var chart = new ApexCharts(document.querySelector("#chart3"), options);
-			chart.render();
+			var chart3 = new ApexCharts(document.querySelector("#chart3"), options);
+			chart3.render();
         @endif
     </x-splade-script>
 </x-app-layout>
