@@ -20,7 +20,7 @@ class TracMail
 
         } catch (\Exception $e) {
 
-            Toast::title(__('Release error!' . $e))->danger()->autoDismiss(5);
+            Toast::title(__('Release error!' . $e->getMessage()))->danger()->autoDismiss(5);
             return response()->json(['messagem' => $e], 422);
             
         }

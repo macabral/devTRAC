@@ -97,7 +97,7 @@ class TypeticketsController extends Controller
 
         } catch (\Exception $e) {
 
-            Toast::title(__('Type error!' . $e))->danger()->autoDismiss(5);
+            Toast::title(__('Type error!' . $e->getMessage()))->danger()->autoDismiss(5);
             return response()->json(['messagem' => $e], 422);
             
         }

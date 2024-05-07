@@ -10,12 +10,12 @@ use ProtoneMedia\Splade\Facades\Toast;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use App\Models\Releases;
-use App\Models\Projects;
 use App\Models\Tickets;
 use App\Models\UsersProjects;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Http\Requests\ReleaseRequest;
+
 
 class ReleasesController extends Controller
 {
@@ -51,7 +51,7 @@ class ReleasesController extends Controller
             ->select("projects.title as project","releases.id","releases.version","releases.description as desc","releases.start","releases.end","releases.status")
             ->leftJoin('projects','projects.id','=','releases.projects_id')
             ->where('releases.projects_id','=',$projects_id)
-            ->orderby('releases.version','asc')
+            ->orderby('releases.start')
             ->allowedSorts(['version'])
             ->allowedFilters(['version', 'description', 'status', 'projects_id', $globalSearch])
             ->paginate(7)
@@ -137,25 +137,18 @@ class ReleasesController extends Controller
     /**
      * Creating a new resource.
      */
-    public function create(Request $request,)
+    public function create(ReleaseRequest $request,)
     {
-        
-        $this->validate($request, [
-            'version' => 'required|max:255',
-            'description' => 'max:255',
-            'status' => 'required',
-            'projects_id' => 'required'
-        ]);
 
         $input = $request->all();
-
+        
         try {
             
             Releases::create($input);
 
         } catch (\Exception $e) {
 
-            Toast::title(__('Sprint error!' . $e))->danger()->autoDismiss(5);
+            Toast::title(__('Error!' . $e->getMessage()))->danger()->autoDismiss(5);
             return response()->json(['messagem' => $e], 422);
             
         }
@@ -168,31 +161,27 @@ class ReleasesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ReleaseRequest $request, string $id)
     {
-        $this->validate($request, [
-            'version' => 'required|max:254',
-            'description' => 'max:254',
-            'status' => 'required'
-        ]);
-
         $id = base64_decode($id);
-        
-        $input = $request->all();
 
         $ret = Releases::findOrFail($id);
 
+        $input = $request->all();
+
+        $ret->fill($input);
+
         try {
             
-            $ret->fill($input);
+            $ret->save();
 
         } catch (\Exception $e) {
+
+            Toast::title(__('Error!' . $e->getMessage()))->danger()->autoDismiss(5);
 
             return response()->json(['messagem' => $e], 422);
             
         }
-
-        $ret->save();
 
         Toast::title(__('Sprint saved!'))->autoDismiss(5);
 

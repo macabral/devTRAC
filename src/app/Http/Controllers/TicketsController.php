@@ -473,7 +473,7 @@ class TicketsController extends Controller
 
         } catch (\Exception $e) {
 
-            Toast::title(__('Error! ' .  $e))->danger()->autoDismiss(15);
+            Toast::title(__('Error! ' .  $e->getMessage()))->danger()->autoDismiss(15);
             return response()->json(['messagem' => $e], 422);
             
         }

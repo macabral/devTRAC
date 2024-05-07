@@ -126,7 +126,7 @@ class UsersController extends Controller
         
         } catch (\Exception $e) {
 
-            Toast::title(__('Error! ' .  $e))->danger()->autoDismiss(15);
+            Toast::title(__('Error! ' .  $e->getMessage()))->danger()->autoDismiss(15);
             return response()->json(['messagem' => $e], 422);
             
         }
@@ -354,7 +354,7 @@ class UsersController extends Controller
 
         } catch (\Exception $e) {
 
-            Toast::title(__('Type error!' . $e))->danger()->autoDismiss(5);
+            Toast::title(__('Error!' . $e->getMessage()))->danger()->autoDismiss(5);
             return response()->json(['messagem' => $e], 422);
             
         }

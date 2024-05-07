@@ -135,10 +135,6 @@ class DashboardController extends Controller
         Session::forget('ret');
         Session::push("ret", $ar);
 
-        // releases
-        
-        $releases = Releases::select('id','version')->where('status','Open')->where('projects_id', $projects_id)->orderBy('version')->get();
-
         // estatísticas do release
 
         $result1 = $this->sprintEstat($releases_id);
@@ -226,7 +222,7 @@ class DashboardController extends Controller
             'chart1' => $chart1,
             'chart2' => $chart2,
             'chart3' => $chart3,
-            'releases' => $releases,
+            'releases' => '',
             'storypoint_medio' =>  $ret[$ind]->media_sp,
             'projeto' => $projects_id,
             'sprint' => $releases_id

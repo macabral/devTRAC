@@ -37,6 +37,7 @@ Route::get('/releases-dashboard/{project_id}', function ($project_id) {
     $ret = Releases::Select("id","version")
             ->Where('projects_id','=',$project_id)
             ->where('status','=','Open')
+            ->orderby('start')
             ->get();
 
     return response()->json($ret);

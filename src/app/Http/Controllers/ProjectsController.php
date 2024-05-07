@@ -181,7 +181,7 @@ class ProjectsController extends Controller
 
         } catch (\Exception $e) {
 
-            Toast::title(__('Project cannot be deleted!' . $e))->danger()->autoDismiss(5);
+            Toast::title(__('Project cannot be deleted!' . $e->getMessage()))->danger()->autoDismiss(5);
             
         }
 
