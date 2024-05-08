@@ -29,7 +29,7 @@ class DashboardController extends Controller
             ->get();
 
         // se usuário não tiver projeto associado retorna para o login.
-        if (count($ret) == 0) {
+        if (empty($ret)) {
 
             Toast::title(__('User has no project!'))->autoDismiss(5);
             Session::forget(Session::driver()->getId());
@@ -43,7 +43,7 @@ class DashboardController extends Controller
 
         $ind = 0;  // determina o projeto selecionado
 
-        if (count($input) == 0) {
+        if (empty($input)) {
            
             if (isset(Session::get('ret')[0]['id']) && Session::get('ret')[0]['id'] != 0) {
 
@@ -52,7 +52,8 @@ class DashboardController extends Controller
 
                 // verifica se o projeto anteriormente selecionado ainda está associado ao usuário
                 $achou = false;
-                for($i=0; $i<count($ret);$i++) {
+                $tcount = count($ret);
+                for($i=0; $i<$tcount;$i++) {
                     if($ret[$i]->projects_id == $projects_id) {
                         $achou = true;
                         $ind = $i;
@@ -73,10 +74,10 @@ class DashboardController extends Controller
                     ->limit(1)
                     ->get();
 
-                if (count($releases) > 0) {
-                    $releases_id = $releases[0]['id'];
-                } else {
+                if (empty($releases)) {
                     $releases_id = 0;
+                } else {
+                    $releases_id = $releases[0]['id'];
                 }
 
             }
@@ -90,7 +91,8 @@ class DashboardController extends Controller
             
             // verifica se o projeto anteriormente selecionado ainda está associado ao usuário
             $achou = false;
-            for($i=0; $i<count($ret); $i++) {
+            $tcount = count($ret);
+            for($i=0; $i<$tcount; $i++) {
                 if($ret[$i]->projects_id == $projects_id) {
                     $ind = $i;
                     $achou = true;
@@ -106,6 +108,7 @@ class DashboardController extends Controller
                 $releases_id = $input['releases_id'];
 
             } else {
+                
                 if (isset(Session::get('ret')[0]['sprint']) && Session::get('ret')[0]['sprint'] != 0) {
 
                     $releases_id = Session::get('ret')[0]['sprint'];
@@ -141,7 +144,8 @@ class DashboardController extends Controller
 
         // total de story points
         $storyPointRelease = 0;
-        for($i=0; $i<count($result1); $i++) {
+        $tcount = count($result1);
+        for($i=0; $i<$tcount; $i++) {
             $storyPointRelease += $result1[$i]['storypoint'];
         }
 
@@ -248,8 +252,8 @@ class DashboardController extends Controller
         foreach($stats as $item) {
 
             $found = false;
-
-            for ($i=0; $i<count($result); $i++) {
+            $tcount = count($result);
+            for ($i=0; $i<$tcount; $i++) {
                     if ($result[$i]['type'] == $item->type && $result[$i]['name'] == $item->name)  {
                     if ($item->status == 'Open') {
                         $result[$i]['open'] += $item->qtd;
@@ -313,8 +317,8 @@ class DashboardController extends Controller
         foreach($stats as $item) {
 
             $found = false; 
-            
-            for ($i=0; $i<count($result); $i++) {
+            $tcount = count($result);
+            for ($i=0; $i<$tcount; $i++) {
 
                 if ($result[$i]['type'] == $item->type)  {
                     if ($item->status == 'Open') {

@@ -90,7 +90,7 @@ class ProjectsController extends Controller
     {
         
         $this->validate($request, [
-            'title' => 'required|max:254',
+            'title' => 'required|max:254|unique:projects',
             'description' => 'max:254',
             'status' => 'required',
             'media_sp' => 'numeric|min:0|max:255'
@@ -118,15 +118,15 @@ class ProjectsController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $id = base64_decode($id);
+
         $this->validate($request, [
-            'title' => 'required|max:254',
+            'title' => 'required|max:254|unique:projects,title,'.$id,
             'description' => 'max:254',
             'status' => 'required',
             'media_sp' => 'numeric|min:0|max:255'
         ]);
-
-        $id = base64_decode($id);
-        
+       
         $input = $request->all();
 
         $projs = Projects::findOrFail($id);
