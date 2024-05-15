@@ -12,6 +12,7 @@ class Logtickets extends Model
     protected $fillable = [
         'description',
         'tickets_id',
-        'users_id'
+        'users_id',
+        'origin'
     ];
 }

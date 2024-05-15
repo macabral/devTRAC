@@ -382,22 +382,37 @@ class TicketsController extends Controller
             ->where('tickets.projects_id','=',$this->projects_id)
             ->get();
 
-        if (count($ret) == 0) {
-            
-            Toast::title(__('Ticket not found.'))->danger()->autoDismiss(5);
-            return redirect()->back();
+        $log = Logtickets::
+            select("logtickets.*", "users.name")
+            ->leftJoin('users','users.id','=','users_id')
+            ->where('tickets_id', $id)
+            ->where('origin',"=",null)
+            ->orwhere('origin',"=",0)
+            ->orderBy('Created_at')
+            ->get();
 
+        // verifica se o item foi editado (se origin = 0)
+        $cont = 0;
+        foreach($log as $item) {
+
+            if ($item->origin == 0) {
+                $result =  Logtickets::select("logtickets.*", "users.name")
+                    ->leftJoin('users','users.id','=','users_id')
+                    ->where('origin', $item->id)
+                    ->orderBy('Created_at','desc')
+                    ->limit(1)
+                    ->get();
+
+                if (count($result) != 0) {
+                    $log[$cont] = $result[0];
+                }
+            }
+            ++$cont;
         }
 
-        $queryLogs = Logtickets::
-            select("logtickets.*", "users.name")
-            ->where('tickets_id', $id)
-            ->orderBy('Created_at')
-            ->leftJoin('users','users.id','=','users_id')->get();
-
-        return view('tickets.detail-form', [
+         return view('tickets.detail-form', [
             'ret' => $ret[0],
-            'logs' => $queryLogs
+            'logs' => $log
         ]);
     }
 

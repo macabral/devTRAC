@@ -68,7 +68,6 @@ Route::middleware('splade')->group(function () {
         Route::delete('/tickets/{id}', [TicketsController::class, 'destroy'])->name('tickets.destroy');
         Route::get('/tickets-start/{id}', [TicketsController::class, 'start'])->name('tickets.start');
         Route::get('/tickets-pause/{id}', [TicketsController::class, 'pause'])->name('tickets.pause');
-
         
         // Projects
         Route::get('/projects', [ProjectsController::class, 'index'])->middleware(['adminAccess'])->name('projects.index');
@@ -87,6 +86,12 @@ Route::middleware('splade')->group(function () {
         Route::get('/typetickets-delete/{id}', [TypeticketsController::class, 'delete'])->middleware(['adminAccess'])->name('typetickets.delete');
         Route::delete('/typetickets/{id}', [TypeticketsController::class, 'destroy'])->middleware(['adminAccess'])->name('typetickets.destroy');
 
+        // Logtickets
+        Route::post('/logtickets/{id}', [LogticketsController::class, 'create'])->name('logtickets.create');
+        Route::get('/logtickets/{id}/{status}', [LogticketsController::class, 'update'])->name('logtickets.update');
+        Route::get('/logtickets-edit/{id}', [LogticketsController::class, 'edit'])->name('logtickets.edit');
+        Route::post('/logtickets-save/{id}/{origin}', [LogticketsController::class, 'save'])->name('logtickets.save');
+
 
         // Releases
         Route::get('/releases-index/{id}', [ReleasesController::class, 'index'])->name('releases.index');
@@ -97,9 +102,6 @@ Route::middleware('splade')->group(function () {
         Route::delete('/releases/{id}', [ReleasesController::class, 'destroy'])->middleware(['gpAccess'])->name('releases.destroy');
         Route::get('/export-tickets/{id}', [ReleasesController::class, 'exports'])->name('releases.exports');
 
-        // Logtickets
-        Route::post('/logtickets/{id}', [LogticketsController::class, 'create'])->name('logtickets.create');
-        Route::get('/logtickets/{id}/{status}', [LogticketsController::class, 'update'])->name('logtickets.update');
 
         // Files
         Route::get('/files/{id}', [FilesController::class, 'show'])->name('files.show');

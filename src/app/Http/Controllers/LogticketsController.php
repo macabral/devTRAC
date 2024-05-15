@@ -50,20 +50,6 @@ class LogticketsController extends Controller
         $input['users_id'] = auth('sanctum')->user()->id;
         $input['tickets_id'] = $id;
 
-        // if (! empty($description)) {
-        //     $input['description'] = $description;
-        //     try {
-            
-        //         Logtickets::create($input);
-    
-        //     } catch (\Exception $e) {
-    
-        //         Toast::title(__('Error!' . $e))->autoDismiss(5);
-                
-        //     }
-        // }
-  
-
         if ($status == 'Testing') {
             $input['description'] = "Tíquete enviado para teste.";
 
@@ -123,6 +109,88 @@ class LogticketsController extends Controller
         }
 
         Toast::title(__('Ticket updated!'))->autoDismiss(5);
+
+        return redirect()->back();
+    }
+
+    public function edit($id)
+    {
+        $id = base64_decode($id);
+
+        $log = Logtickets::findOrFail($id);
+
+        $origin = $log->origin;
+        $ticket = $log->tickets_id;
+        $userId = $log->users_id;
+        $description = $log->description;
+
+        $ret = Tickets::Where('id', $ticket)->get();
+
+        if (! is_null($origin)) {
+            $log = Logtickets::
+                select("logtickets.*", "users.name")
+                ->leftJoin('users','users.id','=','users_id')
+                ->where('origin',"=",$origin)
+                ->orwhere('logtickets.id',"=",$origin)
+                ->orderBy('Created_at','desc')
+                ->get();
+
+        } else {
+            $log = Logtickets::
+                select("logtickets.*", "users.name")
+                ->leftJoin('users','users.id','=','users_id')
+                ->where('logtickets.id',"=",$id)
+                ->orderBy('Created_at','desc')
+                ->get();
+            $origin = $id;
+        }
+
+        return view('logtickets.edit', [
+            'logs' => $log,
+            'ret' => $ret[0],
+            'origin' => $origin,
+            'userId' => $userId,
+            'description' => $description
+     
+        ]);
+
+    }
+
+        /**
+     * Creating a new resource.
+     */
+    public function save($id, $origin, Request $request)
+    {
+       
+        $this->validate($request, [
+            'description' => 'required'
+        ]);
+
+        $input = $request->all();
+
+        $input['users_id'] = auth('sanctum')->user()->id;
+        $input['tickets_id'] = $id;
+        $input['origin'] = $origin;
+
+        try {
+           
+            Logtickets::create($input);
+
+            $ret = Logtickets::findOrFail($origin);
+
+            $ret['origin'] = 0;
+
+            $ret->save();
+
+
+        } catch (\Exception $e) {
+
+            Toast::title(__('Error!' . $e))->autoDismiss(5);
+            return response()->json(['messagem' => $e], 422);
+            
+        }
+
+        Toast::title(__('Comment saved!'))->autoDismiss(5);
 
         return redirect()->back();
     }
