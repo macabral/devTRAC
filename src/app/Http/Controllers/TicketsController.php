@@ -386,8 +386,12 @@ class TicketsController extends Controller
             select("logtickets.*", "users.name")
             ->leftJoin('users','users.id','=','users_id')
             ->where('tickets_id', $id)
-            ->where('origin',"=",null)
-            ->orwhere('origin',"=",0)
+            ->where(
+                function($query) {
+                  return $query
+                         ->where('origin',"=",null)
+                         ->orWhere('origin','=',0);
+                 })
             ->orderBy('Created_at')
             ->get();
 
@@ -398,6 +402,7 @@ class TicketsController extends Controller
             if ($item->origin == 0) {
                 $result =  Logtickets::select("logtickets.*", "users.name")
                     ->leftJoin('users','users.id','=','users_id')
+                    ->where('tickets_id', $id)
                     ->where('origin', $item->id)
                     ->orderBy('Created_at','desc')
                     ->limit(1)

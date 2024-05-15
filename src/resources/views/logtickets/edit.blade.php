@@ -15,7 +15,7 @@
                     
                         <x-splade-modal max-width="3xl">
 
-                            @if ($userId == auth('sanctum')->user()->id)
+                            @if ($userId == auth('sanctum')->user()->id && $ret->status != 'Closed')
 
                                 <x-splade-form method="post" :action="route('logtickets.save',  [$ret->id, $origin])" :default="['description' => $description ]"  class="mt-4 space-y-4" preserve-scroll novalidate>
 
