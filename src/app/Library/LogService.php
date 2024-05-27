@@ -55,6 +55,10 @@ class LogService
         $texto .= 'Tipo alterado! [' . $query1[0]['title'] .'] => [' .  $query2[0]['title'] . ']' . chr(13);
        }
 
+       if ($ret['testcondition'] != $input['testcondition']) {
+        $texto .= 'Condição de Teste alterado! [' . $ret['testcondition'] .'] => [' . $input['testcondition'] . ']' . chr(13);
+    }
+
       if ($ret['status'] != $input['status']) {
           $texto .= 'Status alterado! [' . $ret['status'] .'] => [' . $input['status'] . ']' . chr(13);
       }

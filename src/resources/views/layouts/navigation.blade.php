@@ -5,7 +5,7 @@
   $dev = Session::get('ret')[0]['dev'];
   $relator = Session::get('ret')[0]['relator'];
   $tester = Session::get('ret')[0]['tester'];
-  $admin = auth('sanctum')->user()->admin;
+  $admin = Session::get('ret')[0]['admin'];
 ?>
 <x-splade-toggle>
     <nav class="bg-white border-b border-gray-100">

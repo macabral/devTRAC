@@ -44,28 +44,11 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request)
     {
 
-        Session::forget('ret');
-
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
-
-        // permissões de acesso do usuário logado
-        $ar = Array(
-            'admin' => 0,
-            'id' => 0,
-            'description' => '', 
-            'title' =>'' ,
-            'gp' => 0,
-            'dev' => 0,
-            'relator' => 0,
-            'tester' => 0
-        );
-
-        Session::forget('ret');
-        Session::push("ret", $ar);
 
         return redirect('/');
     }

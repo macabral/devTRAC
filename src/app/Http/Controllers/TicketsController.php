@@ -19,8 +19,8 @@ use App\Models\Releases;
 use App\Models\UsersProjects;
 use App\Models\Type;
 use App\Models\Logtickets;
-use App\Models\User;
-use App\Library\TracMail;
+use App\Mail\NewTicket;
+use Illuminate\Support\Facades\Mail;
 
 class TicketsController extends Controller
 {
@@ -320,7 +320,13 @@ class TicketsController extends Controller
         }
 
         // devs
-        $devs = UsersProjects::select('users_id as id','name')->where('projects_id', $this->projects_id)->where('dev', '1')->leftJoin('users','users.id','=','users_id')->where('users.active','=',1)->orderby('name')->get();
+        $devs = UsersProjects::select('users_id as id','name')
+            ->leftJoin('users','users.id','=','users_id')
+            ->where('projects_id', $this->projects_id)
+            ->where('dev', '1')
+            ->where('users.active','=',1)
+            ->orderby('name')
+            ->get();
 
         // Type 
         $types = Type::select('id','title')->where('status','Enabled')->get();
@@ -425,7 +431,7 @@ class TicketsController extends Controller
     /**
      * Creating a new resource.
      */
-    public function create(Request $request, TracMail $TracMailInstance)
+    public function create(Request $request)
     {
         $this->init();
         
@@ -487,7 +493,9 @@ class TicketsController extends Controller
 
         Try {
 
-            Tickets::create($input);
+            $ret = Tickets::create($input);
+            
+            Mail::Queue(new NewTicket($ret['id']));
 
             Toast::title(__('Ticket saved!'))->autoDismiss(5);
 
@@ -498,33 +506,6 @@ class TicketsController extends Controller
             
         }
         
-        try {
-
-            $data = Tickets::latest()->first();
-
-            $destinatario = User::select('email')->where('id','=',$data['resp_id'])->get();
-
-            $id = $data['id'];
-            $title = $data['title'];
-
-            $mailData = [
-                'to' => $destinatario[0]['email'],
-                'cc' => null,
-                'subject' => 'devTRAC: Novo Tíquete',
-                'title' => "Novo Tíquete",
-                'body' => "Você está recebendo esse email porque um Tíquete foi atribuído para você: [$id] - $title",
-                'priority' => 0,
-                'attachments' => null
-            ];
-                
-            $TracMailInstance->save($mailData);
-
-        } catch (\Exception $e) {
-
-            Toast::title(__('It was not possible to send email notification.'))->danger()->autoDismiss(5);
-
-        }
-
         return redirect()->back();
     }
 

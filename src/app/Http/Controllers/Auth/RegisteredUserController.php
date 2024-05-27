@@ -10,8 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
-use App\Library\TracMail;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUser;
+use ProtoneMedia\Splade\Facades\Toast;
 class RegisteredUserController extends Controller
 {
     /**
@@ -31,7 +32,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request, TracMail $TracMailInstance)
+    public function store(Request $request)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -52,21 +53,11 @@ class RegisteredUserController extends Controller
         // enviar email ao Administrador
         try {
 
-            $to = User::select('email')->where('admin', '=', 1)->get();
-
-            $mailData = [
-                'to' => $to[0]['email'],
-                'cc' => null,
-                'subject' => 'devTRAC: Novo Usuário',
-                'title' => "Novo Usuário",
-                'body' => "Você está recebendo esse email porque um novo usuário se registrou no devTRAC com o email $request->email.",
-                'priority' => 0,
-                'attachments' => null
-            ];
-                
-            $TracMailInstance->save($mailData);
+            Mail::Queue(new NewUser($user['id']));
 
         } catch (\Exception $e) {
+
+            Toast::title(__('Não foi possível enviar email.'))->autoDismiss(5);
 
         }
 

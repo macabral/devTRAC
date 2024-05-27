@@ -29,7 +29,7 @@ class DashboardController extends Controller
             ->get();
 
         // se usuário não tiver projeto associado retorna para o login.
-        if (empty($ret)) {
+        if (count($ret) == 0) {
 
             Toast::title(__('User has no project!'))->autoDismiss(5);
             Session::forget(Session::driver()->getId());
@@ -125,6 +125,7 @@ class DashboardController extends Controller
 
         // permissões de acesso do usuário logado
         $ar = Array(
+            'userId' => $userId,
             'admin' => auth('sanctum')->user()->admin,
             'id' => $ret[$ind]->projects_id,
             'sprint' => $releases_id,

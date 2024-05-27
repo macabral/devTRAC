@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use ProtoneMedia\Splade\Facades\Toast;
 use App\Models\Logtickets;
 use App\Models\Tickets;
-use App\Models\UsersProjects;
-use App\Library\TracMail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestTicket;
 class LogticketsController extends Controller
 
 {
@@ -44,7 +44,7 @@ class LogticketsController extends Controller
         return redirect()->back();
     }
 
-    public function update($id, $status, TracMail $TracMailInstance)
+    public function update($id, $status)
     {
 
         $input['users_id'] = auth('sanctum')->user()->id;
@@ -55,27 +55,8 @@ class LogticketsController extends Controller
 
             try {
 
-                $destinatario = '';
-
-                $project = Session::get('ret')[0]['id'];
-
-                $ret = UsersProjects::select('a.email')->where('projects_id','=',$project)->where('tester','=','1')->leftJoin('users as a','a.id','=','users_id')->get();
-                foreach($ret as $elem) {
-                    $destinatario .= $elem->email . '; ';
-                }
-
-                $mailData = [
-                    'to' => $destinatario,
-                    'cc' => null,
-                    'subject' => 'devTRAC: Ticket enviado para teste',
-                    'title' => "Ticket em teste",
-                    'body' => "Você está recebendo esse email porque o tíquete #$id foi encaminhado para teste.",
-                    'priority' => 0,
-                    'attachments' => null
-                ];
+                Mail::Queue(new TestTicket($id));
                     
-                $TracMailInstance->save($mailData);
-
             } catch (\Exception $e) {
     
                 Toast::title(__('It was not possible to send email notification.'))->danger()->autoDismiss(5);
@@ -156,7 +137,7 @@ class LogticketsController extends Controller
 
     }
 
-        /**
+    /**
      * Creating a new resource.
      */
     public function save($id, $origin, Request $request)

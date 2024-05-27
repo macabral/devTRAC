@@ -25,13 +25,13 @@ class ReleasesController extends Controller
     public function index()
     {
 
-        $userId = auth('sanctum')->user()->id;
-
         if (! isset(Session::get('ret')[0]['id'])) {
 
             return redirect()->back();
 
         }
+
+        $userId = auth('sanctum')->user()->id;
 
         $projects_id = Session::get('ret')[0]['id'];
         

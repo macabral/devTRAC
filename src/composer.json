@@ -10,6 +10,7 @@
         "kirschbaum-development/eloquent-power-joins": "^3.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
+        "laravel/telescope": "^5.0",
         "laravel/tinker": "^2.8",
         "phpmailer/phpmailer": "^6.8",
         "phpoffice/phpspreadsheet": "^1.29",

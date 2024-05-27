@@ -212,5 +212,13 @@
   "User": "Usuário",
   "Start Task": "Iniciar Tarefa",
   "Pause Task": "Pausar Tarefa",
-  "Select Project": "Selecione o Projeto"
+  "Select Project": "Selecione o Projeto",
+  "Test Condition": "Condições para Teste",
+  "Hi there": "Olá!",
+  "You have been assigned a new ticket.": "Um novo tíquete foi atribuído a você.",
+  "Best reguards!": "Atenciosamente,",
+  "You received this email because you are a devTRAC user. If you are no longer part of the team, please contact your devTRAC administrator to remove you from the list. Please do not reply to this email.": "Você recebeu este email porque é um usuário do devTRAC. Se não faz mais parte da equipe, por favor, contate o administrador do devTRAC para removê-lo da lista. Por favor não responda este email.",
+  "The ticket below has been forwarded for testing.": "O tíquete abaixo foi encaminhado para teste.",
+  "Export Tickets": "Exportar",
+  "Tickets": "Tíquetes"
 }

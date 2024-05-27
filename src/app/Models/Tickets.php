@@ -23,7 +23,8 @@ class Tickets extends Model
         'prioridade',
         'storypoint',
         'valorsp',
-        'start'
+        'start',
+        'testcondition'
     ];
 
 }

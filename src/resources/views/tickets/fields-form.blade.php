@@ -2,12 +2,13 @@
 <x-splade-select id="releases_id" name="releases_id" :options="$releases" option-label="version" option-value="id" required :label="__('Sprint')"   />
 <x-splade-textarea id="title" name="title" type="text" autosize :label="__('Title')" required autofocus autocomplete="title" />
 <x-splade-wysiwyg id="description" name="description" autosize :label="__('Description')" autocomplete="description" />
+<x-splade-wysiwyg id="testcondition" name="testcondition" autosize :label="__('Test Condition')" autocomplete="testcondition" />
 <x-splade-select id="types_id" name="types_id" :options="$types" option-label="title" option-value="id" :label="__('Type')" required />
+<x-splade-select id="prioridade" name="prioridade" :options="['Crítica', 'Importante', 'Desejada', 'Pode Esperar']" required :label="__('Prioridade')" />
+<x-splade-select id="storypoint" name="storypoint" :options="[0, 1, 2, 3, 5, 8, 13, 20, 40, 100]" required :label="__('Story Point')" />
 @if ($perfil == '1')
     <x-splade-select id="resp_id" name="resp_id" :options="$devs" option-label="name" option-value="id" :label="__('Assign to')"/>
 @endif
-<x-splade-select id="prioridade" name="prioridade" :options="['Crítica', 'Importante', 'Desejada', 'Pode Esperar']" required :label="__('Prioridade')" />
-<x-splade-select id="storypoint" name="storypoint" :options="[0, 1, 2, 3, 5, 8, 13, 20, 40, 100]" required :label="__('Story Point')" />
 <x-splade-select id="status" name="status" :options="['Open', 'Testing', 'Closed']" required :label="__('Status')" />
 
 @if ($ret['id'] == 0)

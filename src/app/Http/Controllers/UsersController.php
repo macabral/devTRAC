@@ -15,8 +15,6 @@ use App\Library\TracMail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
-use function PHPUnit\Framework\isNull;
-
 class UsersController extends Controller
 {
 
