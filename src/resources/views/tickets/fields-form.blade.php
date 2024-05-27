@@ -6,6 +6,8 @@
 <x-splade-select id="types_id" name="types_id" :options="$types" option-label="title" option-value="id" :label="__('Type')" required />
 <x-splade-select id="prioridade" name="prioridade" :options="['Crítica', 'Importante', 'Desejada', 'Pode Esperar']" required :label="__('Prioridade')" />
 <x-splade-select id="storypoint" name="storypoint" :options="[0, 1, 2, 3, 5, 8, 13, 20, 40, 100]" required :label="__('Story Point')" />
+<x-splade-input id="pf" name="pf" min="0" max="255" type="number" :label="__('Function Point')" required autofocus autocomplete="media_sp" />
+
 @if ($perfil == '1')
     <x-splade-select id="resp_id" name="resp_id" :options="$devs" option-label="name" option-value="id" :label="__('Assign to')"/>
 @endif

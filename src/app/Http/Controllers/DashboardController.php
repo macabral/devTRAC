@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
         $userId = auth('sanctum')->user()->id;
 
-        $ret = UsersProjects::Select('projects.id as projects_id','title','media_sp','dev','relator','tester','gp')
+        $ret = UsersProjects::Select('projects.id as projects_id','title','media_sp','media_pf','dev','relator','tester','gp')
             ->leftJoin('projects','projects.id','=','users_projects.projects_id')
             ->where('users_projects.users_id','=',$userId)
             ->where('projects.status','=','Enabled')
@@ -217,8 +217,10 @@ class DashboardController extends Controller
 
         $chart3 = $this->storyGrafico($projects_id);
 
-        // média de Story Points
+        // gráfico pf
 
+        $chart4 = $this->pfGrafico($projects_id);
+      
         return view('dashboard',[
             'proj' => $ret,
             'input' => $input,
@@ -227,8 +229,10 @@ class DashboardController extends Controller
             'chart1' => $chart1,
             'chart2' => $chart2,
             'chart3' => $chart3,
+            'chart4' => $chart4,
             'releases' => '',
             'storypoint_medio' =>  $ret[$ind]->media_sp,
+            'pf_medio' =>  $ret[$ind]->media_pf,
             'projeto' => $projects_id,
             'sprint' => $releases_id
         ]);
@@ -302,7 +306,7 @@ class DashboardController extends Controller
 
     private function sprintEstat($releases_id) {
         
-        $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, tickets.status, count(*) as qtd, sum(valorsp) as storypoint
+        $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, tickets.status, count(*) as qtd, sum(valorsp) as storypoint, sum(pf) as pf
             from tickets 
             inner join releases on releases.id = tickets.releases_id and releases.status = 'Open' 
             left join projects on projects.id = tickets.projects_id 
@@ -331,6 +335,7 @@ class DashboardController extends Controller
                     }
                     $found = true;
                     $result[$i]['storypoint'] += $item->storypoint;
+                    $result[$i]['pf'] += $item->pf;
                 }
 
             }
@@ -346,7 +351,8 @@ class DashboardController extends Controller
                     'open' => 0,
                     'testing' => 0,
                     'closed' => 0,
-                    'storypoint' => 0
+                    'storypoint' => 0,
+                    'pf' => 0
                 );
 
                 if ($item->status == 'Open') {
@@ -358,6 +364,7 @@ class DashboardController extends Controller
                 }
 
                 $raj['storypoint'] += $item->storypoint;
+                $raj['pf'] += $item->pf;
 
                 array_push($result, $raj);
             }
@@ -432,6 +439,39 @@ class DashboardController extends Controller
             'data1' => "[" . $series1 . "]",
             'categories' =>   substr($categ,0,strlen($categ)-1),
             'title' => "Sprints/Story Points"
+        ];
+
+        return $chart;
+    }
+
+    private function pfGrafico($projects_id) {
+
+        $sql ="SELECT  tickets.releases_id, releases.version, 
+            SUM(pf) AS total
+            FROM tickets
+            LEFT JOIN releases ON releases.id = tickets.releases_id
+            LEFT JOIN types ON types.id = tickets.types_id
+            WHERE tickets.projects_id = $projects_id AND  releases.status <> 'Waiting'
+            GROUP BY releases_id
+            order by releases_id
+            LIMIT 12";
+
+        $ticketsStory = DB::select($sql);
+
+        $categ = ""; $series1 = ''; $total = 0;
+
+        foreach($ticketsStory as $item) {
+
+            $categ .=  $item->version . ",";
+            $series1 .= $item->total . ',';
+            $total += $item->total;
+
+        }
+
+        $chart = [
+            'data1' => "[" . $series1 . "]",
+            'categories' =>   substr($categ,0,strlen($categ)-1),
+            'title' => "Sprints/Pontos de Função"
         ];
 
         return $chart;

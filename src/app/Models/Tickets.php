@@ -24,7 +24,8 @@ class Tickets extends Model
         'storypoint',
         'valorsp',
         'start',
-        'testcondition'
+        'testcondition',
+        'pf'
     ];
 
 }

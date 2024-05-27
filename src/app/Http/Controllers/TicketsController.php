@@ -339,7 +339,9 @@ class TicketsController extends Controller
                 'description' => '',
                 'status' => 'Open',
                 'projects_id' => $this->projects_id,
-                'perfil' => $this->gp
+                'perfil' => $this->gp,
+                'storypoint' => 0,
+                'pf' => 0
             );
 
             return view('tickets.new-form', [

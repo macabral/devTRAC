@@ -73,20 +73,19 @@ class ReleasesController extends Controller
         ]);
     }
 
-
-
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        $id = base64_decode($id);
 
         if (! isset(Session::get('ret')[0]['id'])) {
 
             return redirect()->back();
 
         }
+
+        $id = base64_decode($id);
 
         $projects_id = Session::get('ret')[0]['id'];
 

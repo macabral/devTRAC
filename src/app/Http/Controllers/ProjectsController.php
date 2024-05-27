@@ -64,7 +64,9 @@ class ProjectsController extends Controller
                 'id' => 0,
                 'title' => '',
                 'description' => '',
-                'status' => 'Enabled'
+                'status' => 'Enabled',
+                'media_sp' => 0,
+                'media_pf' => 0
             );
 
             return view('projects.new-project-form', [
@@ -93,7 +95,8 @@ class ProjectsController extends Controller
             'title' => 'required|max:254|unique:projects',
             'description' => 'max:254',
             'status' => 'required',
-            'media_sp' => 'numeric|min:0|max:255'
+            'media_sp' => 'numeric|min:0|max:255',
+            'media_pf' => 'numeric|min:0|max:255'
         ]);
 
         $input = $request->all();
@@ -124,7 +127,8 @@ class ProjectsController extends Controller
             'title' => 'required|max:254|unique:projects,title,'.$id,
             'description' => 'max:254',
             'status' => 'required',
-            'media_sp' => 'numeric|min:0|max:255'
+            'media_sp' => 'numeric|min:0|max:255',
+            'media_pf' => 'numeric|min:0|max:255'
         ]);
        
         $input = $request->all();

@@ -14,7 +14,8 @@ class Projects extends Model
         'title',
         'description',
         'status',
-        'media_sp'
+        'media_sp',
+        'media_pf'
     ];
 
     public function users(): BelongsToMany

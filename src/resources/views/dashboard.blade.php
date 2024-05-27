@@ -32,6 +32,7 @@
                   <th class="text-left">Fim</th>
                   <th class="text-left">Tipo</th>
                   <th class="text-center">Story Points</th>
+				  <th class="text-center">PF</th>
 				  <th class="text-center">Total</th>
                   <th class="text-center">Open</th>
                   <th class="text-center">Testing</th>
@@ -41,7 +42,7 @@
               </thead>
               <tbody>
                     @php
-                        $totalOpen = 0; $totalClosed = 0; $totalTesting = 0; $totalStory = 0;
+                        $totalOpen = 0; $totalClosed = 0; $totalTesting = 0; $totalStory = 0; $totalpf = 0;
                     @endphp
                     @foreach($stats as $item)
                     @php
@@ -49,6 +50,7 @@
                         $totalClosed += $item['closed'];
                         $totalTesting += $item['testing'];
                         $totalStory += $item['storypoint'];
+						$totalpf += $item['pf'];
                     @endphp
                     <tr class="border-b dark:border-neutral-500">
                         <td>{{ $item['project'] }}</td>
@@ -57,6 +59,7 @@
                         <td>{{ date('d/m/Y', strtotime($item['end'])) }}</td>
                         <td>{{ $item['type'] }}</td>
                         <td class="text-center">{{ $item['storypoint'] }}</td>
+						<td class="text-center">{{ $item['pf'] }}</td>
 						<td class="text-center">{{ $item['open'] + $item['closed'] + $item['testing'] }}</td>
                         <td class="text-center">{{ $item['open'] }}</td>
                         <td class="text-center">{{ $item['testing'] }}</td>
@@ -70,6 +73,7 @@
                         <td></td>
                         <td></td>
                         <td class="text-center">{{ $totalStory }}</td>
+						<td class="text-center">{{ $totalpf }}</td>
 						<td class="text-center">{{ $totalOpen + $totalClosed + $totalTesting }}</td>
                         <td class="text-center">{{ $totalOpen }}</td>
                         <td class="text-center">{{ $totalTesting }}</td>
@@ -133,7 +137,10 @@
 
 	<div id="chart3" name="chart3"></div>
 
-	<span>Média de Story Points Prevista: {{ $storypoint_medio }}.</span>
+	@if ($pf_medio != 0)
+		<div id="chart4" name="chart4"></div>
+	@endif
+	
 	<br><br>
 
 </div>
@@ -274,7 +281,7 @@
 				opacity: 1
 			},
 			title: {
-				text: 'Sprints',
+				text: title,
 				align: 'left'
 			},
 			};
@@ -284,7 +291,7 @@
 		
 		@endif
 
-        <!-- Releases/Story Points -->
+        <!-- Sprint/Story Points -->
 		@if (! is_null($chart3))
 			var cat2 = "{{ $chart3['categories']  }}"
 			var categ2 = cat2.split(',')
@@ -346,14 +353,86 @@
 				opacity: 1
 			},
 			title: {
-				text: 'Sprints/Story Points',
+				text: title + ' (Média de  {{ $storypoint_medio }})',
 				align: 'left'
 			},
 			};
 	
 			var chart3 = new ApexCharts(document.querySelector("#chart3"), options);
 			chart3.render();
+
         @endif
+
+		<!-- Sprint/PF-->
+		@if (! empty($chart4))
+			var cat2 = "{{ $chart4['categories']  }}"
+			var categ2 = cat2.split(',')
+			var data1 = {{ $chart4['data1'] }}
+			var title = "{{ $chart4['title'] }}"
+
+			var ar = []
+			categ2.forEach((elem) => {
+				ar.push(elem)
+			})
+
+			var options = {
+				series: [{
+				name: title,
+				data: data1
+			}],
+				chart: {
+					type: 'bar',
+					height: 350,
+					stacked: true,
+					toolbar: {
+						show: true
+					},
+					zoom: {
+						enabled: true
+					}
+			},
+			responsive: [{
+				breakpoint: 480,
+				options: {
+				legend: {
+					position: 'bottom',
+					offsetX: -10,
+					offsetY: 0
+				}
+				}
+			}],
+			plotOptions: {
+				bar: {
+				horizontal: false,
+				borderRadius: 10,
+				dataLabels: {
+					total: {
+						enabled: false,
+						style: {
+							fontSize: '13px',
+							fontWeight: 900
+						}
+					}
+				}
+				},
+			},
+			xaxis: {
+				type: 'text',
+				categories: ar,
+			},
+			fill: {
+				opacity: 1
+			},
+			title: {
+				text: title + ' (Média de  {{ $pf_medio }})',
+				align: 'left'
+			},
+			};
+
+			var chart4 = new ApexCharts(document.querySelector("#chart4"), options);
+			chart4.render();
+		@endif
+
     </x-splade-script>
 </x-app-layout>
 
