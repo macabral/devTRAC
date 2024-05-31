@@ -71,7 +71,7 @@
 
                             <x-slot name="content">
 
-                                <x-dropdown-link :href="route('releases.index', base64_encode(0))">
+                                <x-dropdown-link :href="route('sprints.index', base64_encode(0))">
                                     {{ __('Sprint') }}
                                 </x-dropdown-link>
 

@@ -17,7 +17,7 @@
         <tbody>
             <tr>
                 <td class="px-6 py-3">{{ $ret->project }}</td>
-                <td>{{ $ret->release }}</td>
+                <td>{{ $ret->sprint }}</td>
                 <td>{{ $ret->type }}</td>
                 <td>{{ $ret->prioridade }}</td>
                 <td>{{ $ret->valorsp }}</td>

@@ -7,8 +7,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use ProtoneMedia\Splade\Facades\Toast;
-use App\Models\User;
-use App\Models\Releases;
+use App\Models\Sprints;
 use App\Models\UsersProjects;
 use Carbon\Carbon;
 
@@ -44,11 +43,11 @@ class DashboardController extends Controller
         $ind = 0;  // determina o projeto selecionado
 
         if (empty($input)) {
-           
+
             if (isset(Session::get('ret')[0]['id']) && Session::get('ret')[0]['id'] != 0) {
 
                 $projects_id = Session::get('ret')[0]['id'];
-                $releases_id = Session::get('ret')[0]['sprint'];
+                $sprints_id = Session::get('ret')[0]['sprint'];
 
                 // verifica se o projeto anteriormente selecionado ainda está associado ao usuário
                 $achou = false;
@@ -68,22 +67,22 @@ class DashboardController extends Controller
 
                 $projects_id = $ret[$ind]->projects_id;
 
-                $releases = Releases::Select('id')
+                $sprints = Sprints::Select('id')
                     ->where('status','Open')
                     ->where('projects_id','=',$projects_id)
                     ->limit(1)
                     ->get();
 
-                if (empty($releases)) {
-                    $releases_id = 0;
+                if (count($sprints) == 0) {
+                    $sprints_id = 0;
                 } else {
-                    $releases_id = $releases[0]['id'];
+                    $sprints_id = $sprints[0]['id'];
                 }
 
             }
 
             $input['projects_id'] = $projects_id;
-            $input['releases_id'] = $releases_id;
+            $input['sprints_id'] = $sprints_id;
 
         } else {
 
@@ -103,19 +102,19 @@ class DashboardController extends Controller
                 $projects_id = $ret[0]->projects_id;
             }
 
-            if(isset($input['releases_id'])) {
+            if(isset($input['sprints_id'])) {
 
-                $releases_id = $input['releases_id'];
+                $sprints_id = $input['sprints_id'];
 
             } else {
                 
                 if (isset(Session::get('ret')[0]['sprint']) && Session::get('ret')[0]['sprint'] != 0) {
 
-                    $releases_id = Session::get('ret')[0]['sprint'];
+                    $sprints_id = Session::get('ret')[0]['sprint'];
 
                 } else {
 
-                    $releases_id = 0;
+                    $sprints_id = 0;
 
                 }
 
@@ -128,7 +127,7 @@ class DashboardController extends Controller
             'userId' => $userId,
             'admin' => auth('sanctum')->user()->admin,
             'id' => $ret[$ind]->projects_id,
-            'sprint' => $releases_id,
+            'sprint' => $sprints_id,
             'title' => $ret[$ind]->title,
             'gp' => $ret[$ind]->gp,
             'dev' => $ret[$ind]->dev,
@@ -139,20 +138,20 @@ class DashboardController extends Controller
         Session::forget('ret');
         Session::push("ret", $ar);
 
-        // estatísticas do release
+        // estatísticas da sprint
 
-        $result1 = $this->sprintEstat($releases_id);
+        $result1 = $this->sprintEstat($sprints_id);
 
         // total de story points
-        $storyPointRelease = 0;
+        $storyPointSprint = 0;
         $tcount = count($result1);
         for($i=0; $i<$tcount; $i++) {
-            $storyPointRelease += $result1[$i]['storypoint'];
+            $storyPointSprint += $result1[$i]['storypoint'];
         }
 
         // estatísticas por Dev
 
-        $result2 = $this->devEstat($projects_id,$releases_id);
+        $result2 = $this->devEstat($projects_id,$sprints_id);
 
         // gráfico burndown da primeira sprint
 
@@ -169,15 +168,15 @@ class DashboardController extends Controller
 
             $sprint = $result1[0]['versionId'];
 
-            $sql = "select count(*) as vlr from tickets where releases_id = $sprint";
+            $sql = "select count(*) as vlr from tickets where sprints_id = $sprint";
             $total = DB::select($sql);
 
-            $sql = "select  count(*) as vlr from tickets where releases_id = $sprint and status='Closed'";
+            $sql = "select  count(*) as vlr from tickets where sprints_id = $sprint and status='Closed'";
             $closed = DB::select($sql);
 
-            $progressoReal = floor(($closed[0]->vlr * $storyPointRelease ) / $totalDays);
+            $progressoReal = floor(($closed[0]->vlr * $storyPointSprint ) / $totalDays);
 
-            $totalStoryPoint = $total[0]->vlr * $storyPointRelease ;
+            $totalStoryPoint = $total[0]->vlr * $storyPointSprint ;
             $progresso = floor($totalStoryPoint / $totalDays);
 
             $vlr = $totalStoryPoint; $estimado = $vlr . ',';
@@ -228,26 +227,26 @@ class DashboardController extends Controller
             'chart2' => $chart2,
             'chart3' => $chart3,
             'chart4' => $chart4,
-            'releases' => '',
+            'sprints' => '',
             'storypoint_medio' =>  $ret[$ind]->media_sp,
             'pf_medio' =>  $ret[$ind]->media_pf,
             'projeto' => $projects_id,
-            'sprint' => $releases_id
+            'sprint' => $sprints_id
         ]);
 
     }
 
-    private function devEstat($projects_id, $releases_id) {
+    private function devEstat($projects_id, $sprints_id) {
 
-        $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, users.name, tickets.status, count(*) as qtd, sum(valorsp) as storypoint 
+        $sql = "select projects.title as project, sprints.id as versionId, sprints.version, sprints.start, sprints.end, types.title as type, users.name, tickets.status, count(*) as qtd, sum(valorsp) as storypoint 
             from tickets 
             left join users on users.id = tickets.resp_id 
-            inner join releases on releases.id = tickets.releases_id and releases.status = 'Open' 
+            inner join sprints on sprints.id = tickets.sprints_id and sprints.status = 'Open' 
             left join projects on projects.id = tickets.projects_id 
             left join types on types.id = tickets.types_id 
-            where projects.id =  $projects_id and releases.id = $releases_id
-            group by tickets.projects_id, tickets.releases_id, tickets.resp_id, tickets.types_id, tickets.status 
-            order by users.name, releases.version, types.title, tickets.status";
+            where projects.id =  $projects_id and sprints.id = $sprints_id
+            group by tickets.projects_id, tickets.sprints_id, tickets.resp_id, tickets.types_id, tickets.status 
+            order by users.name, sprints.version, types.title, tickets.status";
         $stats = DB::select($sql);
 
         $result = [];
@@ -274,7 +273,7 @@ class DashboardController extends Controller
             if (! $found) {
                 $raj = array(
                     'versionId' => $item->versionId,
-                    'release' => $item->version,
+                    'sprint' => $item->version,
                     'start' => $item->start,
                     'end' => $item->end,
                     'project' => $item->project,
@@ -302,16 +301,16 @@ class DashboardController extends Controller
         return $result;
     }
 
-    private function sprintEstat($releases_id) {
+    private function sprintEstat($sprints_id) {
         
-        $sql = "select projects.title as project, releases.id as versionId, releases.version, releases.start, releases.end, types.title as type, tickets.status, count(*) as qtd, sum(valorsp) as storypoint, sum(pf) as pf
+        $sql = "select projects.title as project, sprints.id as versionId, sprints.version, sprints.start, sprints.end, types.title as type, tickets.status, count(*) as qtd, sum(valorsp) as storypoint, sum(pf) as pf
             from tickets 
-            inner join releases on releases.id = tickets.releases_id and releases.status = 'Open' 
+            inner join sprints on sprints.id = tickets.sprints_id and sprints.status = 'Open' 
             left join projects on projects.id = tickets.projects_id 
             left join types on types.id = tickets.types_id 
-            where  releases.id = $releases_id
-            group by tickets.projects_id, tickets.releases_id, tickets.types_id, tickets.status 
-            order by releases.version, types.title, tickets.status";
+            where  sprints.id = $sprints_id
+            group by tickets.projects_id, tickets.sprints_id, tickets.types_id, tickets.status 
+            order by sprints.version, types.title, tickets.status";
 
         $stats = DB::select($sql);
 
@@ -341,7 +340,7 @@ class DashboardController extends Controller
             if (! $found) {
                 $raj = array(
                     'versionId' => $item->versionId,
-                    'release' => $item->version,
+                    'sprint' => $item->version,
                     'start' => $item->start,
                     'end' => $item->end,
                     'project' => $item->project,
@@ -373,23 +372,23 @@ class DashboardController extends Controller
 
     private function sprintGrafico($projects_id) {
         
-        $sql ="SELECT  tickets.releases_id, releases.version, 
-            (SELECT COUNT(*) FROM tickets where types_id = 1 AND tickets.releases_id = releases.id) AS melhoria, 
-            (SELECT COUNT(*) FROM tickets where types_id = 2 AND tickets.releases_id = releases.id) AS defeito,
-            (SELECT COUNT(*) FROM tickets where types_id = 3 AND tickets.releases_id = releases.id) AS suporte
+        $sql ="SELECT  tickets.sprints_id, sprints.version, 
+            (SELECT COUNT(*) FROM tickets where types_id = 1 AND tickets.sprints_id = sprints.id) AS melhoria, 
+            (SELECT COUNT(*) FROM tickets where types_id = 2 AND tickets.sprints_id = sprints.id) AS defeito,
+            (SELECT COUNT(*) FROM tickets where types_id = 3 AND tickets.sprints_id = sprints.id) AS suporte
             FROM tickets
-            LEFT JOIN releases ON releases.id = tickets.releases_id
+            LEFT JOIN sprints ON sprints.id = tickets.sprints_id
             LEFT JOIN types ON types.id = tickets.types_id
-            WHERE tickets.projects_id = $projects_id AND  releases.status <> 'Waiting'
-            GROUP BY releases_id
-            order by releases_id
+            WHERE tickets.projects_id = $projects_id AND  sprints.status <> 'Waiting'
+            GROUP BY sprints_id
+            order by sprints_id
             LIMIT 12";
 
-        $ticketsReleases = DB::select($sql);
+        $ticketsSprints = DB::select($sql);
 
         $categ = ""; $series1 = ''; $series2 = ''; $series3 = '';
 
-        foreach($ticketsReleases as $item) {
+        foreach($ticketsSprints as $item) {
 
             $categ .=  $item->version . ",";
             $series1 .= $item->melhoria . ',';
@@ -411,14 +410,14 @@ class DashboardController extends Controller
 
     private function storyGrafico($projects_id) {
 
-        $sql ="SELECT  tickets.releases_id, releases.version, 
+        $sql ="SELECT  tickets.sprints_id, sprints.version, 
             SUM(valorsp) AS total
             FROM tickets
-            LEFT JOIN releases ON releases.id = tickets.releases_id
+            LEFT JOIN sprints ON sprints.id = tickets.sprints_id
             LEFT JOIN types ON types.id = tickets.types_id
-            WHERE tickets.projects_id = $projects_id AND  releases.status <> 'Waiting'
-            GROUP BY releases_id
-            order by releases_id
+            WHERE tickets.projects_id = $projects_id AND  sprints.status <> 'Waiting'
+            GROUP BY sprints_id
+            order by sprints_id
             LIMIT 12";
 
         $ticketsStory = DB::select($sql);
@@ -444,14 +443,14 @@ class DashboardController extends Controller
 
     private function pfGrafico($projects_id) {
 
-        $sql ="SELECT  tickets.releases_id, releases.version, 
+        $sql ="SELECT  tickets.sprints_id, sprints.version, 
             SUM(pf) AS total
             FROM tickets
-            LEFT JOIN releases ON releases.id = tickets.releases_id
+            LEFT JOIN sprints ON sprints.id = tickets.sprints_id
             LEFT JOIN types ON types.id = tickets.types_id
-            WHERE tickets.projects_id = $projects_id AND  releases.status <> 'Waiting'
-            GROUP BY releases_id
-            order by releases_id
+            WHERE tickets.projects_id = $projects_id AND  sprints.status <> 'Waiting'
+            GROUP BY sprints_id
+            order by sprints_id
             LIMIT 12";
 
         $ticketsStory = DB::select($sql);

@@ -23,7 +23,7 @@ class NewTicket extends Mailable
 
         $data = Tickets::Select('tickets.title','projects.title as project','version','users.email')
             ->leftJoin('projects','projects.id','=','tickets.projects_id')
-            ->leftJoin('releases','releases.id','=','tickets.releases_id')
+            ->leftJoin('sprints','sprints.id','=','tickets.sprints_id')
             ->leftJoin('users','resp_id','=','users.id')
             ->where('tickets.id', $id)->get();
 

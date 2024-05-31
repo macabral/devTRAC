@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id()->unsigned();
-            $table->unique(array('title'));
+            $table->string('title');
             $table->longText('description')->nullable();
             $table->enum('status', ['Enabled', 'Disabled']);
             $table->tinyInteger('media_sp')->unsigned()->default(0);
@@ -22,6 +22,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index('status');
+            $table->unique(array('title'));
         });
     }
 

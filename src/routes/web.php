@@ -5,7 +5,7 @@ use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\TypeticketsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ReleasesController;
+use App\Http\Controllers\SprintsController;
 use App\Http\Controllers\TicketsController;
 use App\Http\Controllers\FilesController;
 use App\Http\Controllers\LogticketsController;
@@ -93,14 +93,14 @@ Route::middleware('splade')->group(function () {
         Route::post('/logtickets-save/{id}/{origin}', [LogticketsController::class, 'save'])->name('logtickets.save');
 
 
-        // Releases
-        Route::get('/releases-index/{id}', [ReleasesController::class, 'index'])->name('releases.index');
-        Route::get('/releases/{id}', [ReleasesController::class, 'show'])->middleware(['gpAccess'])->name('releases.show');
-        Route::post('/releases', [ReleasesController::class, 'create'])->middleware(['gpAccess'])->name('releases.create');
-        Route::patch('/releases/{id}', [ReleasesController::class, 'update'])->middleware(['gpAccess'])->name('releases.update');
-        Route::get('/releases-delete/{id}', [ReleasesController::class, 'delete'])->middleware(['gpAccess'])->name('releases.delete');
-        Route::delete('/releases/{id}', [ReleasesController::class, 'destroy'])->middleware(['gpAccess'])->name('releases.destroy');
-        Route::get('/export-tickets/{id}', [ReleasesController::class, 'exports'])->name('releases.exports');
+        // Sprints
+        Route::get('/sprints-index/{id}', [SprintsController::class, 'index'])->name('sprints.index');
+        Route::get('/sprints/{id}', [SprintsController::class, 'show'])->middleware(['gpAccess'])->name('sprints.show');
+        Route::post('/sprints', [SprintsController::class, 'create'])->middleware(['gpAccess'])->name('sprints.create');
+        Route::patch('/sprints/{id}', [SprintsController::class, 'update'])->middleware(['gpAccess'])->name('sprints.update');
+        Route::get('/sprints-delete/{id}', [SprintsController::class, 'delete'])->middleware(['gpAccess'])->name('sprints.delete');
+        Route::delete('/sprints/{id}', [SprintsController::class, 'destroy'])->middleware(['gpAccess'])->name('sprints.destroy');
+        Route::get('/export-tickets/{id}', [SprintsController::class, 'exports'])->name('sprints.exports');
 
 
         // Files

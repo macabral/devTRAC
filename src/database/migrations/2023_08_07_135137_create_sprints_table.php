@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('releases', function (Blueprint $table) {
+        Schema::create('sprints', function (Blueprint $table) {
             $table->id()->unsigned();
             $table->biginteger('projects_id')->unsigned();
             $table->string('version', 30);
@@ -39,6 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('releases');
+        Schema::dropIfExists('sprints');
     }
 };

@@ -17,8 +17,8 @@
                         </header>
                     
                         <x-splade-modal>
-                            <x-splade-form method="patch" :action="route('releases.update', base64_encode($ret->id))" :default="$ret" class="mt-4 space-y-4" preserve-scroll>
-                                @include('releases.fields-form')
+                            <x-splade-form method="patch" :action="route('sprints.update', base64_encode($ret->id))" :default="$ret" class="mt-4 space-y-4" preserve-scroll>
+                                @include('sprints.fields-form')
                             </x-splade-form>
                         </x-splade-modal>
                         

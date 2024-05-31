@@ -15,7 +15,7 @@ use Ramsey\Uuid\Uuid;
 use Carbon\Carbon;
 use ZipArchive;
 use App\Models\Tickets;
-use App\Models\Releases;
+use App\Models\Sprints;
 use App\Models\UsersProjects;
 use App\Models\Type;
 use App\Models\Logtickets;
@@ -61,7 +61,7 @@ class TicketsController extends Controller
                     $query
                         ->orwhere('tickets.title', 'LIKE', "%$value%")
                         ->orwhere('tickets.description', 'LIKE', "%$value%")
-                        ->orwhere('releases.version', 'LIKE', "%$value%")
+                        ->orwhere('sprints.version', 'LIKE', "%$value%")
                         ->orwhere('types.title', 'LIKE', "%$value%")
                         ->orwhere('tickets.prioridade', 'LIKE', "%$value%")
                         ->orwhere('a.name', 'LIKE', "%$value%");
@@ -69,22 +69,22 @@ class TicketsController extends Controller
             });
         });
 
-        $releases = Releases::select('version','id')->where('projects_id','=',$this->projects_id)->get();
+        $sprints = Sprints::select('version','id')->where('projects_id','=',$this->projects_id)->get();
 
-        $releases = $releases->pluck('version','id')->toArray();
+        $sprints = $sprints->pluck('version','id')->toArray();
 
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("projects.title as project","tickets.id","tickets.title","tickets.status","tickets.start","tickets.created_at","tickets.prioridade", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
+            ->select("projects.title as project","tickets.id","tickets.title","tickets.status","tickets.start","tickets.created_at","tickets.prioridade", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","sprints.version as sprint")
             ->leftJoin('users as a','a.id','=','resp_id')
             ->leftJoin('users as b','b.id','=','relator_id')
             ->leftJoin('types','types.id','=','types_id')
-            ->leftJoin('releases','releases.id','=','tickets.releases_id')
-            ->leftJoin('projects','projects.id','=','releases.projects_id')
+            ->leftJoin('sprints','sprints.id','=','tickets.sprints_id')
+            ->leftJoin('projects','projects.id','=','sprints.projects_id')
             ->where('tickets.projects_id','=',$this->projects_id)
             ->orderby('prioridade')
             ->orderby('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
-            ->allowedFilters(['id','title', 'status', 'resp', 'prioridade','releases_id', $globalSearch])
+            ->allowedFilters(['id','title', 'status', 'resp', 'prioridade','sprints_id', $globalSearch])
             ->paginate(50)
             ->withQueryString();
 
@@ -92,10 +92,10 @@ class TicketsController extends Controller
             'ret' => SpladeTable::for($ret)
                 ->perPageOptions([])
                 ->withGlobalSearch()
-                ->selectFilter('releases_id',$releases)
+                ->selectFilter('sprints_id',$sprints)
                 ->column('id', label: __('ID'), searchable: true)
                 ->column('project', label: __('Project'), sortable: true, searchable: false, canBeHidden:false)
-                ->column('release', label: __('Sprint'))
+                ->column('sprint', label: __('Sprint'))
                 ->column('title', label: __('Title'), canBeHidden:false)
                 ->column('type', label: __('Type'))
                 ->column('relator', label: __('Relator'))
@@ -122,7 +122,7 @@ class TicketsController extends Controller
                     $query
                         ->orwhere('tickets.title', 'LIKE', "%$value%")
                         ->orwhere('tickets.prioridade', 'LIKE', "%$value%")
-                        ->orwhere('releases.version', 'LIKE', "%$value%")
+                        ->orwhere('sprints.version', 'LIKE', "%$value%")
                         ->orwhere('types.title', 'LIKE', "%$value%")
                         ->orwhere('a.name', 'LIKE', "%$value%");
                 });
@@ -130,13 +130,13 @@ class TicketsController extends Controller
         });
 
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("projects.title as project","tickets.id","tickets.title","tickets.status","tickets.start","tickets.created_at","tickets.prioridade", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release")
+            ->select("projects.title as project","tickets.id","tickets.title","tickets.status","tickets.start","tickets.created_at","tickets.prioridade", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","sprints.version as sprint")
             ->leftJoin('users as a','a.id','=','resp_id')
             ->leftJoin('users as b','b.id','=','relator_id')
             ->leftJoin('types','types.id','=','types_id')
-            ->leftJoin('releases','releases.id','=','tickets.releases_id')
-            ->leftJoin('projects','projects.id','=','releases.projects_id')
-            ->where('tickets.releases_id', $sprintId)
+            ->leftJoin('sprints','sprints.id','=','tickets.sprints_id')
+            ->leftJoin('projects','projects.id','=','sprints.projects_id')
+            ->where('tickets.sprints_id', $sprintId)
             ->orderby('prioridade')
             ->orderby('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
@@ -150,7 +150,7 @@ class TicketsController extends Controller
                 ->withGlobalSearch()
                 ->column('id', label: __('ID'), searchable: true)
                 ->column('project', label: __('Project'), sortable: true, searchable: true, canBeHidden:false)
-                ->column('release', label: __('Sprint'))
+                ->column('sprint', label: __('Sprint'))
                 ->column('title', label: __('Title'), canBeHidden:false)
                 ->column('type', label: __('Type'))
                 ->column('relator', label: __('Relator'))
@@ -169,9 +169,9 @@ class TicketsController extends Controller
        
         $this->init();
 
-        $releases = Releases::select('version','id')->where('projects_id','=',$this->projects_id)->where('status','=','Open')->get();
+        $sprints = Sprints::select('version','id')->where('projects_id','=',$this->projects_id)->where('status','=','Open')->get();
 
-        $releases = $releases->pluck('version','id')->toArray();
+        $sprints = $sprints->pluck('version','id')->toArray();
 
         $globalSearch = AllowedFilter::callback('global', function ($query,$value) {
             $query->where(function ($query) use ($value) {
@@ -180,7 +180,7 @@ class TicketsController extends Controller
                         ->orwhere('tickets.title', 'LIKE', "%$value%")
                         ->orwhere('tickets.prioridade', 'LIKE', "%$value%")
                         ->orwhere('tickets.description', 'LIKE', "%$value%")
-                        ->orwhere('releases.version', 'LIKE', "%$value%")
+                        ->orwhere('sprints.version', 'LIKE', "%$value%")
                         ->orwhere('types.title', 'LIKE', "%$value%")
                         ->orwhere('a.name', 'LIKE', "%$value%")
                         ->orwhere('b.name', 'LIKE', "%$value%");
@@ -189,13 +189,13 @@ class TicketsController extends Controller
         });
 
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("tickets.title","tickets.id","tickets.status","tickets.start","tickets.created_at","tickets.prioridade","a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release","projects.title as project")
-            ->Join('users as a','a.id','=','resp_id')
+            ->select("tickets.title","tickets.id","tickets.status","tickets.start","tickets.created_at","tickets.prioridade","a.name as resp","b.id as user_id","b.name as relator","types.title as type","sprints.version as sprint","projects.title as project")
+            ->leftJoin('users as a','a.id','=','resp_id')
             ->Join('users as b','b.id','=','relator_id')
             ->Join('types','types.id','=','types_id')
-            ->Join('releases','releases.id','=','tickets.releases_id')
+            ->Join('sprints','sprints.id','=','tickets.sprints_id')
             ->Join('projects','projects.id','=','tickets.projects_id')
-            ->Where('releases.status', '=', 'Open')
+            ->Where('sprints.status', '=', 'Open')
             ->Where('tickets.projects_id','=', $this->projects_id)
             ->Where('tickets.status', '!=', 'Closed')
             ->Where(function($query) {
@@ -208,11 +208,11 @@ class TicketsController extends Controller
                     }
                 }
             })
-            ->orderby('releases_id')
+            ->orderby('sprints_id')
             ->orderby('status')
             ->orderby('prioridade')
             ->orderBy('created_at')
-            ->allowedFilters(['id','title', 'status', 'releases_id', $globalSearch])
+            ->allowedFilters(['id','title', 'status', 'sprints_id', $globalSearch])
             ->paginate(7)
             ->withQueryString();
 
@@ -220,10 +220,10 @@ class TicketsController extends Controller
             'ret' => SpladeTable::for($ret)
                 ->perPageOptions([])
                 ->withGlobalSearch()
-                ->selectFilter('releases_id',$releases)
+                ->selectFilter('sprints_id',$sprints)
                 ->column('id', label: __('ID'), searchable: true)
                 ->column('project', label: __('Project'), sortable: true, searchable: false, canBeHidden:false)
-                ->column('release', label: __('Sprint'))
+                ->column('sprint', label: __('Sprint'))
                 ->column('start', label: __(''),searchable: false, canBeHidden:false)
                 ->column('title', label: __('Title'))
                 ->column('type', label: __('Type'))
@@ -243,9 +243,9 @@ class TicketsController extends Controller
     {
         $this->init();
    
-        $releases = Releases::select('version','id')->where('projects_id','=',$this->projects_id)->where('status','=','Open')->get();
+        $sprints = Sprints::select('version','id')->where('projects_id','=',$this->projects_id)->where('status','=','Open')->get();
 
-        $releases = $releases->pluck('version','id')->toArray();
+        $sprints = $sprints->pluck('version','id')->toArray();
 
         $globalSearch = AllowedFilter::callback('global', function ($query,$value) {
             $query->where(function ($query) use ($value) {
@@ -253,7 +253,7 @@ class TicketsController extends Controller
                     $query
                         ->orwhere('tickets.title', 'LIKE', "%$value%")
                         ->orwhere('tickets.description', 'LIKE', "%$value%")
-                        ->orwhere('releases.version', 'LIKE', "%$value%")
+                        ->orwhere('sprints.version', 'LIKE', "%$value%")
                         ->orwhere('tickets.prioridade', 'LIKE', "%$value%")
                         ->orwhere('types.title', 'LIKE', "%$value%");
                 });
@@ -261,19 +261,19 @@ class TicketsController extends Controller
         });
 
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release","projects.title as project")
+            ->select("tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","sprints.version as sprints","projects.title as project")
             ->where('tickets.status', 'Testing')
             ->leftJoin('users as a','a.id','=','resp_id')
             ->leftJoin('users as b','b.id','=','relator_id')
             ->leftJoin('types','types.id','=','types_id')
-            ->leftJoin('releases','releases.id','=','tickets.releases_id')
+            ->leftJoin('sprints','sprints.id','=','tickets.sprints_id')
             ->leftJoin('projects','projects.id','=','tickets.projects_id')
             ->Where('tickets.projects_id','=',$this->projects_id)
             ->orderby('prioridade')
             ->orderBy('status')
             ->orderBy('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
-            ->allowedFilters(['id','title', 'status', 'releases_id', $globalSearch])
+            ->allowedFilters(['id','title', 'status', 'sprints_id', $globalSearch])
             ->paginate(7)
             ->withQueryString();
 
@@ -281,10 +281,10 @@ class TicketsController extends Controller
             'ret' => SpladeTable::for($ret)
                 ->perPageOptions([])
                 ->withGlobalSearch()
-                ->selectFilter('releases_id',$releases)
+                ->selectFilter('sprints_id',$sprints)
                 ->column('id', label: __('ID'), searchable: true)
                 ->column('project', label: __('Project'), sortable: true, searchable: true, canBeHidden:false)
-                ->column('release', label: __('Sprint'))
+                ->column('sprint', label: __('Sprint'))
                 ->column('title', label: __('Title'), canBeHidden:false)
                 ->column('type', label: __('Type'))
                 ->column('relator', label: __('Relator'))
@@ -312,11 +312,11 @@ class TicketsController extends Controller
             ->where('projects_id','=',$this->projects_id)
             ->get();
 
-        // releases
+        // sprints
         if ($this->gp == '1') {
-            $releases = Releases::select('id','version')->wherein('status',['Open','Waiting'])->where('releases.projects_id', $this->projects_id)->where('end','>=',$hoje)->orderBy('status')->get();
+            $sprints = Sprints::select('id','version')->wherein('status',['Open','Waiting'])->where('sprints.projects_id', $this->projects_id)->where('end','>=',$hoje)->orderBy('status')->get();
         } else {
-            $releases = Releases::select('id','version')->where('projects_id', $this->projects_id)->where('status','Waiting')->where('end','>=',$hoje)->orderBy('status')->get();
+            $sprints = Sprints::select('id','version')->where('projects_id', $this->projects_id)->where('status','Waiting')->where('end','>=',$hoje)->orderBy('status')->get();
         }
 
         // devs
@@ -346,7 +346,7 @@ class TicketsController extends Controller
 
             return view('tickets.new-form', [
                 'ret' => $ret,
-                'releases' => $releases,
+                'sprints' => $sprints,
                 'devs' => $devs,
                 'types' => $types,
                 'projects' => $projects,
@@ -359,7 +359,7 @@ class TicketsController extends Controller
 
             return view('tickets.edit-form', [
                 'ret' => $ret,
-                'releases' => $releases,
+                'sprints' => $sprints,
                 'devs' => $devs,
                 'types' => $types,
                 'projects' => $projects,
@@ -380,12 +380,12 @@ class TicketsController extends Controller
         $id = base64_decode($id);
 
         $ret = Tickets::
-            select("tickets.*","projects.title as project","a.name as resp","b.name as relator","types.title as type","releases.version as release")
+            select("tickets.*","projects.title as project","a.name as resp","b.name as relator","types.title as type","sprints.version as sprint")
             ->leftJoin('projects','projects.id','=','tickets.projects_id')
             ->leftJoin('users as a','a.id','=','resp_id')
             ->leftJoin('users as b','b.id','=','relator_id')
             ->leftJoin('types','types.id','=','types_id')
-            ->leftJoin('releases','releases.id','=','tickets.releases_id')
+            ->leftJoin('sprints','sprints.id','=','tickets.sprints_id')
             ->where('tickets.id', $id)
             ->where('tickets.projects_id','=',$this->projects_id)
             ->get();
@@ -441,7 +441,7 @@ class TicketsController extends Controller
             'projects_id' => 'required',
             'title' => 'required|max:255',
             'status' => 'required',
-            'releases_id' => 'required',
+            'sprints_id' => 'required',
             'types_id' => 'required',
             'prioridade' => 'required'
         ]);
@@ -520,7 +520,7 @@ class TicketsController extends Controller
         $this->validate($request, [
             'title' => 'required|max:255',
             'status' => 'required',
-            'releases_id' => 'required',
+            'sprints_id' => 'required',
             'types_id' => 'required'
         ]);
 

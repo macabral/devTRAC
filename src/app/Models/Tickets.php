@@ -13,7 +13,7 @@ class Tickets extends Model
         'title',
         'description',
         'status',
-        'releases_id',
+        'sprints_id',
         'relator_id',
         'resp_id',
         'projects_id',

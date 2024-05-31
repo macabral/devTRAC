@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Models\Releases;
+use App\Models\Sprints;
 use App\Models\UsersProjects;
 
 /*
@@ -20,21 +20,21 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/releases/{project_id}/{perfil}', function ($project_id,$perfil) {
+Route::get('/sprints/{project_id}/{perfil}', function ($project_id,$perfil) {
 
     if ($perfil == '1') {
-        $releases = Releases::Select("id","version")->Where('projects_id','=',$project_id)->where('status','!=','Closed')->get();
+        $sprints = Sprints::Select("id","version")->Where('projects_id','=',$project_id)->where('status','!=','Closed')->get();
     } else {
-        $releases = Releases::Select("id","version")->Where('projects_id','=',$project_id)->where('status','=','Waiting')->get();
+        $sprints = Sprints::Select("id","version")->Where('projects_id','=',$project_id)->where('status','=','Waiting')->get();
     }
 
-    return response()->json($releases);
+    return response()->json($sprints);
 
 });
 
-Route::get('/releases-dashboard/{project_id}', function ($project_id) {
+Route::get('/sprints-dashboard/{project_id}', function ($project_id) {
 
-    $ret = Releases::Select("id","version")
+    $ret = Sprints::Select("id","version")
             ->Where('projects_id','=',$project_id)
             ->where('status','=','Open')
             ->orderby('start')

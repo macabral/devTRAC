@@ -2,7 +2,7 @@
 namespace App\Library;
   
 use App\Models\Logtickets;
-use App\Models\Releases;
+use App\Models\Sprints;
 use App\Models\User;
 use App\Models\Type;
 use App\Mail\NewTicket;
@@ -31,9 +31,9 @@ class LogService
           $texto .= 'Descrição alterada! [' . $ret['description'] .'] => [' . $input['description'] . ']' . chr(13);
       }
 
-      if ($ret['releases_id'] != $input['releases_id']) {
-          $query1 = Releases::Select('version')->where('id', '=', $ret['releases_id'])->get();
-          $query2 = Releases::Select('version')->where('id', '=', $input['releases_id'])->get();
+      if ($ret['sprints_id'] != $input['sprints_id']) {
+          $query1 = Sprints::Select('version')->where('id', '=', $ret['sprints_id'])->get();
+          $query2 = Sprints::Select('version')->where('id', '=', $input['sprints_id'])->get();
           $texto .= 'Sprint alterada! [' . $query1[0]['version'] .'] => [' .  $query2[0]['version'] . ']' . chr(13);
       }
 

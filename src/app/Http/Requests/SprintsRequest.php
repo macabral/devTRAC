@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ReleaseRequest extends FormRequest
+class SprintsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,7 @@ class ReleaseRequest extends FormRequest
             'version' => [
                 'required',
                 'max:30',
-                Rule::unique('releases')
+                Rule::unique('sprints')
                     ->where('projects_id', $this->input('projects_id'))
              ],
             'description' => 'max:255',

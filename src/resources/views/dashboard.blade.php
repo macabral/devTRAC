@@ -11,7 +11,7 @@
               <x-splade-select id="projects_id" name="projects_id" :options="$proj" option-label="title" option-value="projects_id"  placeholder="Projeto" autofocus />
             </div>
             <div  class="mt-2">
-              <x-splade-select id="releases_id" name="releases_id" :options="$releases" option-label="version" option-value="id" placeholder="Sprint" remote-url="`api/releases-dashboard/${form.projects_id}`" /> 
+              <x-splade-select id="sprints_id" name="sprints_id" :options="$sprints" option-label="version" option-value="id" placeholder="Sprint" remote-url="`api/sprints-dashboard/${form.projects_id}`" /> 
             </div>
             <div  class="mt-2"> 
               <x-splade-submit :label="__('Select Project')" />
@@ -54,7 +54,7 @@
                     @endphp
                     <tr class="border-b dark:border-neutral-500">
                         <td>{{ $item['project'] }}</td>
-                        <td>{{ $item['release'] }}</td>
+                        <td>{{ $item['sprint'] }}</td>
                         <td>{{ date('d/m/Y', strtotime($item['start'])) }}</td>
                         <td>{{ date('d/m/Y', strtotime($item['end'])) }}</td>
                         <td>{{ $item['type'] }}</td>
@@ -108,7 +108,7 @@
 					   <tr class="border-b dark:border-neutral-500">
 						 <td>{{ $item['name'] }}</td>
 						 <td>{{ $item['project'] }}</td>
-						 <td>{{ $item['release'] }}</td>
+						 <td>{{ $item['sprint'] }}</td>
 						 <td>{{ $item['type'] }}</td>
 						 <td class="text-center">{{ $item['open'] + $item['closed'] + $item['testing'] }}</td>
 						 <td class="text-center">{{ $item['open'] }}</td>

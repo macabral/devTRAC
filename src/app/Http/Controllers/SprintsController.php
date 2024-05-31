@@ -9,15 +9,15 @@ use ProtoneMedia\Splade\SpladeTable;
 use ProtoneMedia\Splade\Facades\Toast;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
-use App\Models\Releases;
+use App\Models\Sprints;
 use App\Models\Tickets;
 use App\Models\UsersProjects;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use App\Http\Requests\ReleaseRequest;
-use App\Http\Requests\ReleaseRequestUpdate;
+use App\Http\Requests\SprintsRequest;
+use App\Http\Requests\SprintsRequestUpdate;
 
-class ReleasesController extends Controller
+class SprintsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -40,24 +40,24 @@ class ReleasesController extends Controller
                 Collection::wrap($value)->each(function ($value) use ($query) {
                     $query
                         ->orwhere('version', 'LIKE', "%$value%")
-                        ->orwhere('releases.description', 'LIKE', "%$value%")
-                        ->orwhere('releases.projects_id', '=', $value);
+                        ->orwhere('sprints.description', 'LIKE', "%$value%")
+                        ->orwhere('sprints.projects_id', '=', $value);
                 });
             });
         });
 
 
-        $ret = QueryBuilder::for(Releases::class)
-            ->select("projects.title as project","releases.id","releases.version","releases.description as desc","releases.start","releases.end","releases.status")
-            ->leftJoin('projects','projects.id','=','releases.projects_id')
-            ->where('releases.projects_id','=',$projects_id)
-            ->orderby('releases.start')
+        $ret = QueryBuilder::for(Sprints::class)
+            ->select("projects.title as project","sprints.id","sprints.version","sprints.description as desc","sprints.start","sprints.end","sprints.status")
+            ->leftJoin('projects','projects.id','=','sprints.projects_id')
+            ->where('sprints.projects_id','=',$projects_id)
+            ->orderby('sprints.start')
             ->allowedSorts(['version'])
             ->allowedFilters(['version', 'description', 'status', 'projects_id', $globalSearch])
             ->paginate(7)
             ->withQueryString();
 
-        return view('releases.result-search', [
+        return view('sprints.result-search', [
             'ret' => SpladeTable::for($ret)
                 ->withGlobalSearch()
                 ->perPageOptions([])
@@ -115,16 +115,16 @@ class ReleasesController extends Controller
 
             );
 
-            return view('releases.new-form', [
+            return view('sprints.new-form', [
                 'ret' => $ret,
                 'projects' => $projects,
             ]);
 
         } else {
 
-            $ret = Releases::findOrFail($id);
+            $ret = Sprints::findOrFail($id);
 
-            return view('releases.edit-form', [
+            return view('sprints.edit-form', [
                 'ret' => $ret,
                 'projects' => $projects
             ]);
@@ -136,14 +136,14 @@ class ReleasesController extends Controller
     /**
      * Creating a new resource.
      */
-    public function create(ReleaseRequest $request,)
+    public function create(SprintsRequest $request,)
     {
 
         $input = $request->all();
         
         try {
             
-            Releases::create($input);
+            Sprints::create($input);
 
         } catch (\Exception $e) {
 
@@ -154,17 +154,17 @@ class ReleasesController extends Controller
 
         Toast::title(__('Sprint saved!'))->autoDismiss(5);
 
-        return redirect()->route('releases.index',0);
+        return redirect()->route('sprints.index',0);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(ReleaseRequestUpdate $request, string $id)
+    public function update(SprintsRequestUpdate $request, string $id)
     {
         $id = base64_decode($id);
 
-        $ret = Releases::findOrFail($id);
+        $ret = Sprints::findOrFail($id);
 
         $input = $request->all();
 
@@ -195,9 +195,9 @@ class ReleasesController extends Controller
 
         $id = base64_decode($id);
 
-        $ret = Releases::findOrFail($id);
+        $ret = Sprints::findOrFail($id);
 
-        return view('releases.confirm-delete', [
+        return view('sprints.confirm-delete', [
             'ret' => $ret,
         ]);
 
@@ -209,7 +209,7 @@ class ReleasesController extends Controller
     public function destroy(string $id)
     {
 
-        $ret = Releases::findOrFail($id);
+        $ret = Sprints::findOrFail($id);
 
         try {
             
@@ -236,12 +236,12 @@ class ReleasesController extends Controller
         $id = base64_decode($id);
 
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","releases.version as release","projects.title as project")
-            ->where('releases_id', '=', $id)
+            ->select("tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","sprints.version as sprint","projects.title as project")
+            ->where('sprints_id', '=', $id)
             ->Join('users as a','a.id','=','resp_id')
             ->Join('users as b','b.id','=','relator_id')
             ->Join('types','types.id','=','types_id')
-            ->Join('releases','releases.id','=','tickets.releases_id')
+            ->Join('sprints','sprints.id','=','tickets.sprints_id')
             ->Join('projects','projects.id','=','tickets.projects_id')
             ->orderby('status')
             ->orderBy('created_at', 'desc')->get();
@@ -262,7 +262,7 @@ class ReleasesController extends Controller
         $linha = 2;
         $sheet->setCellValue('A' . $linha, "ID");
         $sheet->setCellValue('B' . $linha, __('Title'));
-        $sheet->setCellValue('C' . $linha, __('Release'));
+        $sheet->setCellValue('C' . $linha, __('Sprint'));
         $sheet->setCellValue('D' . $linha, __('Type'));
         $sheet->setCellValue('E' . $linha, __('Relator'));
         $sheet->setCellValue('F' . $linha, __('Assign to'));
@@ -274,7 +274,7 @@ class ReleasesController extends Controller
             ++$linha;
             $sheet->setCellValue('A' . $linha, $item->id);
             $sheet->setCellValue('B' . $linha, $item->title);
-            $sheet->getCell('C' . $linha)->setValueExplicit($item->release,\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING );
+            $sheet->getCell('C' . $linha)->setValueExplicit($item->sprint,\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING );
             $sheet->setCellValue('D' . $linha, $item->type);
             $sheet->setCellValue('E' . $linha, $item->relator);
             $sheet->setCellValue('F' . $linha, $item->resp);
@@ -283,7 +283,7 @@ class ReleasesController extends Controller
         }
     
         $writer = new Xlsx($spreadsheet);
-        $fileName = 'release-tickets.xlsx';
+        $fileName = 'sprint-tickets.xlsx';
 
         $path = public_path('/uploads/downloads/' . auth('sanctum')->user()->id);
         

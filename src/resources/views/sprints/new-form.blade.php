@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('New Release') }}
+            {{ __('New Sprint') }}
         </h2>
     </x-slot>
 
@@ -17,8 +17,8 @@
                         </header>
                     
                         <x-splade-modal>
-                            <x-splade-form method="post" :action="route('releases.create')" :default="$ret" class="mt-4 space-y-4" preserve-scroll>
-                                @include('releases.fields-form')
+                            <x-splade-form method="post" :action="route('sprints.create')" :default="$ret" class="mt-4 space-y-4" preserve-scroll>
+                                @include('sprints.fields-form')
                             </x-splade-form>
                         </x-splade-modal>
                         

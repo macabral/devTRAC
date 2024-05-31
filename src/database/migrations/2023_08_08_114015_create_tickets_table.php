@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->longText('description')->nullable();
             $table->enum('status', ['Open', 'Closed','Testing']);
-            $table->biginteger('releases_id')->unsigned();
+            $table->biginteger('sprints_id')->unsigned();
             $table->biginteger('relator_id')->unsigned();
             $table->biginteger('resp_id')->unsigned()->nullable();
             $table->biginteger('projects_id')->unsigned();
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->tinyInteger('valorsp')->unsigned()->default(0);
             $table->enum('prioridade', ['Crítica', 'Importante','Desejada','Pode Esperar']);
 
-            $table->foreign('releases_id')->references('id')->on('releases')->onDelete('cascade');
+            $table->foreign('sprints_id')->references('id')->on('sprints')->onDelete('cascade');
             $table->foreign('resp_id')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('relator_id')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('projects_id')->references('id')->on('projects')->onDelete('cascade');
