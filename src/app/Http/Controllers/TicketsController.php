@@ -69,7 +69,7 @@ class TicketsController extends Controller
             });
         });
 
-        $sprints = Sprints::select('version','id')->where('projects_id','=',$this->projects_id)->get();
+        $sprints = Sprints::select('version','id')->where('projects_id','=',$this->projects_id)->orderby('start')->get();
 
         $sprints = $sprints->pluck('version','id')->toArray();
 
@@ -81,6 +81,7 @@ class TicketsController extends Controller
             ->leftJoin('sprints','sprints.id','=','tickets.sprints_id')
             ->leftJoin('projects','projects.id','=','sprints.projects_id')
             ->where('tickets.projects_id','=',$this->projects_id)
+            ->orderby('sprints.start')
             ->orderby('prioridade')
             ->orderby('created_at', 'desc')
             ->allowedSorts(['title','type','relator'])
