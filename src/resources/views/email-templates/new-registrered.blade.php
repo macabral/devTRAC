@@ -102,7 +102,7 @@
               <tr>
                 <td class="wrapper" style="font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top; box-sizing: border-box; padding: 24px;" valign="top">
                   <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;font-weight: bold;"> {{ __('Hi there') }}</p>
-                  <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;"> {{ __('You have been registered as a devTRAC user.  To register your password, access devTRAC and click on ') }}<b>{{__('Forgot your password?')}}</b></p>
+                  <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;"> {{ __("A new user has been registered with devTRAC. You must confirm the user's registration by associating them with a project so that they can access devTRAC.") }}</p>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; box-sizing: border-box; width: 100%; min-width: 100%;" width="100%">
                     <tbody>
                       <tr>

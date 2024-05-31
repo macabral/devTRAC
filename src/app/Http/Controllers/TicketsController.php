@@ -29,6 +29,7 @@ class TicketsController extends Controller
     private $relator;
     private $dev;
     private $gp;
+    private $admin;
 
     private function init()
     {
@@ -44,6 +45,7 @@ class TicketsController extends Controller
         $this->relator = Session::get('ret')[0]['relator'];
         $this->dev = Session::get('ret')[0]['dev'];
         $this->gp = Session::get('ret')[0]['gp'];
+        $this->admin = Session::get('ret')[0]['admin'];
     }
 
     /**
@@ -193,20 +195,19 @@ class TicketsController extends Controller
             ->Join('types','types.id','=','types_id')
             ->Join('releases','releases.id','=','tickets.releases_id')
             ->Join('projects','projects.id','=','tickets.projects_id')
+            ->Where('releases.status', '=', 'Open')
+            ->Where('tickets.projects_id','=', $this->projects_id)
+            ->Where('tickets.status', '!=', 'Closed')
             ->Where(function($query) {
-                $query->where('tickets.status', '=', 'Open')
-                    ->orwhere('tickets.status', '=', 'Testing');
-                })
-            ->Where(function($query) {
-                    if ($this->relator == '1') {
-                        $query->orwhere('tickets.relator_id', '=', $this->userId);
-                    }
+                if ($this->admin != '1' || $this->gp != '1') {
                     if ($this->dev == '1') {
                         $query->orwhere('tickets.resp_id', '=', $this->userId);
                     }
-                })
-            ->Where('releases.status', '=', 'Open')
-            ->Where('tickets.projects_id','=', $this->projects_id)
+                    if ($this->relator == '1') {
+                        $query->orwhere('tickets.relator_id', '=', $this->userId);
+                    }
+                }
+            })
             ->orderby('releases_id')
             ->orderby('status')
             ->orderby('prioridade')
@@ -308,7 +309,6 @@ class TicketsController extends Controller
         $projects = UsersProjects::select('projects.id','title')
             ->leftJoin('projects','projects.id','=','projects_id')
             ->where('users_id','=',$this->userId)
-            ->where('relator','=','1')
             ->where('projects_id','=',$this->projects_id)
             ->get();
 
@@ -541,15 +541,15 @@ class TicketsController extends Controller
             
             $ret->fill($input);
 
+            $ret->save();
+
+            Toast::title(__('Ticket saved!'))->autoDismiss(5);
+
         } catch (\Exception $e) {
 
             return response()->json(['messagem' => $e], 422);
             
         }
-
-        $ret->save();
-
-        Toast::title(__('Ticket saved!'))->autoDismiss(5);
 
         return redirect()->back();
     }

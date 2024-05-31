@@ -17,12 +17,18 @@ return new class extends Migration
             $table->string('version', 30);
             $table->longText('description')->nullable();
             $table->enum('status', ['Open', 'Closed', 'Waiting']);
-
+            $table->date('start')->nullable();
+            $table->date('end')->nullable();
+            $table->longText('lessons')->nullable();
+            
+            $table->unique(array('projects_id', 'version'));
             $table->foreign('projects_id')->references('id')->on('projects')->onDelete('cascade');
+            $table->index('version');
+            $table->index('projects_id','status');
 
             $table->timestamps();
 
-            $table->index('version');
+  
         });
 
 

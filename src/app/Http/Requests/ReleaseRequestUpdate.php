@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ReleaseRequest extends FormRequest
+class ReleaseRequestUpdate extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,12 +23,16 @@ class ReleaseRequest extends FormRequest
     public function rules(): array
     {
 
+        $id = base64_decode($this->id);
+
         return [
             'version' => [
                 'required',
                 'max:30',
                 Rule::unique('releases')
                     ->where('projects_id', $this->input('projects_id'))
+                    ->ignore($id)
+
              ],
             'description' => 'max:255',
             'status' => 'required',

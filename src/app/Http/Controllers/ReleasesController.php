@@ -15,7 +15,7 @@ use App\Models\UsersProjects;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Http\Requests\ReleaseRequest;
-
+use App\Http\Requests\ReleaseRequestUpdate;
 
 class ReleasesController extends Controller
 {
@@ -160,7 +160,7 @@ class ReleasesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ReleaseRequest $request, string $id)
+    public function update(ReleaseRequestUpdate $request, string $id)
     {
         $id = base64_decode($id);
 

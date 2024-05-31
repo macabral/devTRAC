@@ -7,13 +7,15 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Address;
-use App\Models\Tickets;
+use App\Models\User;
+use App\Models\UsersProjects;
 
-class NewTicket extends Mailable
+class RegistredUser extends Mailable
 {
     use Queueable;
 
     public $data;
+    public $destinatario;
 
     /**
      * Create a new message instance.
@@ -21,13 +23,23 @@ class NewTicket extends Mailable
     public function __construct($id)
     {
 
-        $data = Tickets::Select('tickets.title','projects.title as project','version','users.email')
-            ->leftJoin('projects','projects.id','=','tickets.projects_id')
-            ->leftJoin('releases','releases.id','=','tickets.releases_id')
-            ->leftJoin('users','resp_id','=','users.id')
-            ->where('tickets.id', $id)->get();
+        $data = User::select('name','email')
+            ->where('id',$id)
+            ->get();
 
         $this->data = $data[0];
+    
+        $destinatario = [];
+
+        $ret = User::Select('email')
+            ->where('admin', 1)
+            ->get();
+      
+        foreach($ret as $elem) {
+            array_push($destinatario,$elem->email);
+        }
+        
+        $this->destinatario = $destinatario;
 
     }
 
@@ -37,9 +49,9 @@ class NewTicket extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            to: $this->data['email'],
+            to: $this->destinatario,
             from: new Address( env('MAIL_FROM_ADDRESS', 'devtrac@devtrac.com'), env('MAIL_FROM_NAME', 'DevTrac')),
-            subject: 'Novo Tíquete',
+            subject: 'Novo Usuário Registrado',
         );
     }
 
@@ -50,7 +62,7 @@ class NewTicket extends Mailable
     {
 
         return new Content(
-            html: 'email-templates.new-ticket',
+            html: 'email-templates.new-registrered',
             with: [
                 'data' => $this->data,
             ],

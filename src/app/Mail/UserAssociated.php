@@ -7,27 +7,32 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Address;
-use App\Models\Tickets;
+use App\Models\User;
+use App\Models\UsersProjects;
 
-class NewTicket extends Mailable
+class UserAssociated extends Mailable
 {
     use Queueable;
 
     public $data;
+    public $destinatario;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($id)
+    public function __construct($id,$project)
     {
 
-        $data = Tickets::Select('tickets.title','projects.title as project','version','users.email')
-            ->leftJoin('projects','projects.id','=','tickets.projects_id')
-            ->leftJoin('releases','releases.id','=','tickets.releases_id')
-            ->leftJoin('users','resp_id','=','users.id')
-            ->where('tickets.id', $id)->get();
+        $data = UsersProjects::select('users.name','users.email','projects.title','users_projects.gp','users_projects.relator','users_projects.dev','users_projects.tester')
+            ->leftJoin('users','users.id','=','users_projects.users_id')
+            ->leftJoin('projects','projects.id','=','users_projects.projects_id')
+            ->where('users_id','=',$id)
+            ->where('projects_id','=',$project)
+            ->get();
 
         $this->data = $data[0];
+
+        $this->destinatario = $this->data['email'];
 
     }
 
@@ -37,9 +42,9 @@ class NewTicket extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            to: $this->data['email'],
+            to: $this->destinatario,
             from: new Address( env('MAIL_FROM_ADDRESS', 'devtrac@devtrac.com'), env('MAIL_FROM_NAME', 'DevTrac')),
-            subject: 'Novo Tíquete',
+            subject: 'Usuário Associado ao Projeto',
         );
     }
 
@@ -50,7 +55,7 @@ class NewTicket extends Mailable
     {
 
         return new Content(
-            html: 'email-templates.new-ticket',
+            html: 'email-templates.user-associated',
             with: [
                 'data' => $this->data,
             ],

@@ -11,9 +11,11 @@ use Spatie\QueryBuilder\AllowedFilter;
 use App\Models\User;
 use App\Models\Projects;
 use App\Models\UsersProjects;
-use App\Library\TracMail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUser;
+use App\Mail\UserAssociated;
 
 class UsersController extends Controller
 {
@@ -60,7 +62,9 @@ class UsersController extends Controller
     public function projects($userId)
     {
         
-        $ret = User::where('id', $userId)->with('projects')->get();
+        $ret = User::select('*')
+            ->where('id', $userId)
+            ->with('projects')->get();
 
         return view('users.users-projects', [
             'userId' => $userId,
@@ -96,7 +100,7 @@ class UsersController extends Controller
     /**
      * Associate new Project.
      */
-    public function associate(Request $request, $idUser, TracMail $TracMailInstance)
+    public function associate(Request $request, $idUser)
     {
         $this->validate($request, [
             'projects_id' => 'required|max:255',
@@ -110,16 +114,37 @@ class UsersController extends Controller
 
         $input['users_id'] = $idUser;
 
-        $project = $input['projects_id'];
+        $project = (int) $input['projects_id'];
 
-        $ret = UsersProjects::where('users_id','=',$idUser)->where('projects_id','=',$project)->get();
+        $ret = UsersProjects::where('users_id','=',$idUser)
+            ->where('projects_id','=',$project)
+            ->get();
 
-        Try {
+        try {
+
             if (! isset($ret[0]->id)) {
-                UsersProjects::create($input);
+
+                $ret = UsersProjects::create($input);
+                $id = $ret['id'];
+
             } else {
+
                 $id = $ret[0]->id;
                 UsersProjects::findOrFail($id)->fill($input)->save();
+                
+            }
+
+            Toast::title(__('Project Associated.'))->autoDismiss(5);
+
+            // enviar email
+            try {
+
+                Mail::Queue(new UserAssociated($idUser,$project));
+                
+            } catch (\Exception $e) {
+                
+                Toast::title(__('Não foi possível enviar email.'))->autoDismiss(5);
+                
             }
         
         } catch (\Exception $e) {
@@ -129,60 +154,6 @@ class UsersController extends Controller
             
         }
 
-        $proj = Projects::select('title')->Where('id','=', $project)->get();
-        $projectUser = $proj[0]->title;
-
-        $to = User::select('email')->where('id', '=', $idUser)->get(); 
-
-        $acessos = ''; $j = 0;
-
-        if ($input['gp']) {
-            $acessos .= 'Gerente de Projeto';
-            $j = 1;
-        }
-
-        if ($input['relator']) {
-            if($j) {
-                $acessos .= '; ';
-            } else {
-                $j = 1;
-            }
-            $acessos .= ' Relator';
-        }
-
-        if ($input['dev']) {
-            if($j) {
-                $acessos .= '; ';
-            } else {
-                $j = 1;
-            }
-            $acessos .= ' Desenvolvedor';
-        }
-
-        if ($input['tester']) {
-            if($j) {
-                $acessos .= '; ';
-            } else {
-                $j = 1;
-            }
-            $acessos .= ' Testador';
-        }
-
-
-        $mailData = [
-            'to' => $to[0]['email'],
-            'cc' => null,
-            'subject' => 'devTRAC: Projeto Associado',
-            'title' => "Usuário associado ao Projeto",
-            'body' => "Você está recebendo esse email porque o Administrador associou você ao Projeto $projectUser com os seguintes acessos: $acessos.",
-            'priority' => 0,
-            'attachments' => null
-        ];
-            
-        $TracMailInstance->save($mailData);
-
-        Toast::title(__('Project Associated.'))->autoDismiss(5);
-        
         return redirect()->back();
 
     }
@@ -223,11 +194,12 @@ class UsersController extends Controller
     public function destroy(string $id)
     {
 
-        $ret = User::findOrFail($id);
-
         try{
 
+            $ret = User::findOrFail($id);
+
             $ret->delete();
+
             Toast::title(__('User deleted!'))->autoDismiss(5);
 
         } catch (\Exception $e) {
@@ -272,8 +244,6 @@ class UsersController extends Controller
 
         }
 
-
-
     }
 
     /**
@@ -293,21 +263,23 @@ class UsersController extends Controller
         
         $input = $request->all();
 
-        $ret = User::findOrFail($id);
-
         try {
+            
+            $ret = User::findOrFail($id);
             
             $ret->fill($input);
 
+            $ret->save();
+
+            Toast::title(__('User saved!'))->autoDismiss(5);
+
         } catch (\Exception $e) {
+
+            Toast::title(__('Error!' . $e->getMessage()))->danger()->autoDismiss(5);
 
             return response()->json(['messagem' => $e], 422);
             
         }
-
-        $ret->save();
-
-        Toast::title(__('User saved!'))->autoDismiss(5);
 
         return redirect()->back();
     }
@@ -315,7 +287,7 @@ class UsersController extends Controller
     /**
      * Creating a new resource.
      */
-    public function create(Request $request, TracMail $TracMailInstance)
+    public function create(Request $request)
     {
         
         $this->validate($request, [
@@ -335,20 +307,20 @@ class UsersController extends Controller
 
         try {
             
-            User::create($input);
+            $ret = User::create($input);
 
-            $mailData = [
-                'to' => $input['email'],
-                'cc' => null,
-                'subject' => 'devTRAC: Você foi cadastrado.',
-                'title' => "Novo Cadastro",
-                'body' => "Você foi cadastrado no devTRAC com o email <b>$email</b> e senha <b>$password</b>.<br><br>Não esqueça de trocar a senha no próximo login.",
-                'priority' => 10,
-                'attachments' => null
-            ];
-                
-            $TracMailInstance->save($mailData);
+            Toast::title(__('User saved!'))->autoDismiss(5);
 
+            // enviar email
+            try {
+
+                Mail::Queue(new NewUser($ret['id']));
+        
+            } catch (\Exception $e) {
+        
+                Toast::title(__('Não foi possível enviar email.'))->autoDismiss(5);
+        
+            }
 
         } catch (\Exception $e) {
 
@@ -357,46 +329,7 @@ class UsersController extends Controller
             
         }
 
-        Toast::title(__('User saved!'))->autoDismiss(5);
-
-        return redirect()->route('users.index');
-    }
-
-    /**
-     * 
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function reset($id, TracMail $TracMailInstance)
-    {
-
-        $id = base64_decode($id);
-
-        $ret = User::findOrFail($id);
-
-        $password = Str::random(10);
-        
-        $ret->update([
-            'password' =>  Hash::make($password)
-        ]);
-
-        $mailData = [
-            'to' => $ret->email,
-            'cc' => null,
-            'subject' => 'devTRAC: Sua senha foi Resetada',
-            'title' => "Nova Senha",
-            'body' => "Sua senha foi alterada pelo Administrador.<br>No próximo login utiliza a senha <b>$password</b>.<br>Não esqueça de trocar a senha.",
-            'priority' => 10,
-            'attachments' => null
-        ];
-            
-        $TracMailInstance->save($mailData);
-
-        Toast::title(__('Password was reseted!'))->autoDismiss(5);
-
-        return redirect()->route('users.index');
-
+        return redirect()->back();
     }
 
 }

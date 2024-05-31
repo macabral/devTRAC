@@ -23,6 +23,12 @@ return new class extends Migration
             $table->biginteger('types_id')->unsigned();
             $table->tinyInteger('docs')->unsigned()->default(0);
             $table->string('file')->nullable();
+            $table->tinyInteger('pf')->unsigned()->default(0);
+            $table->longText('testcondition')->nullable();
+            $table->tinyInteger('start')->unsigned()->default(0);
+            $table->tinyInteger('storypoint')->unsigned()->default(0);
+            $table->tinyInteger('valorsp')->unsigned()->default(0);
+            $table->enum('prioridade', ['Crítica', 'Importante','Desejada','Pode Esperar']);
 
             $table->foreign('releases_id')->references('id')->on('releases')->onDelete('cascade');
             $table->foreign('resp_id')->references('id')->on('users')->onDelete('restrict');
@@ -32,6 +38,8 @@ return new class extends Migration
 
             $table->timestamps();
 
+            $table->index('projects_id','resp_id');
+            $table->index('projects_id','status');
             $table->index('title');
             $table->index('status');
 

@@ -186,7 +186,6 @@ class DashboardController extends Controller
                 if ($vlr < 0) {
                     $vlr = 0;
                 }
-                error_log($vlr);
                 $estimado .= $vlr . ',';
             }
 
@@ -196,7 +195,6 @@ class DashboardController extends Controller
                 if ($vlr < 0) {
                     $vlr = 0;
                 }
-                error_log($vlr);
                 $real .= $vlr . ',';
             }
 

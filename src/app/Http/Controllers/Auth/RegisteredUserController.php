@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\NewUser;
+use App\Mail\RegistredUser;
 use ProtoneMedia\Splade\Facades\Toast;
 class RegisteredUserController extends Controller
 {
@@ -53,7 +53,7 @@ class RegisteredUserController extends Controller
         // enviar email ao Administrador
         try {
 
-            Mail::Queue(new NewUser($user['id']));
+            Mail::Queue(new RegistredUser($user['id']));
 
         } catch (\Exception $e) {
 

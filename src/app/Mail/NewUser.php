@@ -28,18 +28,8 @@ class NewUser extends Mailable
             ->get();
 
         $this->data = $data[0];
-    
-        $destinatario = [];
 
-        $ret = User::Select('email')
-            ->where('admin', 1)
-            ->get();
-      
-        foreach($ret as $elem) {
-            array_push($destinatario,$elem->email);
-        }
-        
-        $this->destinatario = $destinatario;
+        $this->destinatario = $this->data['email'];
 
     }
 
@@ -51,7 +41,7 @@ class NewUser extends Mailable
         return new Envelope(
             to: $this->destinatario,
             from: new Address( env('MAIL_FROM_ADDRESS', 'devtrac@devtrac.com'), env('MAIL_FROM_NAME', 'DevTrac')),
-            subject: 'Novo Usuário Registrado',
+            subject: 'Usuário Cadastrado',
         );
     }
 
@@ -62,7 +52,7 @@ class NewUser extends Mailable
     {
 
         return new Content(
-            html: 'email-templates.test-ticket',
+            html: 'email-templates.new-user',
             with: [
                 'data' => $this->data,
             ],

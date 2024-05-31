@@ -5,7 +5,8 @@ use App\Models\Logtickets;
 use App\Models\Releases;
 use App\Models\User;
 use App\Models\Type;
-
+use App\Mail\NewTicket;
+use Illuminate\Support\Facades\Mail;
 class LogService
 {
     public function saveLog($id, $ret, $input)
@@ -40,11 +41,17 @@ class LogService
         if (is_null($ret['resp_id'])) {
           $query2 = User::Select('name')->where('id', '=', $input['resp_id'])->get();
           $texto .= 'Responsável atribuído! [' .  $query2[0]['name'] . ']' . chr(13);
+
+          Mail::Queue(new NewTicket($ret['id']));
+
         } else {
           if ($ret['resp_id'] != $input['resp_id']) {
             $query1 = User::Select('name')->where('id', '=', $ret['resp_id'])->get();
             $query2 = User::Select('name')->where('id', '=', $input['resp_id'])->get();
             $texto .= 'Responsável alterado! [' . $query1[0]['name'] .'] => [' .  $query2[0]['name'] . ']' . chr(13);
+
+            Mail::Queue(new NewTicket($ret['id']));
+            
           }
         }
       }

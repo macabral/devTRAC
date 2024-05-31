@@ -119,7 +119,6 @@ Route::middleware('splade')->group(function () {
         Route::get('/users-project-delete/{userId}/{id}', [UsersController::class, 'deleteproj'])->middleware(['adminAccess'])->name('users.project-delete');
         Route::get('/users-delete/{id}', [UsersController::class, 'delete'])->middleware(['adminAccess'])->name('users.delete');
         Route::delete('/users/{id}', [UsersController::class, 'destroy'])->middleware(['adminAccess'])->name('users.destroy');
-        Route::get('/users-reset/{id}', [UsersController::class, 'reset'])->middleware(['adminAccess'])->name('users.reset');
         Route::get('/users/{id}', [UsersController::class, 'show'])->middleware(['adminAccess'])->name('users.show');
         Route::patch('/users-update/{id}', [UsersController::class, 'update'])->middleware(['adminAccess'])->name('users.update');
         Route::post('/users/{id}', [UsersController::class, 'create'])->middleware(['adminAccess'])->name('users.create');
