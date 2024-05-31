@@ -364,7 +364,7 @@
         @endif
 
 		<!-- Sprint/PF-->
-		@if (! empty($chart4))
+		@if (! count($chart4) == 0)
 			var cat2 = "{{ $chart4['categories']  }}"
 			var categ2 = cat2.split(',')
 			var data1 = {{ $chart4['data1'] }}

@@ -215,7 +215,6 @@ class DashboardController extends Controller
         $chart3 = $this->storyGrafico($projects_id);
 
         // gráfico pf
-
         $chart4 = $this->pfGrafico($projects_id);
       
         return view('dashboard',[

@@ -63,9 +63,9 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        container_name: schedule
+        container_name: queue
         restart: unless-stopped
-        command: "php artisan schedule:work"
+        command: "php artisan queue:work"
         volumes:
             - ./src:/var/www/app
         depends_on: 
