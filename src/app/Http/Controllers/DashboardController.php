@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use ProtoneMedia\Splade\Facades\Toast;
 use App\Models\Sprints;
+use App\Models\Tickets;
 use App\Models\UsersProjects;
 use Carbon\Carbon;
 
@@ -244,8 +245,9 @@ class DashboardController extends Controller
             left join projects on projects.id = tickets.projects_id 
             left join types on types.id = tickets.types_id 
             where projects.id =  $projects_id and sprints.id = $sprints_id
-            group by tickets.projects_id, tickets.sprints_id, tickets.resp_id, tickets.types_id, tickets.status 
+            group by projects.title,sprints.id,tickets.projects_id, tickets.sprints_id, tickets.resp_id, tickets.types_id,types.title,tickets.status,users.name
             order by users.name, sprints.version, types.title, tickets.status";
+
         $stats = DB::select($sql);
 
         $result = [];
@@ -308,7 +310,7 @@ class DashboardController extends Controller
             left join projects on projects.id = tickets.projects_id 
             left join types on types.id = tickets.types_id 
             where  sprints.id = $sprints_id
-            group by tickets.projects_id, tickets.sprints_id, tickets.types_id, tickets.status 
+            group by projects.title,sprints.id,sprints.version,tickets.projects_id, tickets.sprints_id, tickets.types_id, types.title, tickets.status 
             order by sprints.version, types.title, tickets.status";
 
         $stats = DB::select($sql);
@@ -379,7 +381,7 @@ class DashboardController extends Controller
             LEFT JOIN sprints ON sprints.id = tickets.sprints_id
             LEFT JOIN types ON types.id = tickets.types_id
             WHERE tickets.projects_id = $projects_id AND  sprints.status <> 'Waiting'
-            GROUP BY sprints_id
+            GROUP BY sprints_id,sprints.version,melhoria,defeito,suporte
             order by sprints_id
             LIMIT 12";
 
@@ -415,7 +417,7 @@ class DashboardController extends Controller
             LEFT JOIN sprints ON sprints.id = tickets.sprints_id
             LEFT JOIN types ON types.id = tickets.types_id
             WHERE tickets.projects_id = $projects_id AND  sprints.status <> 'Waiting'
-            GROUP BY sprints_id
+            GROUP BY sprints_id,sprints.version
             order by sprints_id
             LIMIT 12";
 
@@ -448,7 +450,7 @@ class DashboardController extends Controller
             LEFT JOIN sprints ON sprints.id = tickets.sprints_id
             LEFT JOIN types ON types.id = tickets.types_id
             WHERE tickets.projects_id = $projects_id AND  sprints.status <> 'Waiting'
-            GROUP BY sprints_id
+            GROUP BY sprints_id,sprints.version
             order by sprints_id
             LIMIT 12";
 

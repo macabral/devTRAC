@@ -39,10 +39,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index('projects_id','resp_id');
-            $table->index('projects_id','status');
             $table->index('title');
-            $table->index('status');
-
 
         });
     }
