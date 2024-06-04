@@ -262,7 +262,7 @@ class TicketsController extends Controller
         });
 
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","sprints.version as sprints","projects.title as project")
+            ->select("tickets.*", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","sprints.version as sprint","projects.title as project")
             ->where('tickets.status', 'Testing')
             ->leftJoin('users as a','a.id','=','resp_id')
             ->leftJoin('users as b','b.id','=','relator_id')
