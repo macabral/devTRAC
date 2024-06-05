@@ -43,3 +43,15 @@ MAIL_FROM_NAME="${APP_NAME}"
  https://localhost:8443 para acessar a aplicação devTRAC com o usuário 'admin@admin.com' e senha 'password'.
 
  http://localhost:8080 para acessar o phpmyadmin para administração do banco de dados.
+
+
+ ## devTRAC Instalação em Shared Host
+
+ 1) usar cpanel para clonar o devTRAC para uma pasta devTRAC
+ 2) copiar a pasta vendor para a pasta clonada
+ 3) criar subdomínio devtrac.marcosistemas.com.br
+ 4) copiar a pasta pública para o subdomínio
+ 5) editar o index.php da pasta pública no subdomínio e alterar o caminho para o autoloader e bootstrap para a pasta clonada
+ 6) utilizar o createsymlink.php para criar links para a pasta pública 
+ 
+  
