@@ -5,19 +5,30 @@
         </h2>
     </x-slot>
  
-    <x-splade-form name="form" method="post" :action="route('dashboard.project')" :default="$input" class="mt-4 sm:px-6 lg:px-8 grid grid-cols-3 md:grid-cols-3 gap-3" preserve-scroll>
-      <div>
-            <div>
-              <x-splade-select id="projects_id" name="projects_id" :options="$proj" option-label="title" option-value="projects_id"  placeholder="Projeto" autofocus />
-            </div>
-            <div  class="mt-2">
-              <x-splade-select id="sprints_id" name="sprints_id" :options="$sprints" option-label="version" option-value="id" placeholder="Sprint" remote-url="`api/sprints-dashboard/${form.projects_id}`" /> 
-            </div>
-            <div  class="mt-2"> 
-              <x-splade-submit :label="__('Select Project')" />
-            </div>
-      </div>
-    </x-splade-form>
+	<div class="grid grid-cols-2">
+		<div>
+			<x-splade-form name="form" method="post" :action="route('dashboard.project')" :default="$input" class="mt-4 sm:px-6 lg:px-8 grid grid-cols-3 md:grid-cols-3 gap-3" preserve-scroll>
+			<div>
+					<div>
+					<x-splade-select id="projects_id" name="projects_id" :options="$proj" option-label="title" option-value="projects_id"  placeholder="Projeto" autofocus />
+					</div>
+					<div  class="mt-2">
+					<x-splade-select id="sprints_id" name="sprints_id" :options="$sprints" option-label="version" option-value="id" placeholder="Sprint" remote-url="`api/sprints-dashboard/${form.projects_id}`" /> 
+					</div>
+					<div  class="mt-2"> 
+					<x-splade-submit :label="__('Select Project')" />
+					</div>
+			</div>
+			</x-splade-form>
+		</div>
+		<div>
+				<div class="w-80 p-6 border-8 rounded-md mt-10 bg-white px-2 inline-block align-middle text-center text-blue-800">
+					Total de Tíquetes<br>
+					{{ $total }}
+				</div>
+
+		</div>
+	</div>
 
     <div class="flex flex-wrap mt-6 sm:px-6 lg:px-8 mx-6 mr-6 grid grid-cols-2 md:grid-cols-2 gap-6 bg-white">
     @if (count($stats) > 0)
