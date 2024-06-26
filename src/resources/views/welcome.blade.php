@@ -37,7 +37,7 @@
         </div>
 
             <div class="ml-4 pt-5 text-center text-sm text-gray-500 sm:text-right sm:ml-0">
-                v0.12
+                v0.13
             </div>
 
     </div>

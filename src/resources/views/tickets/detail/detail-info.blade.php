@@ -35,24 +35,27 @@
             </tr>
         </tbody>
     </table>
-    @if ($ret->status == 'Open' || $ret->status == 'Testing')
-        @if ($ret->resp_id === auth('sanctum')->user()->id)
-            <div class="w-100 inline-flex">
-                    @if($ret->start != 1)
-                        <div class="pr-4">
-                            <Link href="{{ route('tickets.start', base64_encode($ret->id)) }}" title="{{ __('Start Task') }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M2 24v-24l20 12-20 12z"/></svg>
-                            </Link>
-                        </div>
-                    @endif
-                    @if($ret->start == 1)
-                        <div class="pr-4">
-                            <Link href="{{ route('tickets.pause', base64_encode($ret->id)) }}" title="{{ __('Pause Task') }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M11 22h-4v-20h4v20zm6-20h-4v20h4v-20z"/></svg>
-                            </Link>
-                        </div>
-                    @endif
-            </div>
+    <div class="flex justify-end align-middle inline-block mr-6">
+        @if ($ret->status == 'Open' || $ret->status == 'Testing')
+            @if ($ret->resp_id === auth('sanctum')->user()->id)
+                <div class="w-100 inline-flex align-middle ">
+                        @if($ret->start != 1)
+                            <div class="pr-4 pt-3">
+                                <Link href="{{ route('tickets.start', base64_encode($ret->id)) }}" title="{{ __('Start Task') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M2 24v-24l20 12-20 12z"/></svg>
+                                </Link>
+                            </div>
+                        @endif
+                        @if($ret->start == 1)
+                            <div class="pr-4 pt-3">
+                                <Link href="{{ route('tickets.pause', base64_encode($ret->id)) }}" title="{{ __('Pause Task') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M11 22h-4v-20h4v20zm6-20h-4v20h4v-20z"/></svg>
+                                </Link>
+                            </div>
+                        @endif
+                </div>
+            @endif
         @endif
-    @endif
+
+    </div>
 </div>

@@ -200,7 +200,7 @@ class ProjectsController extends Controller
     {
         $projects_id = base64_decode($id);
 
-        $ret = UsersProjects::Select('name','email','gp','relator','tester','dev','admin','users.active')
+        $ret = UsersProjects::Select('name','email','gp','relator','tester','dev','admin','users.active','users.avatar')
             ->leftJoin('projects','projects.id','=','users_projects.projects_id')
             ->leftJoin('users','users.id','=','users_projects.users_id')
             ->Where('projects_id','=',$projects_id)

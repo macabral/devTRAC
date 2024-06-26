@@ -1,0 +1,33 @@
+databaseType = "MySql"
+id = "3e161c46-a074-44ae-a994-4c0e97265d7f"
+name = "devTRAC"
+
+[flyway]
+locations = [ "filesystem:migrations" ]
+mixed = true
+outOfOrder = true
+validateMigrationNaming = true
+
+  [flyway.check]
+  majorTolerance = 0
+
+[flywayDesktop]
+developmentEnvironment = "development"
+schemaModel = "schema-model"
+shadowEnvironment = "shadow"
+
+[redgateCompare]
+filterFile = "filter.rgf"
+
+[redgateCompare.mysql.options.ignores]
+ignoreNewlinesInTextObjects = "off"
+
+[environments.target1]
+url = "jdbc:mysql://localhost:3307"
+schemas = [ "devtrac2" ]
+displayName = "devTRAC-DB-Homologação"
+
+[environments.target2]
+url = "jdbc:mysql://localhost:3307"
+schemas = [ "devtrac" ]
+displayName = "devTRAC Produção"

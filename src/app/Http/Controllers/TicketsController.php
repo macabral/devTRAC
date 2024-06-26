@@ -15,6 +15,7 @@ use Ramsey\Uuid\Uuid;
 use Carbon\Carbon;
 use ZipArchive;
 use App\Models\Tickets;
+use App\Tables\myTickets;
 use App\Models\Sprints;
 use App\Models\UsersProjects;
 use App\Models\Type;
@@ -131,7 +132,7 @@ class TicketsController extends Controller
         });
 
         $ret = QueryBuilder::for(Tickets::class)
-            ->select("projects.title as project","tickets.id","tickets.title","tickets.status","tickets.start","tickets.created_at","tickets.prioridade", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","sprints.version as sprint")
+            ->select("projects.title as project","tickets.id","tickets.title","tickets.status","tickets.start","tickets.created_at","tickets.prioridade", "a.name as resp","b.id as user_id","b.name as relator","types.title as type","sprints.version as sprint",'tickets.valorsp')
             ->leftJoin('users as a','a.id','=','resp_id')
             ->leftJoin('users as b','b.id','=','relator_id')
             ->leftJoin('types','types.id','=','types_id')
@@ -157,6 +158,7 @@ class TicketsController extends Controller
                 ->column('relator', label: __('Relator'))
                 ->column('resp', label: __('Assign to'))
                 ->column('prioridade', label: __('Priority'))
+                ->column('valorsp', label: __('Story Point'))
                 ->column('status', label: __('Status'), searchable: true)
                 ->column('action', label: '', canBeHidden:false)
         ]);
@@ -167,73 +169,11 @@ class TicketsController extends Controller
      */
     public function mytickets()
     {
-       
-        $this->init();
-
-        $sprints = Sprints::select('version','id')->where('projects_id','=',$this->projects_id)->where('status','=','Open')->get();
-
-        $sprints = $sprints->pluck('version','id')->toArray();
-
-        $globalSearch = AllowedFilter::callback('global', function ($query,$value) {
-            $query->where(function ($query) use ($value) {
-                Collection::wrap($value)->each(function ($value) use ($query) {
-                    $query
-                        ->orwhere('tickets.title', 'LIKE', "%$value%")
-                        ->orwhere('tickets.prioridade', 'LIKE', "%$value%")
-                        ->orwhere('tickets.description', 'LIKE', "%$value%")
-                        ->orwhere('sprints.version', 'LIKE', "%$value%")
-                        ->orwhere('types.title', 'LIKE', "%$value%")
-                        ->orwhere('a.name', 'LIKE', "%$value%")
-                        ->orwhere('b.name', 'LIKE', "%$value%");
-                });
-            });
-        });
-
-        $ret = QueryBuilder::for(Tickets::class)
-            ->select("tickets.title","tickets.id","tickets.status","tickets.start","tickets.created_at","tickets.prioridade","a.name as resp","b.id as user_id","b.name as relator","types.title as type","sprints.version as sprint","projects.title as project")
-            ->leftJoin('users as a','a.id','=','resp_id')
-            ->Join('users as b','b.id','=','relator_id')
-            ->Join('types','types.id','=','types_id')
-            ->Join('sprints','sprints.id','=','tickets.sprints_id')
-            ->Join('projects','projects.id','=','tickets.projects_id')
-            ->Where('sprints.status', '=', 'Open')
-            ->Where('tickets.projects_id','=', $this->projects_id)
-            ->Where('tickets.status', '!=', 'Closed')
-            ->Where(function($query) {
-                if ($this->admin != '1' || $this->gp != '1') {
-                    if ($this->dev == '1') {
-                        $query->orwhere('tickets.resp_id', '=', $this->userId);
-                    }
-                    if ($this->relator == '1') {
-                        $query->orwhere('tickets.relator_id', '=', $this->userId);
-                    }
-                }
-            })
-            ->orderby('sprints_id')
-            ->orderby('status')
-            ->orderby('prioridade')
-            ->orderBy('created_at')
-            ->allowedFilters(['id','title', 'status', 'sprints_id', $globalSearch])
-            ->paginate(7)
-            ->withQueryString();
-
+      
         return view('tickets.result-search', [
-            'ret' => SpladeTable::for($ret)
-                ->perPageOptions([])
-                ->withGlobalSearch()
-                ->selectFilter('sprints_id',$sprints)
-                ->column('id', label: __('ID'), searchable: true)
-                ->column('project', label: __('Project'), sortable: true, searchable: false, canBeHidden:false)
-                ->column('sprint', label: __('Sprint'))
-                ->column('start', label: __(''),searchable: false, canBeHidden:false)
-                ->column('title', label: __('Title'))
-                ->column('type', label: __('Type'))
-                ->column('relator', label: __('Relator'))
-                ->column('resp', label: __('Assign to'))
-                ->column('prioridade', label: __('Priority'))
-                ->column('status', label: __('Status'))
-                ->column('action', label: '', canBeHidden:false, exportAs: false)
+            'ret' => myTickets::class,
         ]);
+        
     }
 
 

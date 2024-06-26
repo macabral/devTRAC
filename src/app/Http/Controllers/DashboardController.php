@@ -221,6 +221,11 @@ class DashboardController extends Controller
         //total de tíquetes do projeto
         $sql = "select count(*) as total from tickets where projects_id = $projects_id";
         $total = DB::select($sql);
+
+        //total de tíquetes do projeto
+        $sql = "select count(*) as total from users_projects where projects_id = $projects_id";
+        $totalEquipe = DB::select($sql);
+
       
         return view('dashboard',[
             'proj' => $ret,
@@ -236,22 +241,23 @@ class DashboardController extends Controller
             'storypoint_medio' =>  $ret[$ind]->media_sp,
             'pf_medio' =>  $ret[$ind]->media_pf,
             'projeto' => $projects_id,
-            'sprint' => $sprints_id
+            'sprint' => $sprints_id,
+            'totalEquipe' => $totalEquipe[0]->total
         ]);
 
     }
 
     private function devEstat($projects_id, $sprints_id) {
 
-        $sql = "select projects.title as project, sprints.id as versionId, sprints.version, sprints.start, sprints.end, types.title as type, users.name, tickets.status, count(*) as qtd, sum(valorsp) as storypoint 
+        $sql = "select projects.title as project, sprints.id as versionId, sprints.version, sprints.start, sprints.end, users.name, tickets.status, count(*) as qtd, sum(valorsp) as storypoint 
             from tickets 
             left join users on users.id = tickets.resp_id 
             inner join sprints on sprints.id = tickets.sprints_id and sprints.status = 'Open' 
             left join projects on projects.id = tickets.projects_id 
             left join types on types.id = tickets.types_id 
             where projects.id =  $projects_id and sprints.id = $sprints_id
-            group by projects.title,sprints.id,tickets.projects_id, tickets.sprints_id, tickets.resp_id, tickets.types_id,types.title,tickets.status,users.name
-            order by users.name, sprints.version, types.title, tickets.status";
+            group by projects.title,sprints.id,tickets.projects_id, tickets.sprints_id, tickets.resp_id, tickets.status,users.name
+            order by users.name, sprints.version, tickets.status";
 
         $stats = DB::select($sql);
 
@@ -262,7 +268,7 @@ class DashboardController extends Controller
             $found = false;
             $tcount = count($result);
             for ($i=0; $i<$tcount; $i++) {
-                    if ($result[$i]['type'] == $item->type && $result[$i]['name'] == $item->name)  {
+                    if ($result[$i]['name'] == $item->name)  {
                     if ($item->status == 'Open') {
                         $result[$i]['open'] += $item->qtd;
                     } else if ($item->status == 'Closed') {
@@ -283,7 +289,6 @@ class DashboardController extends Controller
                     'start' => $item->start,
                     'end' => $item->end,
                     'project' => $item->project,
-                    'type' => $item->type,
                     'name' => $item->name,
                     'open' => 0,
                     'testing' => 0,

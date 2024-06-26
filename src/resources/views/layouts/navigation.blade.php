@@ -6,6 +6,7 @@
   $relator = Session::get('ret')[0]['relator'];
   $tester = Session::get('ret')[0]['tester'];
   $admin = Session::get('ret')[0]['admin'];
+  $avatar = auth('sanctum')->user()->avatar;
 ?>
 <x-splade-toggle>
     <nav class="bg-white border-b border-gray-100">
@@ -129,7 +130,30 @@
                     <x-dropdown placement="bottom-end">
                         <x-slot name="trigger">
                             <button class="flex items-center text-sm font-medium text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition duration-150 ease-in-out">
-                                <div>{{ Auth::user()->name }}</div>
+                                <div class="inline-flex">
+                                    @if($avatar == 1)
+                                        <img src="<?php echo url(''); ?>/avatar/4043229_afro_avatar_male_man_icon.png" width="30" dalt="">
+                                    @elseif($avatar == 2)
+                                        <img src="<?php echo url(''); ?>/avatar/4043240_avatar_bad_breaking_chemisrty_heisenberg_icon.png" width="30" dalt="">
+                                    @elseif($avatar == 3)
+                                        <img src="<?php echo url(''); ?>/avatar/4043236_avatar_boy_male_portrait_icon.png" width="30" dalt="">
+                                    @elseif($avatar == 4)
+                                        <img src="<?php echo url(''); ?>/avatar/4043247_avatar_female_portrait_woman_icon.png" width="30" dalt="">
+                                    @elseif($avatar == 5)
+                                        <img src="<?php echo url(''); ?>/avatar/4043248_avatar_female_portrait_woman_icon.png" width="30" dalt="">
+                                    @elseif($avatar == 6)
+                                        <img src="<?php echo url(''); ?>/avatar/4043231_afro_female_person_woman_icon.png" width="30" dalt="">      
+                                    @elseif($avatar == 7)
+                                        <img src="<?php echo url(''); ?>/avatar/4043251_avatar_female_girl_woman_icon.png" width="30" dalt="">
+                                    @elseif($avatar == 8)
+                                        <img src="<?php echo url(''); ?>/avatar/4043277_avatar_person_pilot_traveller_icon.png" width="30" dalt="">                                                                       
+                                    @elseif($avatar == 9)
+                                        <img src="<?php echo url(''); ?>/avatar/4043270_avatar_joker_squad_suicide_woman_icon.png" width="30" dalt="">
+                                    @elseif($avatar == 10)
+                                        <img src="<?php echo url(''); ?>/avatar/2992459_girl_lady_user_woman_icon.png" width="30" dalt="">                                                                 
+                                    @endif                                    
+                                    &nbsp;{{ Auth::user()->name }}
+                                </div>
 
                                 <div class="ml-1">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">

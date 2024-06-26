@@ -28,6 +28,7 @@
                     @endcell
                     @cell('action', $ret)
                         <div class="flex flex-row">
+                            
                             @if (Session::get('ret')[0]['gp'] == '1')
                                 <div class="basis-1/2 text-center">
                                     <Link slideover href="{{ route('sprints.show', base64_encode($ret->id)) }}" title="{{ __('Edit') }}">

@@ -21,20 +21,37 @@
 			</div>
 			</x-splade-form>
 		</div>
-		<div>
-				<div class="w-80 p-6 border-8 rounded-md mt-10 bg-white px-2 inline-block align-middle text-center text-blue-800">
-					Total de Tíquetes<br>
+		<div class="flex justify-end align-middle inline-block mr-6">
+
+				<div class="p-6 border-8 rounded-md inline-block mt-10 bg-white  text-center text-blue-800 font-bold">
+					<Link  href="{{ route('tickets.index') }}">
+						Total de Tickets
+					</Link> 
+					<br><br>
 					{{ $total }}
+				</div>
+
+				<div class="ml-10 p-6 border-8 rounded-md inline-block mt-10 bg-white text-center text-blue-800 font-bold">
+					<Link slideover href="{{ route('projects.users', base64_encode($projeto)) }}">
+						Equipe de Projeto
+					</Link> 
+					<br><br>
+					{{ $totalEquipe }}
 				</div>
 
 		</div>
 	</div>
 
     <div class="flex flex-wrap mt-6 sm:px-6 lg:px-8 mx-6 mr-6 grid grid-cols-2 md:grid-cols-2 gap-6 bg-white">
+
     @if (count($stats) > 0)
       <div>
         <div>
-        <table class="w-full bg-white mt-6 text-left text-sm font-light border border-slate-400 rounded">
+			<div>
+				<br>
+				<div id="chart1" name="chart1"></div>
+			  </div>
+        <table class="min-w-full bg-white mt-6 text-left text-sm font-light rounded">
             <thead class="border-b font-medium dark:border-neutral-500">
                 <tr>
                   <th class="text-left">Projeto</th>
@@ -94,10 +111,6 @@
               </tbody>
         </table>
         </div>
-        <div>
-          <br>
-          <div id="chart1" name="chart1"></div>
-        </div>
 
 		@if (count($perdev) > 0)
 		<div>
@@ -107,7 +120,7 @@
 					 <th class="text-left">Dev</th>
 					 <th class="text-left">Projeto</th>
 					 <th class="text-left">Sprint</th>
-					 <th class="text-left">Tipo</th>
+					 <th class="text-center">Story Points</th>
 					 <th class="text-center">Total</th>
 					 <th class="text-center">Open</th>
 					 <th class="text-center">Testing</th>
@@ -120,7 +133,7 @@
 						 <td>{{ $item['name'] }}</td>
 						 <td>{{ $item['project'] }}</td>
 						 <td>{{ $item['sprint'] }}</td>
-						 <td>{{ $item['type'] }}</td>
+						 <td class="text-center">{{ $item['storypoint'] }}</td>
 						 <td class="text-center">{{ $item['open'] + $item['closed'] + $item['testing'] }}</td>
 						 <td class="text-center">{{ $item['open'] }}</td>
 						 <td class="text-center">{{ $item['testing'] }}</td>
@@ -131,6 +144,7 @@
 		   </table>
 	   </div>
 	   @endif
+
 
       </div>
     @else

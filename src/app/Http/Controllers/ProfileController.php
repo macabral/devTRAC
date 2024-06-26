@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\User;
-
-
+use ProtoneMedia\Splade\Facades\Toast;
 
 class ProfileController extends Controller
 {
@@ -92,4 +91,36 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    /**
+     * Update the user's avatar.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function avatar(Request $request)
+    {
+
+        $userId = auth('sanctum')->user()->id;
+
+        $ret = User::findOrFail($userId);
+
+        $input = $request->all();
+
+        $ret->fill($input);
+        
+        try {
+            
+            $ret->save();
+
+        } catch (\Exception $e) {
+
+            Toast::title(__('Error!' . $e->getMessage()))->danger()->autoDismiss(5);
+
+            return response()->json(['messagem' => $e], 422);
+            
+        }
+
+        return Redirect::route('profile.avatar')->with('status', 'updated');
+    }
+
 }

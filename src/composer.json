@@ -12,9 +12,11 @@
         "laravel/sanctum": "^3.2",
         "laravel/telescope": "^5.0",
         "laravel/tinker": "^2.8",
+        "maatwebsite/excel": "^3.1",
         "phpmailer/phpmailer": "^6.8",
         "phpoffice/phpspreadsheet": "^1.29",
         "protonemedia/laravel-splade-breeze": "^2.5",
+        "protoqol/prequel": "^1.23",
         "sopamo/laravel-filepond": "^1.2",
         "spatie/laravel-query-builder": "^5.2"
     },

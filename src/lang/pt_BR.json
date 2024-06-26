@@ -225,5 +225,6 @@
   "Function Point": "Pontos de Função",
   "You have been registered as a devTRAC user.  To register your password, access devTRAC and click on ": "Você foi cadastrado como um usuário do devTRAC. Para cadastrar sua senha acesse o devTRAC e clique em ",
   "You have been associated with the project with the following permissions:":"Você foi associado ao projeto com as seguintes permissões:",
-  "A new user has been registered with devTRAC. You must confirm the user's registration by associating them with a project so that they can access devTRAC.": "Um novo usuário foi registrado no devTRAC. Você deve confirmar o cadastro do usuário associando-o a um projeto para que o mesmo possa acessar o devTRAC."
+  "A new user has been registered with devTRAC. You must confirm the user's registration by associating them with a project so that they can access devTRAC.": "Um novo usuário foi registrado no devTRAC. Você deve confirmar o cadastro do usuário associando-o a um projeto para que o mesmo possa acessar o devTRAC.",
+  "Select your avatar.": "Selecione seu avatar."
 }

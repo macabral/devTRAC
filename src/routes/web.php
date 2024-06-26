@@ -11,7 +11,7 @@ use App\Http\Controllers\FilesController;
 use App\Http\Controllers\LogticketsController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\ConfigController;
-
+use App\Http\Controllers\PlanningpokerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,8 +52,9 @@ Route::middleware('splade')->group(function () {
         Route::post('/dashboard', [DashboardController::class, 'index'])->name('dashboard.project');
 
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::patch('/profile', [ProfileController::class, 'avatar'])->name('profile.avatar');
 
         // Tickets
         Route::get('/tickets', [TicketsController::class, 'index'])->name('tickets.index');
@@ -72,7 +73,7 @@ Route::middleware('splade')->group(function () {
         // Projects
         Route::get('/projects', [ProjectsController::class, 'index'])->middleware(['adminAccess'])->name('projects.index');
         Route::get('/projects/{id}', [ProjectsController::class, 'show'])->middleware(['adminAccess'])->name('projects.show');
-        Route::get('/projects-users/{id}', [ProjectsController::class, 'users'])->middleware(['adminAccess'])->name('projects.users');
+        Route::get('/projects-users/{id}', [ProjectsController::class, 'users'])->name('projects.users');
         Route::post('/projects', [ProjectsController::class, 'create'])->middleware(['adminAccess'])->name('projects.create');
         Route::patch('/projects/{id}', [ProjectsController::class, 'update'])->middleware(['adminAccess'])->name('projects.update');
         Route::get('/projects-delete/{id}', [ProjectsController::class, 'delete'])->middleware(['adminAccess'])->name('projects.delete');
@@ -130,6 +131,13 @@ Route::middleware('splade')->group(function () {
         Route::get('send-mail', [MailController::class, 'index']);
 
 
+        // Planning Poker
+        Route::get('/planning-poker/{ticket_id}', [PlanningpokerController::class, 'index'])->name('planningpoker.index');
+        Route::get('/planning-poker-start/{ticket_id}', [PlanningpokerController::class, 'start'])->name('planningpoker.start');
+        Route::get('/planning-poker-vote/{id}', [PlanningpokerController::class, 'vote'])->name('planningpoker.vote');
+        Route::post('/planning-poker-save/{id}', [PlanningpokerController::class, 'save'])->name('planningpoker.save');
+        Route::get('/planning-poker-show/{id}', [PlanningpokerController::class, 'show'])->name('planningpoker.show');
+        Route::get('/planning-poker-end/{id}', [PlanningpokerController::class, 'end'])->name('planningpoker.end');
     });
 
     require __DIR__.'/auth.php';
