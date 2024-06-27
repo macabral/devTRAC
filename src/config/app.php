@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'devTRAC'),
 
     /*
     |--------------------------------------------------------------------------
@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'https://localhost'),
 
     'asset_url' => env('ASSET_URL'),
 
@@ -83,7 +83,7 @@ return [
     |
     */
 
-    'locale' => 'pt_BR',
+    'locale' =>  env('APP_LOCALE','en'),
 
     /*
     |--------------------------------------------------------------------------

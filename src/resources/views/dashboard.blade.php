@@ -25,7 +25,7 @@
 
 				<div class="p-6 border-8 rounded-md inline-block mt-10 bg-white  text-center text-blue-800 font-bold">
 					<Link  href="{{ route('tickets.index') }}">
-						Total de Tickets
+						{{ __('Total of Tickets') }}
 					</Link> 
 					<br><br>
 					{{ $total }}
@@ -33,7 +33,7 @@
 
 				<div class="ml-10 p-6 border-8 rounded-md inline-block mt-10 bg-white text-center text-blue-800 font-bold">
 					<Link slideover href="{{ route('projects.users', base64_encode($projeto)) }}">
-						Equipe de Projeto
+						{{ __('Project Team') }}
 					</Link> 
 					<br><br>
 					{{ $totalEquipe }}
@@ -54,13 +54,13 @@
         <table class="min-w-full bg-white mt-6 text-left text-sm font-light rounded">
             <thead class="border-b font-medium dark:border-neutral-500">
                 <tr>
-                  <th class="text-left">Projeto</th>
+                  <th class="text-left">{{ __('Project') }}</th>
                   <th class="text-left">Sprint</th>
-                  <th class="text-left">Início</th>
-                  <th class="text-left">Fim</th>
-                  <th class="text-left">Tipo</th>
+                  <th class="text-left">{{ __('Start') }}</th>
+                  <th class="text-left">{{ __('End') }}</th>
+                  <th class="text-left">{{ __('Type') }}</th>
                   <th class="text-center">Story Points</th>
-				  <th class="text-center">PF</th>
+				  <th class="text-center">{{ __('Function Points') }}</th>
 				  <th class="text-center">Total</th>
                   <th class="text-center">Open</th>
                   <th class="text-center">Testing</th>
@@ -118,7 +118,7 @@
 			   <thead class="border-b font-medium dark:border-neutral-500">
 				   <tr>
 					 <th class="text-left">Dev</th>
-					 <th class="text-left">Projeto</th>
+					 <th class="text-left">{{ __('Project') }}</th>
 					 <th class="text-left">Sprint</th>
 					 <th class="text-center">Story Points</th>
 					 <th class="text-center">Total</th>

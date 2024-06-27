@@ -11,11 +11,14 @@ use App\Models\Sprints;
 use App\Models\Tickets;
 use App\Models\UsersProjects;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+
+        error_log(App::currentLocale());
 
         $input = $request->all();
 

@@ -9,8 +9,28 @@
         $contsp = 0;
     ?>
 
-    @if (Session::get('ret')[0]['gp'] == 1)
+    @if (Session::get('ret')[0]['gp'] != 1)
         
+        <x-splade-button class="ml-3">
+            <x-splade-defer manual stay @success="$splade.emit('team-member-added')">
+                <p v-if="response.data"  />
+                <button @click.prevent="reload">Reload</button>
+            </x-splade-defer>
+        </x-splade-button>
+        <br><br>
+        <hr>
+        <br>
+    @endif
+
+    @if (Session::get('ret')[0]['gp'] == 1)
+    
+        <x-splade-button class="ml-3">
+            <x-splade-defer manual stay @success="$splade.emit('team-member-added')">
+                <p v-if="response.data"  />
+                <button @click.prevent="reload">Reload</button>
+            </x-splade-defer>
+        </x-splade-button>
+
         <x-splade-button class="ml-3">
             <x-splade-defer manual url="{{ route('planningpoker.start', base64_encode($ret->id)) }}" stay @success="$splade.emit('team-member-added')">
                 <p v-if="response.data"  />
@@ -31,9 +51,10 @@
             </x-splade-defer>
         </x-splade-button>
         <br><br>
+        <hr>
+        <br>
     @endif
-    <hr>
-    <br>
+
 
     <x-splade-rehydrate  on="team-member-added">
     <table>
