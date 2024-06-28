@@ -8,7 +8,6 @@ use ProtoneMedia\Splade\SpladeTable;
 use ProtoneMedia\Splade\Facades\Toast;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
-use Illuminate\Support\Facades\Session;
 use App\Models\Projects;
 use App\Models\UsersProjects;
 
@@ -66,7 +65,9 @@ class ProjectsController extends Controller
                 'description' => '',
                 'status' => 'Enabled',
                 'media_sp' => 0,
-                'media_pf' => 0
+                'media_pf' => 0,
+                'sitelink' => null,
+                'gitlink' => null
             );
 
             return view('projects.new-project-form', [
@@ -96,7 +97,9 @@ class ProjectsController extends Controller
             'description' => 'max:254',
             'status' => 'required',
             'media_sp' => 'numeric|min:0|max:255',
-            'media_pf' => 'numeric|min:0|max:255'
+            'media_pf' => 'numeric|min:0|max:255',
+            'sitelink' => 'nullable|string|max:255',
+            'gitlink' => 'nullable|string|max:255'
         ]);
 
         $input = $request->all();
@@ -105,13 +108,14 @@ class ProjectsController extends Controller
             
             Projects::create($input);
 
+            Toast::title(__('Project saved!'))->autoDismiss(5);
+
         } catch (\Exception $e) {
 
+            Toast::title(__('Error! ' .  $e->getMessage()))->danger()->autoDismiss(15);
             return response()->json(['messagem' => $e], 422);
             
         }
-
-        Toast::title(__('Project saved!'))->autoDismiss(5);
 
         return redirect()->route('projects.index');
     }
@@ -128,7 +132,9 @@ class ProjectsController extends Controller
             'description' => 'max:254',
             'status' => 'required',
             'media_sp' => 'numeric|min:0|max:255',
-            'media_pf' => 'numeric|min:0|max:255'
+            'media_pf' => 'numeric|min:0|max:255',
+            'sitelink' => 'nullable|string|max:255',
+            'gitlink' => 'nullable|string|max:255'
         ]);
        
         $input = $request->all();
@@ -139,15 +145,17 @@ class ProjectsController extends Controller
             
             $projs->fill($input);
 
+            $projs->save();
+
+            Toast::title(__('Project saved!'))->autoDismiss(5);
+
         } catch (\Exception $e) {
 
+            
+            Toast::title(__('Error! ' .  $e->getMessage()))->danger()->autoDismiss(15);
             return response()->json(['messagem' => $e], 422);
             
         }
-
-        $projs->save();
-
-        Toast::title(__('Project saved!'))->autoDismiss(5);
 
         return redirect()->back();
     }

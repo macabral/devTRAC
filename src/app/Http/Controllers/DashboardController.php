@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use ProtoneMedia\Splade\Facades\Toast;
 use App\Models\Sprints;
-use App\Models\Tickets;
 use App\Models\UsersProjects;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
@@ -24,7 +23,7 @@ class DashboardController extends Controller
 
         $userId = auth('sanctum')->user()->id;
 
-        $ret = UsersProjects::Select('projects.id as projects_id','title','media_sp','media_pf','dev','relator','tester','gp')
+        $ret = UsersProjects::Select('projects.id as projects_id','title','sitelink','gitlink','media_sp','media_pf','dev','relator','tester','gp')
             ->leftJoin('projects','projects.id','=','users_projects.projects_id')
             ->where('users_projects.users_id','=',$userId)
             ->where('projects.status','=','Enabled')
@@ -136,7 +135,9 @@ class DashboardController extends Controller
             'gp' => $ret[$ind]->gp,
             'dev' => $ret[$ind]->dev,
             'relator' => $ret[$ind]->relator,
-            'tester' => $ret[$ind]->tester
+            'tester' => $ret[$ind]->tester,
+            'gitlink' => $ret[$ind]->gitlink,
+            'sitelink' => $ret[$ind]->sitelink
         );
 
         Session::forget('ret');
@@ -245,7 +246,9 @@ class DashboardController extends Controller
             'pf_medio' =>  $ret[$ind]->media_pf,
             'projeto' => $projects_id,
             'sprint' => $sprints_id,
-            'totalEquipe' => $totalEquipe[0]->total
+            'totalEquipe' => $totalEquipe[0]->total,
+            'sitelink' => $ret[$ind]->sitelink,
+            'gitlink' => $ret[$ind]->gitlink
         ]);
 
     }
