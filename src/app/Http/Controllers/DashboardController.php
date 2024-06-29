@@ -23,13 +23,13 @@ class DashboardController extends Controller
 
         $userId = auth('sanctum')->user()->id;
 
-        $ret = UsersProjects::Select('projects.id as projects_id','title','sitelink','gitlink','media_sp','media_pf','dev','relator','tester','gp')
-            ->leftJoin('projects','projects.id','=','users_projects.projects_id')
+        $ret = UsersProjects::Select('projects.id as projects_id','projects.status','title','sitelink','gitlink','media_sp','media_pf','dev','relator','tester','gp')
+            ->Join('projects','projects.id','=','users_projects.projects_id')
+            ->where('projects.status','!=','Disabled')
             ->where('users_projects.users_id','=',$userId)
-            ->where('projects.status','=','Enabled')
             ->orderby('title')
             ->get();
-
+  
         // se usuário não tiver projeto associado retorna para o login.
         if (count($ret) == 0) {
 
