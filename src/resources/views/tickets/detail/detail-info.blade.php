@@ -26,7 +26,7 @@
                 <td>{{ date('d/m/Y H:i', strtotime($ret->created_at)) }}</td>  
                 <td>{{ $ret->status }}</td>
                 <td>
-                    <Link slideover href="{{ route('files.show', base64_encode($ret->id)) }}" title="{{ __('Files') }}">
+                    <Link slideover href="{{ route('files.show', base64_encode($ret->id)), 'tickets' }}" title="{{ __('Files') }}">
                         <center>
                             ({{ $ret->docs }})
                         </center>

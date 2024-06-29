@@ -8,10 +8,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SprintsController;
 use App\Http\Controllers\TicketsController;
 use App\Http\Controllers\FilesController;
+use App\Http\Controllers\FilesdocController;
 use App\Http\Controllers\LogticketsController;
-use App\Http\Controllers\MailController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\PlanningpokerController;
+use App\Http\Controllers\DocumentsController;
+use App\Http\Controllers\TipodocsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -93,7 +95,6 @@ Route::middleware('splade')->group(function () {
         Route::get('/logtickets-edit/{id}', [LogticketsController::class, 'edit'])->name('logtickets.edit');
         Route::post('/logtickets-save/{id}/{origin}', [LogticketsController::class, 'save'])->name('logtickets.save');
 
-
         // Sprints
         Route::get('/sprints-index/{id}', [SprintsController::class, 'index'])->name('sprints.index');
         Route::get('/sprints/{id}', [SprintsController::class, 'show'])->middleware(['gpAccess'])->name('sprints.show');
@@ -103,13 +104,11 @@ Route::middleware('splade')->group(function () {
         Route::delete('/sprints/{id}', [SprintsController::class, 'destroy'])->middleware(['gpAccess'])->name('sprints.destroy');
         Route::get('/export-tickets/{id}', [SprintsController::class, 'exports'])->name('sprints.exports');
 
-
         // Files
         Route::get('/files/{id}', [FilesController::class, 'show'])->name('files.show');
         Route::post('/files/{id}', [FilesController::class, 'upload'])->name('files.upload');
         Route::get('/download/{id}', [FilesController::class, 'download'])->name('files.download');
         Route::get('/delete-file/{id}/{nomearq}', [FilesController::class, 'deleteFile'])->name('files.delete');
-
         
         // Users
         Route::get('/users', [UsersController::class, 'index'])->middleware(['adminAccess'])->name('users.index');
@@ -128,9 +127,6 @@ Route::middleware('splade')->group(function () {
         Route::get('/config', [ConfigController::class, 'index'])->name('config.index');
         Route::patch('/config', [ConfigController::class, 'update'])->name('config.update');
 
-        Route::get('send-mail', [MailController::class, 'index']);
-
-
         // Planning Poker
         Route::get('/planning-poker/{ticket_id}', [PlanningpokerController::class, 'index'])->name('planningpoker.index');
         Route::get('/planning-poker-start/{ticket_id}', [PlanningpokerController::class, 'start'])->name('planningpoker.start');
@@ -138,6 +134,29 @@ Route::middleware('splade')->group(function () {
         Route::post('/planning-poker-save/{id}', [PlanningpokerController::class, 'save'])->name('planningpoker.save');
         Route::get('/planning-poker-show/{id}', [PlanningpokerController::class, 'show'])->name('planningpoker.show');
         Route::get('/planning-poker-end/{id}', [PlanningpokerController::class, 'end'])->name('planningpoker.end');
+
+        // Documents
+        Route::get('/documents', [DocumentsController::class, 'index'])->name('documents.index');
+        Route::get('/documents/{id}', [DocumentsController::class, 'show'])->name('documents.show');
+        Route::post('/documents', [DocumentsController::class, 'create'])->name('documents.create');
+        Route::patch('/documents/{id}', [DocumentsController::class, 'update'])->name('documents.update');
+        Route::get('/documents-delete/{id}', [DocumentsController::class, 'delete'])->name('documents.delete');
+        Route::delete('/documents/{id}', [DocumentsController::class, 'destroy'])->name('documents.destroy');
+
+        // Type of Document
+        Route::get('/tipodocs', [TipodocsController::class, 'index'])->middleware(['adminAccess'])->name('tipodocs.index');
+        Route::get('/tipodocs/{id}', [TipodocsController::class, 'show'])->middleware(['adminAccess'])->name('tipodocs.show');
+        Route::post('/tipodocs', [TipodocsController::class, 'create'])->middleware(['adminAccess'])->name('tipodocs.create');
+        Route::patch('/tipodocs/{id}', [TipodocsController::class, 'update'])->middleware(['adminAccess'])->name('tipodocs.update');
+        Route::get('/tipodocs-delete/{id}', [TipodocsController::class, 'delete'])->middleware(['adminAccess'])->name('tipodocs.delete');
+        Route::delete('/tipodocs/{id}', [TipodocsController::class, 'destroy'])->middleware(['adminAccess'])->name('tipodocs.destroy');
+
+        // Documents
+        Route::get('/document-files/{id}', [FilesdocController::class, 'show'])->name('document-files.show');
+        Route::post('/document-files/{id}', [FilesdocController::class, 'upload'])->name('document-files.upload');
+        Route::get('/document-download/{id}', [FilesdocController::class, 'download'])->name('document-files.download');
+        Route::get('/document-delete-file/{id}/{nomearq}', [FilesdocController::class, 'deleteFile'])->name('document-files.delete');
+
     });
 
     require __DIR__.'/auth.php';

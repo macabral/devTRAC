@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Collection;
 use ProtoneMedia\Splade\SpladeTable;
@@ -30,8 +29,6 @@ class SprintsController extends Controller
             return redirect()->back();
 
         }
-
-        $userId = auth('sanctum')->user()->id;
 
         $projects_id = Session::get('ret')[0]['id'];
         

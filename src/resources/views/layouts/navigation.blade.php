@@ -67,6 +67,12 @@
                         </x-nav-link>
                     </div>
 
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                        <x-nav-link href="{{ route('documents.index') }}" :active="request()->routeIs('documents.index')">
+                            {{ __('Documents') }}
+                        </x-nav-link>
+                    </div>
+
                     <!-- Admin Dropdown -->
                     @if ($admin == 1)
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
@@ -89,12 +95,12 @@
                                         {{ __('Projects') }}
                                     </x-dropdown-link>
 
-                                    {{-- <x-dropdown-link :href="route('typetickets.index')">
-                                        {{ __('Type of Tickets') }}
-                                    </x-dropdown-link> --}}
-
                                     <x-dropdown-link :href="route('users.index')">
                                         {{ __('Users') }}
+                                    </x-dropdown-link>
+
+                                    <x-dropdown-link :href="route('tipodocs.index')">
+                                        {{ __('Type of Documents') }}
                                     </x-dropdown-link>
 
                                     {{-- <x-dropdown-link :href="route('config.index')">
@@ -218,6 +224,12 @@
             <div class="pt-2 pb-3 space-y-1">
                 <x-responsive-nav-link href="{{ route('tickets.index') }}" :active="request()->routeIs('tickets.index')">
                     {{ __('Tickets') }}
+                </x-responsive-nav-link>
+            </div>
+
+            <div class="pt-2 pb-3 space-y-1">
+                <x-responsive-nav-link href="{{ route('documents.index') }}" :active="request()->routeIs('documents.index')">
+                    {{ __('Documents') }}
                 </x-responsive-nav-link>
             </div>
 

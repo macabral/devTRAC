@@ -228,5 +228,9 @@
   "A new user has been registered with devTRAC. You must confirm the user's registration by associating them with a project so that they can access devTRAC.": "Um novo usuário foi registrado no devTRAC. Você deve confirmar o cadastro do usuário associando-o a um projeto para que o mesmo possa acessar o devTRAC.",
   "Select your avatar.": "Selecione seu avatar.",
   "Total of Tickets": "Total de Tíquetes",
-  "Project Team": "Equipe de Projeto"
+  "Project Team": "Equipe de Projeto",
+  "Documents": "Documentos",
+  "New Document": "Novo Documento",
+  "Type of Documents": "Tipos de Documento",
+  "Document saved!": "Documento salvo!"
 }
