@@ -232,5 +232,6 @@
   "Documents": "Documentos",
   "New Document": "Novo Documento",
   "Type of Documents": "Tipos de Documento",
-  "Document saved!": "Documento salvo!"
+  "Document saved!": "Documento salvo!",
+  "File not found.": "Arquivo não encontrado."
 }

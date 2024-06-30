@@ -242,7 +242,12 @@ class FilesdocController extends Controller
         // Path to the file
         $path = public_path( '/uploads/downloads/' . auth('sanctum')->user()->id . '/' . $filename);
 
-        return response()->file($path);
+        if (file_exists($path)) {
+            return response()->file($path);
+        } else {
+            Toast::title(__('File not found.'))->danger()->autoDismiss(5);
+            return redirect()->back();
+        }
 
     }
 }

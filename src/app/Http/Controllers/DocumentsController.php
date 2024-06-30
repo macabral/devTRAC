@@ -72,7 +72,7 @@ class DocumentsController extends Controller
     {
         $id = base64_decode($id);
 
-        $tipodocs = Tipodocs::get();
+        $tipodocs = Tipodocs::where('status','Enabled')->get();
 
         if ($id == 0) {
 
