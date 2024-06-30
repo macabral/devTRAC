@@ -109,6 +109,8 @@ Route::middleware('splade')->group(function () {
         Route::post('/files/{id}', [FilesController::class, 'upload'])->name('files.upload');
         Route::get('/download/{id}', [FilesController::class, 'download'])->name('files.download');
         Route::get('/delete-file/{id}/{nomearq}', [FilesController::class, 'deleteFile'])->name('files.delete');
+        Route::get('/file-open/{id}', [FilesdocController::class, 'openfile'])->name('files.openfile');
+
         
         // Users
         Route::get('/users', [UsersController::class, 'index'])->middleware(['adminAccess'])->name('users.index');
@@ -156,6 +158,7 @@ Route::middleware('splade')->group(function () {
         Route::post('/document-files/{id}', [FilesdocController::class, 'upload'])->name('document-files.upload');
         Route::get('/document-download/{id}', [FilesdocController::class, 'download'])->name('document-files.download');
         Route::get('/document-delete-file/{id}/{nomearq}', [FilesdocController::class, 'deleteFile'])->name('document-files.delete');
+        Route::get('/document-open/{id}', [FilesdocController::class, 'openfile'])->name('document-files.openfile');
 
     });
 

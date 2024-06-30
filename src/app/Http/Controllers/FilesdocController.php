@@ -227,6 +227,22 @@ class FilesdocController extends Controller
 
         // Outputs the content of the file
         readfile($path);
+
     }
 
+    /**
+     * View download a especific document.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function openfile($filename)
+    {
+
+        // Path to the file
+        $path = public_path( '/uploads/downloads/' . auth('sanctum')->user()->id . '/' . $filename);
+
+        return response()->file($path);
+
+    }
 }
