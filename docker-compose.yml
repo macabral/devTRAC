@@ -59,7 +59,7 @@ services:
         networks: 
             - devtrac
             
-    schedule:
+    queue:
         build:
             context: .
             dockerfile: Dockerfile
