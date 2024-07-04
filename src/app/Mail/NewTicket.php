@@ -21,7 +21,7 @@ class NewTicket extends Mailable
     public function __construct($id)
     {
 
-        $data = Tickets::Select('tickets.title','projects.title as project','version','users.email')
+        $data = Tickets::Select('tickets.id','tickets.title','projects.title as project','version','users.email')
             ->leftJoin('projects','projects.id','=','tickets.projects_id')
             ->leftJoin('sprints','sprints.id','=','tickets.sprints_id')
             ->leftJoin('users','resp_id','=','users.id')

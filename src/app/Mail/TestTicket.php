@@ -25,7 +25,7 @@ class TestTicket extends Mailable
 
         $destinatario = [];
 
-        $data = Tickets::Select('tickets.title','projects.title as project','version','tickets.projects_id')
+        $data = Tickets::Select('tickets.id','tickets.title','projects.title as project','version','tickets.projects_id')
             ->leftJoin('projects','projects.id','=','tickets.projects_id')
             ->leftJoin('sprints','sprints.id','=','tickets.sprints_id')
             ->where('tickets.id', $id)->get();

@@ -25,8 +25,8 @@
 		<div class="flex justify-end align-middle inline-block mr-6">
 
 			<div class="ml-10 p-6 border-8 rounded-md inline-block mt-10 bg-white  text-center text-blue-800 font-bold">
-				<Link  href="{{ route('tickets.index') }}">
-					{{ __('Total of Tickets') }}
+				<Link  href="{{ route('tickets.sprint', base64_encode($sprint)) }}">
+					{{ __('Sprint Tickets') }}
 				</Link> 
 				<br><br>
 				{{ $total }}

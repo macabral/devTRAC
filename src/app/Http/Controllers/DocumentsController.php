@@ -35,17 +35,19 @@ class DocumentsController extends Controller
             $query->where(function ($query) use ($value) {
                 Collection::wrap($value)->each(function ($value) use ($query) {
                     $query
-                        ->orwhere('version', 'LIKE', "%$value%")
-                        ->orwhere('documents.description', 'LIKE', "%$value%")
-                        ->orwhere('documents.projects_id', '=', $value);
+                        ->orwhere('documents.title', 'LIKE', "%$value%")
+                        ->orwhere('tipodocs.title', 'LIKE', "%$value%")
+                        ->orwhere('users.name', 'LIKE', "%$value%");
+
                 });
             });
         });
 
         $ret = QueryBuilder::for(Documents::class)
-            ->select("projects.title as project","documents.title","documents.datadoc","documents.id","tipodocs.title as tipodoc")
+            ->select("projects.title as project","documents.title","documents.datadoc","documents.id","tipodocs.title as tipodoc","users.name")
             ->leftJoin('projects','projects.id','=','documents.projects_id')
             ->leftJoin('tipodocs','tipodocs.id','=','documents.tipodocs_id')
+            ->leftJoin('users','users.id','=','documents.users_id')
             ->where('documents.projects_id','=',$projects_id)
             ->orderby('documents.datadoc')
             ->allowedFilters(['title', 'projects_id', $globalSearch])
@@ -61,6 +63,7 @@ class DocumentsController extends Controller
                 ->column('title', label: __('Title'), searchable: true)
                 ->column('tipodoc', label: __('Type'), searchable: true)
                 ->column('datadoc', label: __('Data'), searchable: false, as: fn ($datadoc) => date('d/m/Y', strtotime($datadoc)))
+                ->column('name', label: __('User'), searchable: true)
                 ->column('action', label: '', canBeHidden:false)
         ]);
     }

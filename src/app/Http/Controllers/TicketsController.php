@@ -437,8 +437,12 @@ class TicketsController extends Controller
         Try {
 
             $ret = Tickets::create($input);
-            
-            Mail::Queue(new NewTicket($ret['id']));
+
+            if (! is_null($input['resp_id'])) {
+
+                Mail::Queue(new NewTicket($ret['id']));
+
+            }
 
             Toast::title(__('Ticket saved!'))->autoDismiss(5);
 

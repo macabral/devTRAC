@@ -6,9 +6,6 @@
     <title>devTRAC</title>
     <style media="all" type="text/css">
 @media all {
-  .btn-primary table td:hover {
-    background-color: #ec0867 !important;
-  }
 
   .btn-primary a:hover {
     background-color: #ec0867 !important;
@@ -118,14 +115,14 @@
                                 <td>{{ $data['email'] }}</td>
                               </tr>
                               <tr>
-                                <td>&nbsp</td>
+                                <td></td>
                               </tr>
                               <tr>
                                 <td style="width:200px">{{ __('Project') }}</td>
                                 <td>{{ $data['title'] }}</td>
                               </tr> 
                               <tr>
-                                <td>&nbsp</td>
+                                <td></td>
                               </tr>                             
                               <tr>
                                 <td style="width:200px">{{ __('Project Manager') }}</td>
