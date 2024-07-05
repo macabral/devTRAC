@@ -226,13 +226,12 @@ class DashboardController extends Controller
         //total de tíquetes do projeto
         $sql = "select count(*) as total from users_projects where projects_id = $projects_id";
         $totalEquipe = DB::select($sql);
-
       
         return view('dashboard',[
             'proj' => $ret,
             'input' => $input,
             'stats' => $result1,
-            'total' => $total,
+            'total' => $total[0]->vlr,
             'perdev' => $result2,
             'chart1' => $chart1,
             'chart2' => $chart2,
