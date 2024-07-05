@@ -222,9 +222,6 @@ class DashboardController extends Controller
         // gráfico pf
         $chart4 = $this->pfGrafico($projects_id);
 
-        //total de tíquetes do projeto
-        $sql = "select count(*) as total from tickets where projects_id = $projects_id";
-        $total = DB::select($sql);
 
         //total de tíquetes do projeto
         $sql = "select count(*) as total from users_projects where projects_id = $projects_id";
@@ -235,7 +232,7 @@ class DashboardController extends Controller
             'proj' => $ret,
             'input' => $input,
             'stats' => $result1,
-            'total' => $tcount,
+            'total' => $total,
             'perdev' => $result2,
             'chart1' => $chart1,
             'chart2' => $chart2,
