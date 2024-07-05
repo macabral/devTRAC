@@ -42,7 +42,12 @@ class LogService
           $query2 = User::Select('name')->where('id', '=', $input['resp_id'])->get();
           $texto .= 'Responsável atribuído! [' .  $query2[0]['name'] . ']' . chr(13);
 
-          Mail::Queue(new NewTicket($ret['id']));
+          if (! is_null($input['resp_id'])) {
+
+            Mail::Queue(new NewTicket($ret['id']));
+
+          }
+          
 
         } else {
           if ($ret['resp_id'] != $input['resp_id']) {
@@ -50,7 +55,11 @@ class LogService
             $query2 = User::Select('name')->where('id', '=', $input['resp_id'])->get();
             $texto .= 'Responsável alterado! [' . $query1[0]['name'] .'] => [' .  $query2[0]['name'] . ']' . chr(13);
 
-            Mail::Queue(new NewTicket($ret['id']));
+            if (! is_null($input['resp_id'])) {
+
+              Mail::Queue(new NewTicket($ret['id']));
+
+            }
             
           }
         }
