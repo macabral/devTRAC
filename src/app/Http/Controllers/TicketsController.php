@@ -440,7 +440,7 @@ class TicketsController extends Controller
 
             if (! is_null($input['resp_id'])) {
 
-                Mail::Queue(new NewTicket($ret['id']));
+                Mail::Queue(new NewTicket($ret['id'], ''));
 
             }
 
@@ -481,13 +481,12 @@ class TicketsController extends Controller
 
         try {
 
-            
+            // registra log das alterações
+            $logServiceInstance->saveLog($id, $ret, $input);
+           
             $ret->fill($input);
 
             $ret->save();
-
-            // registra log das alterações
-            $logServiceInstance->saveLog($id, $ret, $input);
 
             Toast::title(__('Ticket saved!'))->autoDismiss(5);
 
