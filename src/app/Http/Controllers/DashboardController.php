@@ -158,13 +158,15 @@ class DashboardController extends Controller
 
         $result2 = $this->devEstat($projects_id,$sprints_id);
 
+
+        $_totalTicketsSprint = 0;
+
         // gráfico burndown da primeira sprint
 
         if ($result1) {
             $start_time = Carbon::parse($result1[0]['start']);
             $finish_time =  Carbon::parse($result1[0]['end']);
             $totalDays = $start_time->diffInDays($finish_time) - 1;
-
 
             $categories = '';
             for($i=$start_time; $i<=$finish_time; $i->addDays(1)) {
@@ -173,15 +175,23 @@ class DashboardController extends Controller
 
             $sprint = $result1[0]['versionId'];
 
+            // total de tíquetes no release selecionado
             $sql = "select count(*) as vlr from tickets where sprints_id = $sprint";
             $total = DB::select($sql);
 
+            if (count($total) == 0) {
+                $_totalTicketsSprint = 0;
+            } else {
+                $_totalTicketsSprint = $total[0]->vlr;
+            }
+
+            // total de tíquetes fechados na sprint
             $sql = "select  count(*) as vlr from tickets where sprints_id = $sprint and status='Closed'";
             $closed = DB::select($sql);
 
             $progressoReal = floor(($closed[0]->vlr * $storyPointSprint ) / $totalDays);
 
-            $totalStoryPoint = $total[0]->vlr * $storyPointSprint ;
+            $totalStoryPoint = $_totalTicketsSprint * $storyPointSprint ;
             $progresso = floor($totalStoryPoint / $totalDays);
 
             $vlr = $totalStoryPoint; $estimado = $vlr . ',';
@@ -222,7 +232,6 @@ class DashboardController extends Controller
         // gráfico pf
         $chart4 = $this->pfGrafico($projects_id);
 
-
         //total de tíquetes do projeto
         $sql = "select count(*) as total from users_projects where projects_id = $projects_id";
         $totalEquipe = DB::select($sql);
@@ -231,7 +240,7 @@ class DashboardController extends Controller
             'proj' => $ret,
             'input' => $input,
             'stats' => $result1,
-            'total' => $total[0]->vlr,
+            'total' => $_totalTicketsSprint,
             'perdev' => $result2,
             'chart1' => $chart1,
             'chart2' => $chart2,
