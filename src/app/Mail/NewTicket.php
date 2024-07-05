@@ -30,7 +30,7 @@ class NewTicket extends Mailable
 
         $this->data = $data[0];
 
-        if (empty($email)) {
+        if (! empty($email)) {
             $this->email = $email;
         } else {
             $this->email = $this->data['email'];
