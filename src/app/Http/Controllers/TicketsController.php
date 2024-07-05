@@ -481,12 +481,13 @@ class TicketsController extends Controller
 
         try {
 
-            // registra log das alterações
-            $logServiceInstance->saveLog($id, $ret, $input);
             
             $ret->fill($input);
 
             $ret->save();
+
+            // registra log das alterações
+            $logServiceInstance->saveLog($id, $ret, $input);
 
             Toast::title(__('Ticket saved!'))->autoDismiss(5);
 
