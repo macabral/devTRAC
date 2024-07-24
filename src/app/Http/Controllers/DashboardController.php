@@ -17,8 +17,6 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
 
-        error_log(App::currentLocale());
-
         $input = $request->all();
 
         $userId = auth('sanctum')->user()->id;

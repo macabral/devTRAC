@@ -395,6 +395,10 @@ class TicketsController extends Controller
 
         $input['relator_id'] = $this->userId;
 
+        if (! isset($input['resp_id'])) {
+            $input['resp_id'] = null;
+        }
+
         $arqs = $request->file('arquivos');
 
         $zip_file = '';
