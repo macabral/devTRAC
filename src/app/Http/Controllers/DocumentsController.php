@@ -211,7 +211,7 @@ class DocumentsController extends Controller
 
         $ret = Documents::findOrFail($id);
 
-         return view('Documents.confirm-delete', [
+         return view('documents.confirm-delete', [
             'ret' => $ret,
         ]);
 

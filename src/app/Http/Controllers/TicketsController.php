@@ -374,7 +374,7 @@ class TicketsController extends Controller
     /**
      * Creating a new resource.
      */
-    public function create(Request $request)
+    public function create(Request $request, LogService $logServiceInstance)
     {
         $this->init();
         
@@ -423,9 +423,12 @@ class TicketsController extends Controller
 
             if ($zipStatus == true) {
 
+                $texto = 'Arquivos Anexados: ';
+
                 foreach($arqs as $file) {
                     
                     $zip->addFile($file, basename($file->getClientOriginalName()));
+                    $texto .=  basename($file->getClientOriginalName()) . '; ';
 
                 }
 
@@ -438,14 +441,22 @@ class TicketsController extends Controller
 
         $input['file'] = $zip_file;
 
+        $statusSprint = Sprints::Select('status')->where('id',$input['sprints_id'])->get();
+
         Try {
 
             $ret = Tickets::create($input);
+ 
+            if (is_null($input['resp_id']) == false && $statusSprint[0]->status != "Waiting") {
 
-            if (! is_null($input['resp_id'])) {
-
+                Toast::title(__('Sending email...'))->autoDismiss(5);
                 Mail::Queue(new NewTicket($ret['id'], ''));
 
+            }
+            
+            // registra log dos uploads
+            if (!empty($zip_file)) {
+                $logServiceInstance->saveUploadLog($ret->id, $texto);
             }
 
             Toast::title(__('Ticket saved!'))->autoDismiss(5);

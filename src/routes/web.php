@@ -110,7 +110,6 @@ Route::middleware('splade')->group(function () {
         Route::get('/download/{id}', [FilesController::class, 'download'])->name('files.download');
         Route::get('/delete-file/{id}/{nomearq}', [FilesController::class, 'deleteFile'])->name('files.delete');
         Route::get('/file-open/{id}', [FilesdocController::class, 'openfile'])->name('files.openfile');
-
         
         // Users
         Route::get('/users', [UsersController::class, 'index'])->middleware(['adminAccess'])->name('users.index');

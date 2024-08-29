@@ -22,9 +22,9 @@
 			</x-splade-form>
 		</div>
 
-		<div class="flex justify-end align-middle inline-block mr-6">
+		<div class="flex justify-end align-middle inline-block mr-6 mt-3">
 
-			<div class="ml-10 p-6 border-8 rounded-md inline-block mt-10 bg-white  text-center text-blue-800 font-bold">
+			<div class="ml-10 p-6 border-8 rounded-md inline-block bg-white  text-center text-blue-800 font-bold">
 				<Link  href="{{ route('tickets.sprint', base64_encode($sprint)) }}">
 					{{ __('Sprint Tickets') }}
 				</Link> 
@@ -32,7 +32,7 @@
 				{{ $total }}
 			</div>
 
-			<div class="ml-10 p-6 border-8 rounded-md inline-block mt-10 bg-white text-center text-blue-800 font-bold">
+			<div class="ml-10 p-6 border-8 rounded-md inline-block bg-white text-center text-blue-800 font-bold">
 				<Link slideover href="{{ route('projects.users', base64_encode($projeto)) }}">
 					{{ __('Project Team') }}
 				</Link> 

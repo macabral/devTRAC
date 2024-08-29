@@ -280,7 +280,10 @@ class SprintsController extends Controller
         }
     
         $writer = new Xlsx($spreadsheet);
-        $fileName = 'sprint-tickets.xlsx';
+
+        $nome = str_replace('/','_',$ret[0]['sprint']);
+        $nome = str_replace('.','_',$nome);
+        $fileName = 'sprint-tickets-' . $nome . '.xlsx';
 
         $path = public_path('/uploads/downloads/' . auth('sanctum')->user()->id);
         

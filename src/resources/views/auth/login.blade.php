@@ -9,22 +9,22 @@
             <x-splade-input id="password" type="password" name="password" :label="__('Password')" required autocomplete="current-password" />
             <x-splade-checkbox id="remember_me" name="remember" :label="__('Remember me')" />
 
-            <div class="flex items-center justify-end">
-                @if (Route::has('password.request'))
-                    <Link class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </Link>
-                @endif
-
-                <x-splade-submit class="ml-3" :label="__('Log in')" />
-
-            </div>
             <p>
             Database Connected:
             <?php
                 try {
                     \DB::connection()->getPDO();
                     echo \DB::connection()->getDatabaseName();
+                    ?>
+                                <div class="flex items-center justify-end">
+                                    @if (Route::has('password.request'))
+                                        <Link class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('password.request') }}">
+                                            {{ __('Forgot your password?') }}
+                                        </Link>
+                                    @endif
+                                    <x-splade-submit class="ml-3" :label="__('Log in')" />
+                                </div>
+                    <?php
                     } catch (\Exception $e) {
                     echo 'None';
                 }
