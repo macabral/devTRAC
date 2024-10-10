@@ -16,11 +16,11 @@
                 <div class="flex">
                     <!-- Logo -->
                     <div class="shrink-0 flex items-center">
-                        <Link href="<?php echo url(''); ?>">
+                        <x-nav-link :href="route('dashboard')">
                             <img src="<?php echo url(''); ?>/assets/logo.jpg" width="70" dalt="logo!">
-                        </Link>
+                        </x-nav-link>
                     </div>
-
+                    
                     <!-- Dashboad -->
                     <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">

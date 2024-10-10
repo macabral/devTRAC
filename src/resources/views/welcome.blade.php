@@ -29,7 +29,7 @@
 
                     <div class="ml-12 pt-4">
                         <div class="mt-12 text-gray-600 dark:text-gray-400 text-lg">
-                            {{ __("devTRAC is an issue tracking tool for a small software development projects. It helps developers to view theirs tasks and interact with a Project Manager.") }}
+                            {{ __("devTRAC is an issue tracking tool for software development projects. It helps developers to view theirs tasks and interact with a Dev squad.") }}
                         </div>
                     </div>
                 </div>
@@ -37,7 +37,7 @@
         </div>
 
             <div class="ml-4 pt-5 text-center text-sm text-gray-500 sm:text-right sm:ml-0">
-                v0.15
+                v0.16
             </div>
 
     </div>
