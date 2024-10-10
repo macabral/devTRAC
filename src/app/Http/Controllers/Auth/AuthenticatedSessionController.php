@@ -31,9 +31,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->authenticate();
 
-        $request->session()->regenerate();
+        $ativo = auth('sanctum')->user()->active;
 
-        return redirect('/dashboard');
+        if ($ativo == '0') {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect('/login');
+        } else {
+            return redirect('/dashboard');
+        }
 
         // return redirect()->intended(RouteServiceProvider::HOME);
     }
