@@ -171,13 +171,13 @@ class SprintsController extends Controller
 
         if ($input['status'] == 'Closed') {
             // verifica se existem tíquetes abertos
-            $ret = Tickets::Where('status','Open')->where('sprints_id',$id)->get();
-            $open = $ret->count();
+            $tcks = Tickets::Where('status','Open')->where('sprints_id',$id)->get();
+            $open = $tcks->count();
             if ($open > 0) {
                 Toast::title(__("Cannot Close Sprint while exists open tickets."))->danger()->autoDismiss(5);
             }
         }
-        
+
         if ($open == 0) {
             try {
                 
