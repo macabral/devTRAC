@@ -93,14 +93,10 @@ class myTickets extends AbstractTable
             ->Where('tickets.projects_id','=', $this->projects_id)
             ->Where('tickets.status', '!=', 'Closed')
             ->Where(function($query) {
-                if ($this->admin != '1' || $this->gp != '1') {
-                    if ($this->dev == '1') {
-                        $query->orwhere('tickets.resp_id', '=', $this->userId);
-                    }
-                    if ($this->relator == '1') {
-                        $query->orwhere('tickets.relator_id', '=', $this->userId);
-                    }
+                if ($this->dev == '1') {
+                    $query->where('tickets.resp_id', '=', $this->userId);
                 }
+
             })
             ->orderby('sprints_id')
             ->orderby('status')

@@ -212,6 +212,7 @@ class ProjectsController extends Controller
             ->leftJoin('projects','projects.id','=','users_projects.projects_id')
             ->leftJoin('users','users.id','=','users_projects.users_id')
             ->Where('projects_id','=',$projects_id)
+            ->Where('users.active',1)
             ->orderby('name')
             ->get();
 

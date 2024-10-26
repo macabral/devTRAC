@@ -231,7 +231,9 @@ class DashboardController extends Controller
         $chart4 = $this->pfGrafico($projects_id);
 
         //total de tíquetes do projeto
-        $sql = "select count(*) as total from users_projects where projects_id = $projects_id";
+        $sql = "select count(*) as total from users_projects
+            left join users on users.id = users_projects.users_id
+            where projects_id = $projects_id and users.active = 1";
         $totalEquipe = DB::select($sql);
       
         return view('dashboard',[

@@ -381,6 +381,7 @@ class TicketsController extends Controller
         $this->validate($request, [
             'projects_id' => 'required',
             'title' => 'required|max:255',
+            'description' => 'max:255',
             'status' => 'required',
             'sprints_id' => 'required',
             'types_id' => 'required',
@@ -440,6 +441,8 @@ class TicketsController extends Controller
         }
 
         $input['file'] = $zip_file;
+        $input['title'] = strip_tags($input['title']);
+        $input['description'] = strip_tags($input['description']);
 
         $statusSprint = Sprints::Select('status')->where('id',$input['sprints_id'])->get();
 
@@ -479,6 +482,7 @@ class TicketsController extends Controller
 
         $this->validate($request, [
             'title' => 'required|max:255',
+            'description' => 'max:255',
             'status' => 'required',
             'sprints_id' => 'required',
             'types_id' => 'required'
@@ -487,6 +491,9 @@ class TicketsController extends Controller
         $id = base64_decode($id);
         
         $input = $request->all();
+
+        $input['title'] = strip_tags($input['title']);
+        $input['description'] = strip_tags($input['description']);
 
         $ret = Tickets::findOrFail($id);
 
