@@ -235,5 +235,6 @@
   "Document saved!": "Documento salvo!",
   "File not found.": "Arquivo não encontrado.",
   "Sprint Tickets": "Tíquetes da Sprint",
-  "Sending email...": "Enviando email..."
+  "Sending email...": "Enviando email...",
+  "Cannot Close Sprint while exists open tickets.": "Não é possível fechar o Sprint enquanto existirem tickets abertos."
 }

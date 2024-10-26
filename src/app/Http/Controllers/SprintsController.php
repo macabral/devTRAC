@@ -48,7 +48,7 @@ class SprintsController extends Controller
             ->select("projects.title as project","sprints.id","sprints.version","sprints.description as desc","sprints.start","sprints.end","sprints.status")
             ->leftJoin('projects','projects.id','=','sprints.projects_id')
             ->where('sprints.projects_id','=',$projects_id)
-            ->orderby('sprints.start')
+            ->orderby('sprints.start',)
             ->allowedSorts(['version'])
             ->allowedFilters(['version', 'description', 'status', 'projects_id', $globalSearch])
             ->paginate(7)
@@ -167,19 +167,32 @@ class SprintsController extends Controller
 
         $ret->fill($input);
 
-        try {
-            
-            $ret->save();
+        $open = 0;
 
-        } catch (\Exception $e) {
-
-            Toast::title(__('Error!' . $e->getMessage()))->danger()->autoDismiss(5);
-
-            return response()->json(['messagem' => $e], 422);
-            
+        if ($input['status'] == 'Closed') {
+            // verifica se existem tíquetes abertos
+            $ret = Tickets::Where('status','Open')->where('sprints_id',$id)->get();
+            $open = $ret->count();
+            if ($open > 0) {
+                Toast::title(__("Cannot Close Sprint while exists open tickets."))->danger()->autoDismiss(5);
+            }
         }
+        
+        if ($open == 0) {
+            try {
+                
+                $ret->save();
 
-        Toast::title(__('Sprint saved!'))->autoDismiss(5);
+            } catch (\Exception $e) {
+
+                Toast::title(__('Error!' . $e->getMessage()))->danger()->autoDismiss(5);
+
+                return response()->json(['messagem' => $e], 422);
+                
+            }
+
+            Toast::title(__('Sprint saved!'))->autoDismiss(5);
+        }
 
         return redirect()->back();
     }
