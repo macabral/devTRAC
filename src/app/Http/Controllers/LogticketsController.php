@@ -185,7 +185,6 @@ class LogticketsController extends Controller
                 
             }
 
-
         }
 
         return redirect()->back();
