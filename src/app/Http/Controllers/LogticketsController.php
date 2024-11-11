@@ -69,27 +69,29 @@ class LogticketsController extends Controller
             $input['description'] = "Tíquete Fechado.";
         }
 
-        if (! empty($input['description'])) {
+        $desc = trim($input['description']);
+
+        if (! empty($desc)) {
             
             $ticket = Tickets::findOrFail($id);
 
             $ticket['status'] = $status;
             $ticket->save();
 
-        }
-
-        try {
+            try {
             
-            Logtickets::create($input);
+                Logtickets::create($input);
+    
+            } catch (\Exception $e) {
+    
+                Toast::title(__('Error!' . $e))->autoDismiss(5);
+                return response()->json(['messagem' => $e], 422);
+                
+            }
+    
+            Toast::title(__('Ticket updated!'))->autoDismiss(5);
 
-        } catch (\Exception $e) {
-
-            Toast::title(__('Error!' . $e))->autoDismiss(5);
-            return response()->json(['messagem' => $e], 422);
-            
         }
-
-        Toast::title(__('Ticket updated!'))->autoDismiss(5);
 
         return redirect()->back();
     }
