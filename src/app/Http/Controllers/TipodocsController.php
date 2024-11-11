@@ -45,7 +45,7 @@ class TipodocsController extends Controller
                 ->column('action', label: '', canBeHidden:false)
         ]);
     }
-    
+
     /**
      * Display the specified resource.
      */
@@ -82,7 +82,7 @@ class TipodocsController extends Controller
      */
     public function create(Request $request,)
     {
-        
+
         $this->validate($request, [
             'title' => 'required|max:255',
             'status' => 'required'
@@ -91,7 +91,7 @@ class TipodocsController extends Controller
         $input = $request->all();
 
         try {
-            
+
             Tipodocs::create($input);
 
             Toast::title(__('Type saved!'))->autoDismiss(5);
@@ -102,7 +102,7 @@ class TipodocsController extends Controller
 
             Toast::title(__('Type error!' . $e->getMessage()))->danger()->autoDismiss(5);
             return response()->json(['messagem' => $e], 422);
-            
+
         }
 
 
@@ -119,31 +119,31 @@ class TipodocsController extends Controller
         ]);
 
         $id = base64_decode($id);
-        
+
         $input = $request->all();
 
         $ret = Tipodocs::findOrFail($id);
 
         try {
-            
+
             $ret->fill($input);
 
             $ret->save();
 
             Toast::title(__('Type saved!'))->autoDismiss(5);
-    
+
             return redirect()->back();
 
         } catch (\Exception $e) {
 
             return response()->json(['messagem' => $e], 422);
-            
+
         }
 
 
     }
 
-    
+
     /**
      * Remove the specified resource from storage.
      */
@@ -169,7 +169,7 @@ class TipodocsController extends Controller
         $ret = Tipodocs::findOrFail($id);
 
         try {
-            
+
             $ret->delete();
 
             Toast::title(__('Type deleted!'))->autoDismiss(5);
@@ -177,7 +177,7 @@ class TipodocsController extends Controller
         } catch (\Exception $e) {
 
             Toast::title(__('Type cannot be deleted!'))->danger()->autoDismiss(5);
-            
+
         }
 
 

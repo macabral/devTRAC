@@ -50,7 +50,7 @@ class DocumentsController extends Controller
             ->leftJoin('users','users.id','=','documents.users_id')
             ->where('documents.projects_id','=',$projects_id)
             ->orderby('documents.datadoc')
-            ->allowedFilters(['title', 'projects_id', $globalSearch])
+            ->allowedFilters(['title', $globalSearch])
             ->paginate(7)
             ->withQueryString();
 
@@ -61,7 +61,7 @@ class DocumentsController extends Controller
                 ->defaultSort('title','desc')
                 ->column('project', label: __('Project'),  canBeHidden:false)
                 ->column('title', label: __('Title'), searchable: true)
-                ->column('tipodoc', label: __('Type'), searchable: true)
+                ->column('tipodoc', label: __('Type'), searchable: false)
                 ->column('datadoc', label: __('Data'), searchable: false, as: fn ($datadoc) => date('d/m/Y', strtotime($datadoc)))
                 ->column('name', label: __('User'), searchable: true)
                 ->column('action', label: '', canBeHidden:false)
