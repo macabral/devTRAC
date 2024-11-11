@@ -151,7 +151,9 @@ class LogticketsController extends Controller
 
         $input = $request->all();
 
-        if (empty($input['description'])) {
+        $desc = trim($input['description']);
+
+        if (empty($desc)) {
             return;
         }
 
