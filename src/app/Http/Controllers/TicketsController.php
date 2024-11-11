@@ -381,7 +381,7 @@ class TicketsController extends Controller
         $this->validate($request, [
             'projects_id' => 'required',
             'title' => 'required|max:255|string',
-            'description' => 'max:4096|string',
+            'description' => 'max:4096',
             'status' => 'required',
             'sprints_id' => 'required',
             'types_id' => 'required',
@@ -482,7 +482,7 @@ class TicketsController extends Controller
 
         $this->validate($request, [
             'title' => 'required|max:255|string',
-            'description' => 'max:4096|string',
+            'description' => 'max:4096',
             'status' => 'required',
             'sprints_id' => 'required',
             'types_id' => 'required'
