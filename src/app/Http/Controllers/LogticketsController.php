@@ -149,6 +149,10 @@ class LogticketsController extends Controller
 
         $input = $request->all();
 
+        if (empty($input['description'])) {
+            return;
+        }
+
         $input['users_id'] = auth('sanctum')->user()->id;
         $input['tickets_id'] = $id;
         $input['origin'] = $origin;
@@ -163,6 +167,8 @@ class LogticketsController extends Controller
 
             $ret->save();
 
+            Toast::title(__('Comment saved!'))->autoDismiss(5);
+
 
         } catch (\Exception $e) {
 
@@ -170,8 +176,6 @@ class LogticketsController extends Controller
             return response()->json(['messagem' => $e], 422);
             
         }
-
-        Toast::title(__('Comment saved!'))->autoDismiss(5);
 
         return redirect()->back();
     }

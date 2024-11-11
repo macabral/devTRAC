@@ -3,7 +3,7 @@
         {!! nl2br($ret->title) !!}
         <br>
         <div class='text-base'>
-            {!! nl2br($ret->description) !!}
+            {!! $ret->description !!}
         </div>
     </div>
 
