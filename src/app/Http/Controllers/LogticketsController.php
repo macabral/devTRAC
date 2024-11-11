@@ -20,7 +20,7 @@ class LogticketsController extends Controller
     {
        
         $this->validate($request, [
-            'description' => 'required'
+            'description' => 'required|string'
         ]);
 
         $input = $request->all();
@@ -28,9 +28,9 @@ class LogticketsController extends Controller
         $input['users_id'] = auth('sanctum')->user()->id;
         $input['tickets_id'] = $id;
 
-        $desc = trim($input['description']);
+        $desc = trim(strip_tags(str_replace("&nbsp;",'',$input['description'])));
 
-        if (!empty($desc)) {
+        if ($desc != '') {
 
             try {
             
@@ -75,9 +75,9 @@ class LogticketsController extends Controller
             $input['description'] = "Tíquete Fechado.";
         }
 
-        $desc = trim($input['description']);
+        $desc = trim(strip_tags(str_replace("&nbsp;",'',$input['description'])));
 
-        if (!empty($desc)) {
+        if ($desc != '') {
             
             $ticket = Tickets::findOrFail($id);
 
@@ -152,14 +152,14 @@ class LogticketsController extends Controller
     {
        
         $this->validate($request, [
-            'description' => 'required'
+            'description' => 'required|string'
         ]);
 
         $input = $request->all();
 
-        $desc = trim($input['description']);
+        $desc = trim(strip_tags(str_replace("&nbsp;",'',$input['description'])));
 
-        if (!empty($desc)) {
+        if ($desc != '') {
 
             $input['users_id'] = auth('sanctum')->user()->id;
             $input['tickets_id'] = $id;
