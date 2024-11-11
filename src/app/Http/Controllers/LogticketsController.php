@@ -28,18 +28,24 @@ class LogticketsController extends Controller
         $input['users_id'] = auth('sanctum')->user()->id;
         $input['tickets_id'] = $id;
 
-        try {
-            
-            Logtickets::create($input);
+        $desc = trim($input['description']);
 
-        } catch (\Exception $e) {
+        if (!empty($desc)) {
 
-            Toast::title(__('Error!' . $e))->autoDismiss(5);
-            return response()->json(['messagem' => $e], 422);
+            try {
             
+                Logtickets::create($input);
+    
+                Toast::title(__('Comment saved!'))->autoDismiss(5);
+    
+            } catch (\Exception $e) {
+    
+                Toast::title(__('Error!' . $e))->autoDismiss(5);
+                return response()->json(['messagem' => $e], 422);
+                
+            }
+
         }
-
-        Toast::title(__('Comment saved!'))->autoDismiss(5);
 
         return redirect()->back();
     }
@@ -71,7 +77,7 @@ class LogticketsController extends Controller
 
         $desc = trim($input['description']);
 
-        if (! empty($desc)) {
+        if (!empty($desc)) {
             
             $ticket = Tickets::findOrFail($id);
 
@@ -153,32 +159,33 @@ class LogticketsController extends Controller
 
         $desc = trim($input['description']);
 
-        if (empty($desc)) {
-            return;
-        }
+        if (!empty($desc)) {
 
-        $input['users_id'] = auth('sanctum')->user()->id;
-        $input['tickets_id'] = $id;
-        $input['origin'] = $origin;
+            $input['users_id'] = auth('sanctum')->user()->id;
+            $input['tickets_id'] = $id;
+            $input['origin'] = $origin;
+    
+            try {
+               
+                Logtickets::create($input);
+    
+                $ret = Logtickets::findOrFail($origin);
+    
+                $ret['origin'] = 0;
+    
+                $ret->save();
+    
+                Toast::title(__('Comment saved!'))->autoDismiss(5);
+    
+    
+            } catch (\Exception $e) {
+    
+                Toast::title(__('Error!' . $e))->autoDismiss(5);
+                return response()->json(['messagem' => $e], 422);
+                
+            }
 
-        try {
-           
-            Logtickets::create($input);
 
-            $ret = Logtickets::findOrFail($origin);
-
-            $ret['origin'] = 0;
-
-            $ret->save();
-
-            Toast::title(__('Comment saved!'))->autoDismiss(5);
-
-
-        } catch (\Exception $e) {
-
-            Toast::title(__('Error!' . $e))->autoDismiss(5);
-            return response()->json(['messagem' => $e], 422);
-            
         }
 
         return redirect()->back();
