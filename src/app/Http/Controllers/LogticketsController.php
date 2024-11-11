@@ -81,6 +81,8 @@ class LogticketsController extends Controller
             try {
             
                 Logtickets::create($input);
+ 
+                Toast::title(__('Ticket updated!'))->autoDismiss(5);
     
             } catch (\Exception $e) {
     
@@ -88,8 +90,6 @@ class LogticketsController extends Controller
                 return response()->json(['messagem' => $e], 422);
                 
             }
-    
-            Toast::title(__('Ticket updated!'))->autoDismiss(5);
 
         }
 
