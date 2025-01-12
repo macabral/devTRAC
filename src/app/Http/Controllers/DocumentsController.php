@@ -249,4 +249,5 @@ class DocumentsController extends Controller
         return redirect()->back();
 
     }
+    
 }

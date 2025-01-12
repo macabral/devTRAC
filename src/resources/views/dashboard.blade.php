@@ -174,7 +174,7 @@
     @else
     <div class="rounded">
 		<br>
-        <p>Você não possui tarefas no momento.</p>
+        <p>Você não possui tarefas na sprint selecionada.</p>
 		<br>
     </div>
   @endif

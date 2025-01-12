@@ -57,19 +57,18 @@
                         </a>
                     </td>
                     <td>
+                        @if(substr($ret['files'][$i][0], strrpos($ret['files'][$i][0], '.') + 1) == 'pdf')
+                        <a href="#" onclick="openFile('{{ route('files.openfile', $ret['files'][$i][0] ) }}')" title="Abrir Documento" target="__blank">
+                            {{ $ret['files'][$i][0] }}
+                        </a> 
+                        @else 
                         <a href="{{ route('files.openfile', $ret['files'][$i][0] ) }}" title="Abrir Documento" target="__blank">
                             {{ $ret['files'][$i][0] }}
                         </a>
-                    </td>
-                    {{-- <td>
-
-                        @if(substr($ret['files'][$i][0], strrpos($ret['files'][$i][0], '.') + 1) == 'pdf')
-                            <a href="{{ url('/') . '/uploads/downloads/' . auth('sanctum')->user()->id . '/' . $ret['files'][$i][0] }}" onclick="window.open(this.href, 'new', 'popup'); return false;">{{ $ret['files'][$i][0] }}</a>
-                        @else
-                            <a href="{{ url('/') . '/uploads/downloads/' . auth('sanctum')->user()->id . '/' . $ret['files'][$i][0] }}" download>{{ $ret['files'][$i][0] }}</a>
                         @endif
 
-                    </td> --}}
+                    </td>
+
                 </tr>
             @endfor
         </tbody>

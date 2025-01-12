@@ -108,17 +108,9 @@ class DashboardController extends Controller
                 $sprints_id = $input['sprints_id'];
 
             } else {
+
+                $sprints_id = 0;
                 
-                if (isset(Session::get('ret')[0]['sprint']) && Session::get('ret')[0]['sprint'] != 0) {
-
-                    $sprints_id = Session::get('ret')[0]['sprint'];
-
-                } else {
-
-                    $sprints_id = 0;
-
-                }
-
             }
             
         }

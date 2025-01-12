@@ -24,5 +24,9 @@
     function GoBackWithRefresh(event) {
             window.history.back();
     }
+    function openFile(file) {
+        window.open(file, file, "top=10,left=100,toolbar=false, width=700, height=900");
+
+    }
     </script>
 </html>
